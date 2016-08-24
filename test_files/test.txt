@@ -1,0 +1,131 @@
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||j#||||#00|#1|engou
+020##$a0747532745
+041##$aeng
+1001#$aRowling, J.K.
+190##$aHarry Potter :$v1
+245#0$aHarry Potter and the Philosopher's Stone /$cJ.K. Rowling
+250##$a1st ed.
+260#2$aLondon, UK :$bBloomsbury Publishing,$c1997
+300#0$a223 p.
+520##$aHarry Potter thinks he is an ordinary boy until he is rescued by a beetle-eyed giant of a man, enrols at Hogwarts school of Witchcraft and Wizardry, learns to play Quidditch and does battle in a deadly duel. The reason: HARRY POTTER IS A WIZARD!
+541##$e2015:000001
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||j#||||#00|#1|engou
+020##$a155192370X
+041##$aeng
+1001#$aRowling, J.K.
+190##$aHarry Potter :$v2
+245#0$aHarry Potter and the Chamber of Secrets /$cJ.K. Rowling
+260#2$aLondon, UK :$bBloomsbury Publishing,$c1998
+541##$e2015:000002
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||j#||||#00|#1|engou
+020##$a1551922460
+041##$aeng
+1001#$aRowling, J.K.
+190##$aHarry Potter :$v3
+245#0$aHarry Potter and the Prisoner of Azkaban /$cJ.K. Rowling
+260#2$aLondon, UK :$bBloomsbury Publishing,$c1999
+541##$e2015:000003
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||j#||||#00|#1|engou
+020##$a155192515X
+041##$aeng
+1001#$aRowling, J.K.
+190##$aHarry Potter :$v4
+245#0$aHarry Potter and the Goblet of Fire /$cJ.K. Rowling
+260#2$aLondon, UK :$bBloomsbury Publishing,$c2000
+541##$e2015:000004
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||j#||||#00|#1|engou
+020##$a1551927241
+041##$aeng
+1001#$aRowling, J.K.
+190##$aHarry Potter :$v5
+245#0$aHarry Potter and the Order of the Phoenix /$cJ.K. Rowling
+260#2$aLondon, UK :$bBloomsbury Publishing,$c2003
+541##$e2015:000005
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||j#||||#00|#1|engou
+020##$a155192918X
+041##$aeng
+1001#$aRowling, J.K.
+190##$aHarry Potter :$v6
+245#0$aHarry Potter and the Half-Blood Prince /$cJ.K. Rowling
+260#2$aLondon, UK :$bBloomsbury Publishing,$c2005
+541##$e2015:000006
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||j#||||#00|#1|engou
+020##$b9781551929767
+041##$aeng
+1001#$aRowling, J.K.
+190##$aHarry Potter :$v7
+245#0$aHarry Potter and the Deathly Hallows /$cJ.K. Rowling
+260#2$aLondon, UK :$bBloomsbury Publishing,$c2007
+541##$e2015:000007
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||g#||||#00|#0|engou
+020##$b9781550549638
+041##$aeng
+1001#$aSuzuki, David
+245#4$aThe Sacred Balance /$cDavid Suzuki
+260#2$aVancouver, Canada :$bGreystone Books,$c1997
+541##$e2015:000008
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||g#||||#00|#||freou
+020##$b9782070612758
+041##$afre
+1001#$ade Saint-Exupery, Antoine
+245#3$aLe petit prince /$cAntoine de Saint-Exupery
+260#2$aParis, France :$bGallimard,$c2007
+541##$e2015:000009
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||g#||||#00|#m|engou
+020##$a0517454777
+041##$aeng
+1001#$aDoyle, Arthur Conan$cSir$d1859-1930
+245#4$aThe Illustrated Sherlock Holmes Treasury /$cSir Arthur Conan Doyle
+250##$aUnabridged ed.
+260#2$aNew York, USA :$bAvenel Books,$c1984
+5050#$aAdventures -- Memoirs -- Return -- Hound of the Baskervilles -- Study in Scarlet -- Sign of the Four -- Wisteria Lodge -- Adventure of the Bruce-Partington Plans
+541##$e2015:000010
+650##$aHolmes, Sherlock$vFiction
+650##$aDetective and mystery stories, English
+650##$aPrivate investigators$zEngland$vFiction
+7000#$aPaget, Sidney$d1860-1908
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#||||g#||||#00|#||engou
+020##$a0002008645
+041##$aeng
+1001#$aWeisman, Alan
+245#4$aThe World Without Us /$cAlan Weisman
+250##$a1st Canadian ed.
+260#2$aToronto, Canada :$bHarperCollins,$c2007
+541##$e2015:000011
+650##$aNature$xEffect of human beings on$xForecasting
+650##$aEcology$xForecasting
+650##$aEnvironmental degradation
+
+LDR##$a00000nam##2200024ua#4500
+008##$a150615|||||||||xx#b|||g#||||#001#1#engou
+020##$a0007149247
+041##$aeng
+1001#$aTolkien, J.R.R.$q(John Ronald Reuel)$d1892-1973
+245#4$aThe Lord of the Rings /$cJ.R.R. Tolkien
+260#2$aLondon, UK :$bHarperCollins,$c1995
+300##$a1112 p.:$bmaps
+500##$aIncludes Appendices and index.
+5050#$aThe Fellowship of the Ring -- The Two Towers -- The Return of the King -- Appendices
+541##$e2015:000012
+
