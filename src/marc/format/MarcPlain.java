@@ -4,12 +4,16 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -143,6 +147,8 @@ public class MarcPlain extends AbstractMarc {
 	
 	@Override
 	public void write(File file, List<Record> data) throws FileNotFoundException, IOException {
+		final Charset encoding = StandardCharsets.UTF_8;
+		final String charsetName = encoding.displayName(Locale.US);
 		BufferedWriter out = null;
 		
 		Record record = null;
@@ -152,7 +158,7 @@ public class MarcPlain extends AbstractMarc {
 		Subfield subfield = null;
 		Iterator<Record> it = null;
 		
-		out = new BufferedWriter(new FileWriter(file));
+		out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charsetName));
 		it = data.iterator();
 		while (it.hasNext()){
 			record = it.next();

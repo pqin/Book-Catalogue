@@ -98,6 +98,7 @@ public class MarcXML extends AbstractMarc {
 	}
 	
 	public void write(File file, List<Record> data) throws FileNotFoundException, IOException {
+		final int version = 1;
 		final Charset encoding = StandardCharsets.UTF_8;
 		final String charsetName = encoding.displayName(Locale.US);
 		BufferedWriter out = null;
@@ -108,7 +109,7 @@ public class MarcXML extends AbstractMarc {
 		Iterator<Record> it = null;
 		
 		out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charsetName));
-		out.write(String.format("<?xml version=\"%s\" encoding=\"%s\"?>", "1.0", charsetName));
+		out.write(String.format("<?xml version=\"%d.0\" encoding=\"%s\"?>", version, charsetName));
 		out.newLine();
 		out.write(String.format("<collection xmlns=\"%s\">", "http://www.loc.gov/MARC21/slim"));
 		out.newLine();

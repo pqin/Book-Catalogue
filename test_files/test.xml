@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||j |||| 00| 1|engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">0747532745</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Rowling, J.K.</subfield>
+    </datafield>
+    <datafield tag="190" ind1=" " ind2=" ">
+      <subfield code="a">Harry Potter :</subfield>
+      <subfield code="v">1</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="0">
+      <subfield code="a">Harry Potter and the Philosopher's Stone /</subfield>
+      <subfield code="c">J.K. Rowling</subfield>
+    </datafield>
+    <datafield tag="250" ind1=" " ind2=" ">
+      <subfield code="a">1st ed.</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">London, UK :</subfield>
+      <subfield code="b">Bloomsbury Publishing,</subfield>
+      <subfield code="c">1997</subfield>
+    </datafield>
+    <datafield tag="300" ind1=" " ind2="0">
+      <subfield code="a">223 p.</subfield>
+    </datafield>
+    <datafield tag="520" ind1=" " ind2=" ">
+      <subfield code="a">Harry Potter thinks he is an ordinary boy until he is rescued by a beetle-eyed giant of a man, enrols at Hogwarts school of Witchcraft and Wizardry, learns to play Quidditch and does battle in a deadly duel. The reason: HARRY POTTER IS A WIZARD!</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000001</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||j |||| 00| 1|engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">155192370X</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Rowling, J.K.</subfield>
+    </datafield>
+    <datafield tag="190" ind1=" " ind2=" ">
+      <subfield code="a">Harry Potter :</subfield>
+      <subfield code="v">2</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="0">
+      <subfield code="a">Harry Potter and the Chamber of Secrets /</subfield>
+      <subfield code="c">J.K. Rowling</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">London, UK :</subfield>
+      <subfield code="b">Bloomsbury Publishing,</subfield>
+      <subfield code="c">1998</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000002</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||j |||| 00| 1|engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">1551922460</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Rowling, J.K.</subfield>
+    </datafield>
+    <datafield tag="190" ind1=" " ind2=" ">
+      <subfield code="a">Harry Potter :</subfield>
+      <subfield code="v">3</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="0">
+      <subfield code="a">Harry Potter and the Prisoner of Azkaban /</subfield>
+      <subfield code="c">J.K. Rowling</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">London, UK :</subfield>
+      <subfield code="b">Bloomsbury Publishing,</subfield>
+      <subfield code="c">1999</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000003</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||j |||| 00| 1|engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">155192515X</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Rowling, J.K.</subfield>
+    </datafield>
+    <datafield tag="190" ind1=" " ind2=" ">
+      <subfield code="a">Harry Potter :</subfield>
+      <subfield code="v">4</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="0">
+      <subfield code="a">Harry Potter and the Goblet of Fire /</subfield>
+      <subfield code="c">J.K. Rowling</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">London, UK :</subfield>
+      <subfield code="b">Bloomsbury Publishing,</subfield>
+      <subfield code="c">2000</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000004</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||j |||| 00| 1|engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">1551927241</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Rowling, J.K.</subfield>
+    </datafield>
+    <datafield tag="190" ind1=" " ind2=" ">
+      <subfield code="a">Harry Potter :</subfield>
+      <subfield code="v">5</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="0">
+      <subfield code="a">Harry Potter and the Order of the Phoenix /</subfield>
+      <subfield code="c">J.K. Rowling</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">London, UK :</subfield>
+      <subfield code="b">Bloomsbury Publishing,</subfield>
+      <subfield code="c">2003</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000005</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||j |||| 00| 1|engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">155192918X</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Rowling, J.K.</subfield>
+    </datafield>
+    <datafield tag="190" ind1=" " ind2=" ">
+      <subfield code="a">Harry Potter :</subfield>
+      <subfield code="v">6</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="0">
+      <subfield code="a">Harry Potter and the Half-Blood Prince /</subfield>
+      <subfield code="c">J.K. Rowling</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">London, UK :</subfield>
+      <subfield code="b">Bloomsbury Publishing,</subfield>
+      <subfield code="c">2005</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000006</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||j |||| 00| 1|engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="b">9781551929767</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Rowling, J.K.</subfield>
+    </datafield>
+    <datafield tag="190" ind1=" " ind2=" ">
+      <subfield code="a">Harry Potter :</subfield>
+      <subfield code="v">7</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="0">
+      <subfield code="a">Harry Potter and the Deathly Hallows /</subfield>
+      <subfield code="c">J.K. Rowling</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">London, UK :</subfield>
+      <subfield code="b">Bloomsbury Publishing,</subfield>
+      <subfield code="c">2007</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000007</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||g |||| 00| 0|engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="b">9781550549638</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Suzuki, David</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="4">
+      <subfield code="a">The Sacred Balance /</subfield>
+      <subfield code="c">David Suzuki</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">Vancouver, Canada :</subfield>
+      <subfield code="b">Greystone Books,</subfield>
+      <subfield code="c">1997</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000008</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||g |||| 00| ||freou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="b">9782070612758</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">fre</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">de Saint-Exupery, Antoine</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="3">
+      <subfield code="a">Le petit prince /</subfield>
+      <subfield code="c">Antoine de Saint-Exupery</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">Paris, France :</subfield>
+      <subfield code="b">Gallimard,</subfield>
+      <subfield code="c">2007</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000009</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||g |||| 00| m|engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">0517454777</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Doyle, Arthur Conan</subfield>
+      <subfield code="c">Sir</subfield>
+      <subfield code="d">1859-1930</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="4">
+      <subfield code="a">The Illustrated Sherlock Holmes Treasury /</subfield>
+      <subfield code="c">Sir Arthur Conan Doyle</subfield>
+    </datafield>
+    <datafield tag="250" ind1=" " ind2=" ">
+      <subfield code="a">Unabridged ed.</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">New York, USA :</subfield>
+      <subfield code="b">Avenel Books,</subfield>
+      <subfield code="c">1984</subfield>
+    </datafield>
+    <datafield tag="505" ind1="0" ind2=" ">
+      <subfield code="a">Adventures -- Memoirs -- Return -- Hound of the Baskervilles -- Study in Scarlet -- Sign of the Four -- Wisteria Lodge -- Adventure of the Bruce-Partington Plans</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000010</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2=" ">
+      <subfield code="a">Holmes, Sherlock</subfield>
+      <subfield code="v">Fiction</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2=" ">
+      <subfield code="a">Detective and mystery stories, English</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2=" ">
+      <subfield code="a">Private investigators</subfield>
+      <subfield code="z">England</subfield>
+      <subfield code="v">Fiction</subfield>
+    </datafield>
+    <datafield tag="700" ind1="0" ind2=" ">
+      <subfield code="a">Paget, Sidney</subfield>
+      <subfield code="d">1860-1908</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx ||||g |||| 00| ||engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">0002008645</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Weisman, Alan</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="4">
+      <subfield code="a">The World Without Us /</subfield>
+      <subfield code="c">Alan Weisman</subfield>
+    </datafield>
+    <datafield tag="250" ind1=" " ind2=" ">
+      <subfield code="a">1st Canadian ed.</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">Toronto, Canada :</subfield>
+      <subfield code="b">HarperCollins,</subfield>
+      <subfield code="c">2007</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000011</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2=" ">
+      <subfield code="a">Nature</subfield>
+      <subfield code="x">Effect of human beings on</subfield>
+      <subfield code="x">Forecasting</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2=" ">
+      <subfield code="a">Ecology</subfield>
+      <subfield code="x">Forecasting</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2=" ">
+      <subfield code="a">Environmental degradation</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>00000nam  2200024ua 4500</leader>
+    <controlfield tag="008">150615|||||||||xx b|||g |||| 001 1 engou</controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">0007149247</subfield>
+    </datafield>
+    <datafield tag="041" ind1=" " ind2=" ">
+      <subfield code="a">eng</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Tolkien, J.R.R.</subfield>
+      <subfield code="q">(John Ronald Reuel)</subfield>
+      <subfield code="d">1892-1973</subfield>
+    </datafield>
+    <datafield tag="245" ind1=" " ind2="4">
+      <subfield code="a">The Lord of the Rings /</subfield>
+      <subfield code="c">J.R.R. Tolkien</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2="2">
+      <subfield code="a">London, UK :</subfield>
+      <subfield code="b">HarperCollins,</subfield>
+      <subfield code="c">1995</subfield>
+    </datafield>
+    <datafield tag="300" ind1=" " ind2=" ">
+      <subfield code="a">1112 p.:</subfield>
+      <subfield code="b">maps</subfield>
+    </datafield>
+    <datafield tag="500" ind1=" " ind2=" ">
+      <subfield code="a">Includes Appendices and index.</subfield>
+    </datafield>
+    <datafield tag="505" ind1="0" ind2=" ">
+      <subfield code="a">The Fellowship of the Ring -- The Two Towers -- The Return of the King -- Appendices</subfield>
+    </datafield>
+    <datafield tag="541" ind1=" " ind2=" ">
+      <subfield code="e">2015:000012</subfield>
+    </datafield>
+  </record>
+</collection>
