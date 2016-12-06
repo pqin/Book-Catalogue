@@ -79,8 +79,8 @@ public class RecordForm extends RecordPanel implements ActionListener, ListSelec
 		setRecord(record);
 	}
 
-	public void setRecord(Record data){
-		record = data;
+	public void setRecord(Record r){
+		record = r;
 		updateView();
 	}
 

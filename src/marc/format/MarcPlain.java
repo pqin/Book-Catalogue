@@ -3,10 +3,11 @@ package marc.format;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -105,7 +106,7 @@ public class MarcPlain extends AbstractMarc {
         char ind1 = MARC.BLANK_CHAR;
         char ind2 = MARC.BLANK_CHAR;
         
-        in = new BufferedReader(new FileReader(file));
+        in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
         while ((line = in.readLine()) != null){
             m1 = FIELD_REGEX.matcher(line);
             m2 = SUBFIELD_REGEX.matcher(line);

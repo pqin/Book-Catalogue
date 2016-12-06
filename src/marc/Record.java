@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import marc.field.ControlField;
 import marc.field.DataField;
@@ -17,6 +18,7 @@ import marc.resource.ResourceType;
 
 public class Record implements Comparable<Record>, Serializable {
 	private static final long serialVersionUID = 1L;
+	public static final Locale LOCALE = Locale.ENGLISH;
 	
 	private int length, accession;
 	private Leader leader;
@@ -35,6 +37,10 @@ public class Record implements Comparable<Record>, Serializable {
 		length = 0;
 		resource = new Resource();
 		//setAccession(0);
+	}
+	// copy constructor
+	private Record(Record r){
+		this();
 	}
 	
 	public void setLength(int recordLength){
@@ -526,9 +532,13 @@ public class Record implements Comparable<Record>, Serializable {
 	public int compareTo(Record arg0) {
 		int a0 = this.getAccession();
 		int a1 = arg0.getAccession();
-		int comparison = a0 - a1;
-		return comparison;
+		return (a0 - a1);
 	}
+	
+	/* TODO
+	 * Record clone()
+	 * boolean equals(Record b)
+	 */
 	
 	@Override
 	public String toString(){

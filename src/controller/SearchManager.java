@@ -2,20 +2,22 @@ package controller;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import application.CatalogueView;
 import application.MarcComponent;
 import gui.MatchType;
 import gui.form.SearchForm;
 import marc.Catalogue;
 import marc.Record;
 
-public class SearchManager implements MarcComponent {
+public class SearchManager implements MarcComponent, CatalogueView {
 	private Component parent;
 	private SearchForm searchForm;
 	private Catalogue data;
-	private ArrayList<Record> searchResults;
+	private ArrayList<Integer> searchResults;
 
 	public SearchManager(){
 		parent = null;
@@ -31,7 +33,7 @@ public class SearchManager implements MarcComponent {
 	@Override
 	public void create() {
 		searchForm = new SearchForm();
-		searchResults = new ArrayList<Record>();
+		searchResults = new ArrayList<Integer>();
 	}
 
 	@Override
@@ -43,25 +45,23 @@ public class SearchManager implements MarcComponent {
 	}
 	@Override
 	public Component getComponent(){
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	public void setParent(Component owner){
 		parent = owner;
 	}
-	public void setData(Catalogue records){
-		data = records;
-	}
+	
 	public void clearResults(){
 		searchResults.clear();
 	}
 	
-	public ArrayList<Record> getSearchResults(){
+	public List<Integer> getSearchResults(){
 		return searchResults;
 	}
 	public boolean searchCatalogue(){
 		searchForm.resetForm();
+		searchResults.clear();
 		int option = JOptionPane.showConfirmDialog(parent,
 				searchForm, "Record Search",
 				JOptionPane.OK_CANCEL_OPTION);
@@ -85,9 +85,7 @@ public class SearchManager implements MarcComponent {
 		String phrase = null;
 		Record result = null;
 		
-		searchResults.clear();
 		controlSearch = !lang.isEmpty();
-		
 		if (keyword.length > 0){
 			// wildcard matching
 			for (int k = 0; k < keyword.length; ++k){
@@ -128,9 +126,13 @@ public class SearchManager implements MarcComponent {
 					}
 				}
 				if (controlMatch && dataMatch){
-					searchResults.add(result);
+					searchResults.add(i);
 				}
 			}
 		}
+	}
+	@Override
+	public void updateView(Catalogue catalogue) {
+		data = catalogue;
 	}
 }

@@ -2,9 +2,9 @@ package marc.field;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Locale;
 
 import marc.MARC;
+import marc.Record;
 
 public class ControlField extends Field {
 	protected int FIXED_FIELD_LENGTH;
@@ -183,8 +183,8 @@ public class ControlField extends Field {
 	public boolean contains(String query, final boolean caseSensitive){
 		String data0 = String.copyValueOf(data);
 		if (!caseSensitive){
-			data0 = data0.toLowerCase(Locale.ENGLISH);
-			query = query.toLowerCase(Locale.ENGLISH);
+			data0 = data0.toLowerCase(Record.LOCALE);
+			query = query.toLowerCase(Record.LOCALE);
 		}
 		int index = data0.indexOf(query);
 		boolean match = (index != -1);

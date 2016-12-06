@@ -1,6 +1,6 @@
 package marc.field;
 
-import java.util.Locale;
+import marc.Record;
 
 public class Subfield {
 	private char code;
@@ -52,8 +52,8 @@ public class Subfield {
 		if (caseSensitive){
 			data0 = data;
 		} else {
-			data0 = data.toLowerCase(Locale.ENGLISH);
-			query = query.toLowerCase(Locale.ENGLISH);
+			data0 = data.toLowerCase(Record.LOCALE);
+			query = query.toLowerCase(Record.LOCALE);
 		}
 		int index = data0.indexOf(query);
 		boolean match = (index != -1);

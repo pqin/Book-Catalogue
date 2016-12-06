@@ -90,6 +90,10 @@ public class Catalogue implements MarcComponent {
 	public void add(Record record){
 		data.add(record);
 	}
+	public void add(Record[] records){
+		ArrayList<Record> list = new ArrayList<Record>(Arrays.asList(records));
+		data.addAll(list);
+	}
 	public void setData(ArrayList<Record> records) {
 		data.clear();
 		data.addAll(records);
@@ -105,6 +109,10 @@ public class Catalogue implements MarcComponent {
 	}
 	public void clear(){
 		data.clear();
+	}
+	public List<Record> split(int index, int length){
+		// TODO
+		return data;
 	}
 
 	public boolean hasAccession(final int accession){
@@ -164,7 +172,10 @@ public class Catalogue implements MarcComponent {
 		}
 	}
 	public void updateRecordView(int index){
-		Record record = (index < 0) ? null : data.get(index);
+		Record record = null;
+		if (index >= 0 && index < data.size()){
+			record = data.get(index);
+		}
 		Iterator<RecordView> iterator = recordView.iterator();
 		while (iterator.hasNext()){
 			iterator.next().updateView(record);

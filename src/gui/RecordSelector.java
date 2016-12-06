@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -19,67 +17,69 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import application.CatalogueView;
 import application.MarcComponent;
 import gui.table.MainEntryRenderer;
 import gui.table.NavigationTableModel;
+import gui.table.RecordSearchFilter;
 import marc.Catalogue;
 
 public class RecordSelector implements MarcComponent, CatalogueView, ListSelectionListener {
-	public static final String selectedRow = "SELECTED_ROW";
+	private static final int DEFAULT_COL_WIDTH = 80;
+	private static final int MAX_COL_WIDTH = 100000;
+	private static String STATUS_FORMAT = "Record: %d / %d";
 
 	private JPanel panel;
+	private JScrollPane scrollPane;
+	private JLabel statusBar;
 	private JTable table;
 	private NavigationTableModel model;
 	private ListSelectionModel selectionModel;
-	private ArrayList<PropertyChangeListener> listener;
-	private JScrollPane scrollPane;
-	private JLabel statusBar;
-	private String format;
-	private int previousRow, currentRow;
+	private RecordSearchFilter filter;
+	private ArrayList<ListSelectionListener> listener;
 	
 	public RecordSelector(){
 		model = new NavigationTableModel();
+		filter = null;
 		create();
-		
-		updateStatus();
 	}
 	public RecordSelector(Catalogue data){
 		model = new NavigationTableModel();
 		model.setData(data);
+		filter = null;
 		create();
-		
-		updateStatus();
+	}
+	public RecordSelector(RecordSearchFilter f){
+		model = new NavigationTableModel();
+		filter = f;
+		create();
 	}
 	
 	@Override
 	public void create() {
 		table = new JTable(model);
-		final int index = 1;
-		final int width = 80;
 		TableColumnModel columnModel = table.getColumnModel();
 		int colNum = columnModel.getColumnCount();
 		int tableWidth = table.getPreferredSize().width;
 				
 		TableColumn column = null;
-		int width0 = width;
+		int width0 = DEFAULT_COL_WIDTH;
 		int width1 = 0;
 		int widthSum = 0;
 		for (int i = 0; i < colNum; ++i){
 			column = columnModel.getColumn(i);
-			if (i < index){
+			if (i < 1){
 				column.setMinWidth(width0);
 				column.setMaxWidth(width0);
 				column.setPreferredWidth(width0);
 				column.setResizable(false);
 				widthSum += width0;
 			} else {
-				width1 = (tableWidth - widthSum) / (colNum - index);
+				width1 = (tableWidth - widthSum) / (colNum - 1);
 				column.setMinWidth(width1);
-				column.setMaxWidth(100000);
+				column.setMaxWidth(MAX_COL_WIDTH);
 				column.setPreferredWidth(width1);
 				column.setResizable(true);
 			}
@@ -87,28 +87,30 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		table.setDefaultRenderer(String.class, null);
 		table.setDefaultRenderer(String.class, new MainEntryRenderer());
 
-		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
+		TableRowSorter<NavigationTableModel> sorter = new TableRowSorter<NavigationTableModel>(model);
+		if (filter != null){
+			sorter.setRowFilter(filter);
+		}
 		table.setRowSorter(sorter);
-		
+
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		selectionModel = table.getSelectionModel();
 		selectionModel.addListSelectionListener(this);
-		listener = new ArrayList<PropertyChangeListener>();
+		listener = new ArrayList<ListSelectionListener>();
 		
 		panel = new JPanel();
 		scrollPane = new JScrollPane(table);
 		statusBar = new JLabel();
-		format = "Record: %d / %d";
 		
 		panel.setLayout(new BorderLayout());
 		panel.add(scrollPane, BorderLayout.CENTER);
 		panel.add(statusBar, BorderLayout.SOUTH);
 		
-		previousRow = -1;
-		currentRow = -1;
+		updateStatusBar();
 	}
 	@Override
 	public void destroy() {
+		
 		selectionModel.removeListSelectionListener(this);
 		listener.clear();
 		panel.removeAll();
@@ -117,32 +119,42 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 	public Component getComponent(){
 		return panel;
 	}
-	
-	public void addPropertyChangeListener(PropertyChangeListener l){
-		listener.add(l);
+	public RecordSearchFilter getSearchFilter(){
+		return filter;
 	}
 	
+	public void addListSelectionListener(ListSelectionListener l){
+		listener.add(l);
+	}
+	private void fireRowSelectionChange(int index){
+		ListSelectionEvent event = new ListSelectionEvent(this, index, index, false);
+		Iterator<ListSelectionListener> it = listener.iterator();
+		while (it.hasNext()){
+			it.next().valueChanged(event);
+		}
+	}
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		// TODO Auto-generated method stub
+		int selectedIndex = selectionModel.getLeadSelectionIndex();
+		
 		if (!e.getValueIsAdjusting()){
 			if (e.getSource() == selectionModel){
-				previousRow = currentRow;
-				currentRow = table.getSelectedRow();
-				PropertyChangeEvent event = new PropertyChangeEvent(this, selectedRow, previousRow, currentRow);
-				Iterator<PropertyChangeListener> it = listener.iterator();
-				while (it.hasNext()){
-					it.next().propertyChange(event);
-				}
+				updateStatusBar();
+				fireRowSelectionChange(selectedIndex);
 			}
 		}
+	}
+	
+	private void updateStatusBar(){
+		String status = String.format(STATUS_FORMAT, table.getSelectedRow() + 1, table.getRowCount());
+		statusBar.setText(status);
 	}
 	
 	public void selectRow(int row){
 		if (isValidRow(row)){
 			table.setRowSelectionInterval(row, row);
-			previousRow = currentRow;
-			currentRow = row;
+		} else if (row == -1){
+			table.clearSelection();
 		}
 	}
 	public void selectFirstRow(){
@@ -150,15 +162,11 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		if (table.getRowCount() > 0){
 			row = 0;
 		}
-		table.setRowSelectionInterval(row, row);
-		previousRow = currentRow;
-		currentRow = row;
+		selectRow(row);
 	}
 	public void selectLastRow(){
 		int row = table.getRowCount() - 1;
-		table.setRowSelectionInterval(row, row);
-		previousRow = currentRow;
-		currentRow = row;
+		selectRow(row);
 	}
 	
 	public void scrollToRow(final int row){
@@ -172,25 +180,18 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		viewport.scrollRectToVisible(rect);
 	}
 	
-	public void updateStatus(){
-		String status = String.format(format, table.getSelectedRow() + 1, table.getRowCount());
-		statusBar.setText(status);
-	}
 	public int getSelectedRow(){
-		int selection = table.getSelectedRow();
-		if (currentRow != selection){
-			currentRow = selection;
-		}
-		return currentRow;
+		return table.getSelectedRow();
 	}
 	public int getModelIndex(){
 		int modelIndex = -1;
+		int selectedIndex = table.getSelectedRow();
 		int rowCount = table.getRowCount();
-		if (currentRow >= rowCount){
-			currentRow = rowCount - 1;
+		if (selectedIndex >= rowCount){
+			selectedIndex = rowCount - 1;
 		}
-		if (isValidRow(currentRow)){
-			modelIndex = table.convertRowIndexToModel(currentRow);
+		if (isValidRow(selectedIndex)){
+			modelIndex = table.convertRowIndexToModel(selectedIndex);
 		}
 		return modelIndex;
 	}
@@ -229,12 +230,8 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 	public void updateView(Catalogue catalogue) {
 		model.setData(catalogue);
 		table.revalidate();
-		int rowCount = model.getRowCount();
-		int row = 0;
-		if (currentRow >= rowCount){
-			row = rowCount - 1;
-		}
-		selectRow(row);
-		updateStatus();
+	}
+	public void updateView(){
+		model.fireTableDataChanged();
 	}
 }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -18,6 +19,8 @@ import marc.format.AbstractMarc;
 import marc.format.FormatManager;
 
 public class FileManager implements MarcComponent {
+	private static final int RECORD_CAP = 1024;
+	
 	private Component parent;
 	private JFileChooser fileChooser;
 	private AbstractMarc[] format;
@@ -130,6 +133,29 @@ public class FileManager implements MarcComponent {
         } catch (IOException e) {
         	e.printStackTrace();
         }
+		int size = data.size();
+		if (size > RECORD_CAP){
+			data.subList(RECORD_CAP, size).clear();
+		}
+		// generate accession
+		int r0 = 0;
+		int a1 = 0;
+		Record r = null;
+		Iterator<Record> it = null;
+		if (data != null){
+			it = data.iterator();
+			while (it.hasNext()){
+				r = it.next();
+				r0 = r.getAccession();
+				if (r0 > a1){
+					a1 = r0;
+				} else {
+					r.setAccession(a1);
+				}
+				++a1;
+			}
+			data.trimToSize();
+		}
 		return data;
 	}
 	
