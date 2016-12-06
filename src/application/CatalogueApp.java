@@ -2,11 +2,8 @@ package application;
 
 import java.awt.Component;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,22 +12,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import action.*;
+import controller.DialogManager;
 import controller.FileManager;
 import controller.FrameManager;
 import controller.SearchManager;
 import controller.TabManager;
-import gui.MarcMenuBar;
 import gui.RecordSelector;
 import gui.form.CatalogCardPanel;
-import gui.form.RecordForm;
 import gui.form.FixedFieldForm;
+import gui.table.RecordSearchFilter;
 import gui.table.RecordTable;
 import gui.table.RecordTableModel;
 import marc.Catalogue;
@@ -38,24 +42,23 @@ import marc.Record;
 import marc.format.AbstractMarc;
 import marc.format.MarcDefault;
 
-public class CatalogueApp implements MarcComponent, ActionListener, PropertyChangeListener {
+public class CatalogueApp implements MarcComponent, ListSelectionListener {
 	private static final String SETTINGS_PATH = "resource/settings.properties";
-	private Catalogue data, searchResults;
-	private Properties property;
-	private String recentFile;
-	
+	private Catalogue data;
+	// 
 	private MarcWindow window;
-	private MarcMenuBar menubar;
 	private RecordSelector navSelector, searchSelector;
 	private TabManager scrollNav, recordDataPanel;
-	
+
 	private FrameManager frameManager;
 	private FileManager fileManager;
+	private DialogManager dialogManager;
 	private SearchManager searchManager;
 	
-	private CatalogueApp(){
-		create();
-	}
+	private FileAction newFileAction, openFileAction, saveFileAction, saveAsFileAction;
+	private WindowAction closeWindowAction;
+	private AbstractAction searchAction, clearSearchAction, aboutProgramAction;
+	private RecordAction addRecordAction, editRecordAction, deleteRecordAction;
 	
 	/**
 	 * @param args
@@ -88,19 +91,84 @@ public class CatalogueApp implements MarcComponent, ActionListener, PropertyChan
 	}
 	private static void createAndShowGUI(){
 		CatalogueApp app = new CatalogueApp();
-		app.loadData();
+		app.loadRecords(new ArrayList<Record>(), null);
 		app.show();
+		app.loadData();
 	}
 	
+	private CatalogueApp(){
+		create();
+	}
+	
+	private JMenu createMenu(String text, int mnemonic){
+		JMenu menu = new JMenu(text);
+		menu.setMnemonic(mnemonic);
+		return menu;
+	}
+	private JMenuItem createMenuItem(Action action, int mnemonic){
+		JMenuItem item = new JMenuItem(action);
+		item.setMnemonic(mnemonic);
+		return item;
+	}
+	private JMenuItem createMenuItem(Action action, int mnemonic, int accelerator, int modifier){
+		JMenuItem item = new JMenuItem(action);
+		item.setMnemonic(mnemonic);
+		item.setAccelerator(KeyStroke.getKeyStroke(accelerator, modifier));
+		return item;
+	}
+	
+	private JMenuBar buildMenuBar(){
+		JMenuBar menubar = new JMenuBar();
+		JMenu fileMenu = createMenu("File", KeyEvent.VK_F);
+		JMenuItem newFileItem = createMenuItem(newFileAction, KeyEvent.VK_N, KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
+		JMenuItem openFileItem = createMenuItem(openFileAction, KeyEvent.VK_O, KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
+		JMenuItem saveFileItem = createMenuItem(saveFileAction, KeyEvent.VK_S, KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
+		JMenuItem saveAsFileItem = new JMenuItem(saveAsFileAction);
+		JMenuItem quitFileItem = createMenuItem(closeWindowAction, KeyEvent.VK_X);
+		fileMenu.add(newFileItem);
+		fileMenu.add(openFileItem);
+		fileMenu.add(saveFileItem);
+		fileMenu.add(saveAsFileItem);
+		fileMenu.add(quitFileItem);
+		menubar.add(fileMenu);
+		
+		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E);
+		JMenuItem findItem = createMenuItem(searchAction, KeyEvent.VK_F, KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK);
+		JMenuItem clearSearchItem = createMenuItem(clearSearchAction, KeyEvent.VK_C);
+		editMenu.add(findItem);
+		editMenu.add(clearSearchItem);
+		menubar.add(editMenu);
+		
+		JMenu toolsMenu = createMenu("Tools", KeyEvent.VK_T);
+		JMenuItem addRecordItem = createMenuItem(addRecordAction, KeyEvent.VK_A);
+		JMenuItem editRecordItem = createMenuItem(editRecordAction, KeyEvent.VK_E);
+		JMenuItem deleteRecordItem = createMenuItem(deleteRecordAction, KeyEvent.VK_D, KeyEvent.VK_DELETE, 0);
+		toolsMenu.add(addRecordItem);
+		toolsMenu.add(editRecordItem);
+		toolsMenu.add(deleteRecordItem);
+		menubar.add(toolsMenu);
+		
+		JMenu helpMenu = createMenu("Help", KeyEvent.VK_H);
+		JMenuItem aboutHelpItem = createMenuItem(aboutProgramAction, KeyEvent.VK_A);
+		helpMenu.add(aboutHelpItem);
+		menubar.add(helpMenu);
+		return menubar;
+	}
 	@Override
 	public void create(){
+		data = new Catalogue();
+		
 		frameManager = new FrameManager(this);
 		fileManager = new FileManager();
-				
+		dialogManager = new DialogManager();
+		
 		navSelector = new RecordSelector();
-		searchSelector = new RecordSelector();
-		navSelector.addPropertyChangeListener(this);
-		searchSelector.addPropertyChangeListener(this);
+		
+		searchSelector = new RecordSelector(new RecordSearchFilter());
+		searchManager = new SearchManager();
+		
+		navSelector.addListSelectionListener(this);
+		searchSelector.addListSelectionListener(this);
 		scrollNav = new TabManager();
 		scrollNav.addTab(navSelector, "Index", "Index");
 		scrollNav.addTab(searchSelector, "Search", "Search");
@@ -113,40 +181,48 @@ public class CatalogueApp implements MarcComponent, ActionListener, PropertyChan
 		recordDataPanel.addTab(new JScrollPane(recordTable), "MARC", "MARC21");
 		recordDataPanel.addTab(recordResourcePanel, "Control", "Fixed Fields");
 		
-		menubar = new MarcMenuBar(this);
+		
+		newFileAction = new NewFileAction(data, fileManager);
+		openFileAction = new OpenFileAction(data, fileManager);
+		saveFileAction = new SaveFileAction(data, fileManager);
+		saveAsFileAction = new SaveAsFileAction(data, fileManager);
+		closeWindowAction = new WindowAction("Exit", WindowEvent.WINDOW_CLOSING);
+		searchAction = new SearchAction(searchManager, searchSelector);
+		clearSearchAction = new ClearSearchAction(searchManager, searchSelector);
+		addRecordAction = new AddRecordAction(data, dialogManager);
+		editRecordAction = new EditRecordAction(data, dialogManager);
+		deleteRecordAction = new DeleteRecordAction(data, dialogManager);
+		aboutProgramAction = new AboutProgramAction(dialogManager);
+		JMenuBar menubar = buildMenuBar();
 		
 		WindowBuilder builder = new WindowBuilder();
 		builder.setTitle("Catalogue Application v2.0");
 		builder.setItemSelector(scrollNav.getComponent());
 		builder.setItemEditor(recordDataPanel.getComponent());
 		builder.setWindowListener(frameManager);
-		builder.setMenuBar((JMenuBar) menubar.getComponent());
+		builder.setMenuBar(menubar);
 		window = new MarcWindow(builder.buildFrame());
 		
-		data = new Catalogue();
+		closeWindowAction.setWindow((JFrame) window.getComponent());
+		fileManager.setParent(window.getComponent());
+		dialogManager.setParent(window.getComponent());
+		searchManager.setParent(window.getComponent());
+		
 		data.addCatalogueView(navSelector);
+		data.addCatalogueView(searchSelector);
 		data.addCatalogueView(window);
+		data.addCatalogueView(searchManager);
 		data.addRecordView(recordTable);
 		data.addRecordView(recordCard);
 		data.addRecordView(recordResourcePanel);
-		
-		fileManager.setParent(window.getComponent());
-		
-		searchManager = new SearchManager(window.getComponent());
-		searchManager.setData(data);
-		searchResults = new Catalogue();
-		searchResults.addCatalogueView(searchSelector);
-		searchResults.updateCatalogueView();
 	}
 	@Override
 	public void destroy(){
 		saveProperties();
 		
 		data.destroy();
-		searchResults.destroy();
 		window.destroy();
 		frameManager.destroy();
-		menubar.destroy();
 		navSelector.destroy();
 		searchSelector.destroy();
 		fileManager.destroy();
@@ -165,29 +241,11 @@ public class CatalogueApp implements MarcComponent, ActionListener, PropertyChan
 	}
 	
 	public void loadData(){
-		property = loadProperties();
-		recentFile = property.getProperty("recentFile");
-		if (recentFile == null || recentFile.isEmpty()){
-			recentFile = "";
-			loadRecords(new ArrayList<Record>(), null);
-		} else {
-			File file = new File(recentFile);		
-			AbstractMarc format = fileManager.getFormatForFile(file);
-			if (format == null){
-				format = new MarcDefault();
-			}
-			ArrayList<Record> input = fileManager.read(file, format);
-			loadRecords(input, file);
-		}
-	}
-	
-	private Properties loadProperties(){
-		Properties prop = new Properties();
-		
+		Properties property = new Properties();
 		FileInputStream in = null;
 		try {
 			in = new FileInputStream(SETTINGS_PATH);
-			prop.load(in);
+			property.load(in);
 		} catch (FileNotFoundException e){
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -201,13 +259,47 @@ public class CatalogueApp implements MarcComponent, ActionListener, PropertyChan
 				}
 			}
 		}
-		return prop;
+		String title = property.getProperty("applicationTitle");
+		String majorVersion = property.getProperty("majorVersion");
+		String minorVersion = property.getProperty("minorVersion");
+		String recentFile = property.getProperty("recentFile");
+		int vMajor = 0;
+		int vMinor = 0;
+		try {
+			vMajor = Integer.parseInt(majorVersion, 10);
+			vMinor = Integer.parseInt(minorVersion, 10);
+		} catch (NumberFormatException e){
+			e.printStackTrace();
+		}
+		window.setProperties(title, vMajor, vMinor);
+		((AboutProgramAction) aboutProgramAction).setWindow(window);
+		
+		if (recentFile == null || recentFile.isEmpty()){
+			loadRecords(new ArrayList<Record>(), null);
+		} else {
+			File file = new File(recentFile);		
+			AbstractMarc format = fileManager.getFormatForFile(file);
+			if (format == null){
+				format = new MarcDefault();
+			}
+			ArrayList<Record> input = fileManager.read(file, format);
+			loadRecords(input, file);
+		}
 	}
+	
 	private void saveProperties(){
-		recentFile = (recentFile == null)? "": recentFile;
+		Properties property = new Properties();
+		File file = data.getFile();
+		String recentFile = (file == null) ? "" : file.getAbsolutePath();
+		if (recentFile == null){
+			recentFile = "";
+		}
 		FileOutputStream out = null;
 		try {
 			out = new FileOutputStream(SETTINGS_PATH);
+			property.setProperty("applicationTitle", window.getApplicationTitle());
+			property.setProperty("majorVersion", Integer.toString(window.getMajorVersion(), 10));
+			property.setProperty("minorVersion", Integer.toString(window.getMinorVersion(), 10));
 			property.setProperty("recentFile", recentFile);
 			property.store(out, "---No Comment---");
 		} catch (FileNotFoundException e){
@@ -226,182 +318,40 @@ public class CatalogueApp implements MarcComponent, ActionListener, PropertyChan
 	}
 	
 	private void loadRecords(ArrayList<Record> records, File file){
-		recentFile = (file == null) ? "" : file.getAbsolutePath();
 		data.setFile(file);
 		if (records != null){
 			data.setData(records);
 			data.updateCatalogueView();
-			displayRow(0);
-			
-			searchManager.setData(data);
-			searchResults.clear();
-			searchResults.updateCatalogueView();
+			navSelector.selectFirstRow();
 		}
 	}
 	
-	private void displayRow(int row){
-		navSelector.selectRow(row);
-		int i = navSelector.getModelIndex(row);
-		data.updateRecordView(i);
-		
-		navSelector.updateStatus();
-		searchSelector.updateStatus();
-	}
-	
-	private void showMessage(Object message, String title, boolean isWarning){
-		final int messageType = isWarning ? JOptionPane.WARNING_MESSAGE : JOptionPane.PLAIN_MESSAGE;
-		JOptionPane.showMessageDialog(
-				window.getComponent(),
-				message, title, messageType);
-	}
-	private boolean showDialog(Object component, String title, boolean isWarning){
-		final int messageType = isWarning ? JOptionPane.WARNING_MESSAGE : JOptionPane.PLAIN_MESSAGE;
-		final int option = JOptionPane.showConfirmDialog(
-				window.getComponent(),
-				component, title,
-				JOptionPane.OK_CANCEL_OPTION, messageType);
-		return (option == JOptionPane.OK_OPTION);
+	private void updateSelectedRecord(int index){
+		editRecordAction.setRecordIndex(index);
+		deleteRecordAction.setRecordIndex(index);
+		data.updateRecordView(index);
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		final String command = e.getActionCommand();
-		if (command.equals(MarcMenuBar.NEW_FILE)){
-			loadRecords(new ArrayList<Record>(), null);
-		}
-		if (command.equals(MarcMenuBar.OPEN_FILE)){
-			ArrayList<Record> input = fileManager.openFile();
-			if (input != null){
-				loadRecords(input, fileManager.getSelectedFile());
+	public void valueChanged(ListSelectionEvent e) {
+		int row = e.getFirstIndex();
+		int index = ((RecordSelector) e.getSource()).getModelIndex(row);
+		if (e.getSource() == navSelector){
+			/* Show selected Record if selection made from navigation table */
+			updateSelectedRecord(index);
+		} else if (e.getSource() == searchSelector){
+			/* Show selected Record if selection made from search results table.
+			 * Also, select and scroll to corresponding Record in navigation table. */
+			if (searchSelector.isValidModelIndex(index)){
+				// convert searchModel index to navModel index by matching accession number
+				int accession = searchSelector.getAccession(index);
+				index = navSelector.getIndexForAccession(accession);
+				row = navSelector.getRowForModel(index);
+				navSelector.selectRow(row);
+				
+				updateSelectedRecord(index);
+				navSelector.scrollToRow(row);
 			}
 		}
-		if (command.equals(MarcMenuBar.SAVE_FILE)){
-			boolean fileSaved = false;
-			File file = null;
-			AbstractMarc format = null;
-			if (recentFile == null || recentFile.isEmpty()){
-				fileSaved = fileManager.saveFile(data);
-				file = fileManager.getSelectedFile();
-				if (fileSaved){
-					data.setFile(file);
-					data.updateCatalogueView();
-				}
-			} else {
-				file = new File(recentFile);
-				format = fileManager.getFormatForFile(file);
-				fileManager.write(file, format, data);
-			}
-		}
-		if (command.equals(MarcMenuBar.SAVE_AS_FILE)){
-			boolean fileSaved = fileManager.saveFile(data);
-			File file = fileManager.getSelectedFile();
-			if (fileSaved){
-				data.setFile(file);
-				data.updateCatalogueView();
-			}
-		}
-		if (command.equals(MarcMenuBar.QUIT_PROG)){
-			JFrame frame = (JFrame) window.getComponent();
-			WindowEvent event = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
-			frame.dispatchEvent(event);
-		}
-
-		if (command.equals(MarcMenuBar.FIND_ITEM)){
-			boolean status = searchManager.searchCatalogue();
-			if (status){
-				searchResults.setData(searchManager.getSearchResults());
-				searchResults.updateCatalogueView();
-				scrollNav.displayTabComponent("Search");
-			}
-		}
-		if (command.equals(MarcMenuBar.CLEAR_SEARCH)){
-			searchManager.clearResults();
-			searchResults.setData(searchManager.getSearchResults());
-			searchResults.updateCatalogueView();
-		}
-		if (command.equals(MarcMenuBar.ADD_RECORD)){
-			// create new Record
-			Record record = data.generateRecord();
-			
-			// create and initialize Record form
-			RecordForm form = new RecordForm();
-			form.setRecord(record);
-			boolean option = showDialog(form.getComponent(), "Add Record", false);
-			if (option){
-				data.add(record);
-				navSelector.updateView(data);
-				navSelector.selectLastRow();
-				int addedRow = navSelector.getSelectedRow();
-				displayRow(addedRow);
-				navSelector.scrollToRow(addedRow);
-			}
-		}
-		if (command.equals(MarcMenuBar.DELETE_RECORD)){
-			int i = -1;
-			Record record = null;
-			String message = null;
-			if (navSelector.getModelIndex() == -1){
-				showMessage("No Record selected.", "Delete Record", true);
-			} else {
-				i = navSelector.getModelIndex();
-				record = data.get(i);
-				message = String.format("Delete Record #%d?", record.getAccession());
-				boolean option = showDialog(message, "Delete Record", true);
-				if (option){
-					record = data.remove(i);
-					if (searchResults.contains(record)){
-						searchResults.remove(record);
-						searchSelector.updateView(searchResults);
-					}
-					navSelector.updateView(data);
-					displayRow(navSelector.getRowForModel(i));
-				}
-			}
-		}
-		if (command.equals(MarcMenuBar.EDIT_RECORD)){
-			int i = -1;
-			Record record = null;
-			if (navSelector.getModelIndex() == -1){
-				showMessage("No Record selected.", "Edit Record", true);
-			} else {
-				i = navSelector.getModelIndex();
-				record = data.get(i);
-				RecordForm form = new RecordForm();
-				form.setRecord(record);
-				boolean option = showDialog(form.getComponent(), "Edit Record", false);
-				if (option){
-					displayRow(navSelector.getRowForModel(i));
-				}
-			}
-		}
-		if (command.equals(MarcMenuBar.INFO_ABOUT_PROGRAM)){
-			String message = String.format("%s %s", window.getApplicationTitle(), window.getVersion());
-			this.showMessage(message, "About", false);
-		}
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent e) {
-		int row = -1;
-		if (e.getPropertyName().equals(RecordSelector.selectedRow)){
-			row = (int) e.getNewValue();
-			if (e.getSource() == navSelector){
-				/* Show selected Record if selection made from navigation table */
-				displayRow(row);
-			} else if (e.getSource() == searchSelector){
-				/* Show selected Record if selection made from search results table.
-				 * Also, select and scroll to corresponding Record in navigation table. */
-				int index = searchSelector.getModelIndex();
-				if (searchSelector.isValidModelIndex(index)){
-					// convert searchModel index to navModel index by matching accession number
-					int accession = searchSelector.getAccession(index);
-					index = navSelector.getIndexForAccession(accession);
-					row = navSelector.getRowForModel(index);
-					displayRow(row);
-					navSelector.scrollToRow(row);
-				}
-			}
-		}
-		menubar.setRecordSelected(row != -1);
 	}
 }

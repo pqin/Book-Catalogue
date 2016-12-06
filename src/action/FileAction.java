@@ -8,23 +8,25 @@ import javax.swing.AbstractAction;
 import controller.FileManager;
 import marc.Catalogue;
 
-/**
- * @author Peter
- *
- */
+
 public abstract class FileAction extends AbstractAction {
 	private static final long serialVersionUID = 1L;
-	protected FileManager manager;
 	protected Catalogue catalogue;
+	protected FileManager manager;
 	
 	public FileAction(){
 		super();
-		manager = new FileManager();
 		catalogue = new Catalogue();
+		manager = new FileManager();
 	}
-	public FileAction(FileManager manager, Catalogue catalogue){
+	public FileAction(Catalogue catalogue, FileManager manager){
 		super();
-		this.manager = manager;
 		this.catalogue = catalogue;
+		this.manager = manager;
+	}
+	public FileAction(String text, Catalogue catalogue, FileManager manager){
+		super(text);
+		this.catalogue = catalogue;
+		this.manager = manager;
 	}
 }
