@@ -38,7 +38,7 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 	private NavigationTableModel model;
 	private ListSelectionModel selectionModel;
 	private RecordSearchFilter filter;
-	private ArrayList<ListSelectionListener> listener;
+	private ArrayList<RecordSelectionListener> listener;
 	
 	public RecordSelector(){
 		model = new NavigationTableModel();
@@ -96,7 +96,7 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		selectionModel = table.getSelectionModel();
 		selectionModel.addListSelectionListener(this);
-		listener = new ArrayList<ListSelectionListener>();
+		listener = new ArrayList<RecordSelectionListener>();
 		
 		panel = new JPanel();
 		scrollPane = new JScrollPane(table);
@@ -110,7 +110,6 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 	}
 	@Override
 	public void destroy() {
-		
 		selectionModel.removeListSelectionListener(this);
 		listener.clear();
 		panel.removeAll();
@@ -123,14 +122,23 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		return filter;
 	}
 	
-	public void addListSelectionListener(ListSelectionListener l){
+	public void addRecordSelectionListener(RecordSelectionListener l){
 		listener.add(l);
 	}
-	private void fireRowSelectionChange(int index){
-		ListSelectionEvent event = new ListSelectionEvent(this, index, index, false);
-		Iterator<ListSelectionListener> it = listener.iterator();
+	private void fireRowSelectionChange(int index, int row){
+		int modelIndex = getModelIndex(row);
+		if (index != modelIndex){
+			index = modelIndex;
+		}
+		Iterator<RecordSelectionListener> it = listener.iterator();
 		while (it.hasNext()){
-			it.next().valueChanged(event);
+			it.next().selectionUpdated(this, index, row);
+		}
+	}
+	public void fireDataUpdated(){
+		Iterator<RecordSelectionListener> it = listener.iterator();
+		while (it.hasNext()){
+			it.next().dataUpdated(this);
 		}
 	}
 	@Override
@@ -140,7 +148,7 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		if (!e.getValueIsAdjusting()){
 			if (e.getSource() == selectionModel){
 				updateStatusBar();
-				fireRowSelectionChange(selectedIndex);
+				fireRowSelectionChange(selectedIndex, table.getSelectedRow());
 			}
 		}
 	}
@@ -230,8 +238,10 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 	public void updateView(Catalogue catalogue) {
 		model.setData(catalogue);
 		table.revalidate();
+		updateStatusBar();
 	}
 	public void updateView(){
 		model.fireTableDataChanged();
+		updateStatusBar();
 	}
 }

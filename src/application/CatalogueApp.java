@@ -22,15 +22,26 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
-import action.*;
+import action.AboutProgramAction;
+import action.AddRecordAction;
+import action.ClearSearchAction;
+import action.DeleteRecordAction;
+import action.EditRecordAction;
+import action.FileAction;
+import action.NewFileAction;
+import action.OpenFileAction;
+import action.RecordAction;
+import action.SaveAsFileAction;
+import action.SaveFileAction;
+import action.SearchAction;
+import action.WindowAction;
 import controller.DialogManager;
 import controller.FileManager;
 import controller.FrameManager;
 import controller.SearchManager;
 import controller.TabManager;
+import gui.RecordSelectionListener;
 import gui.RecordSelector;
 import gui.form.CatalogCardPanel;
 import gui.form.FixedFieldForm;
@@ -42,7 +53,7 @@ import marc.Record;
 import marc.format.AbstractMarc;
 import marc.format.MarcDefault;
 
-public class CatalogueApp implements MarcComponent, ListSelectionListener {
+public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 	private static final String SETTINGS_PATH = "resource/settings.properties";
 	private Catalogue data;
 	// 
@@ -167,8 +178,8 @@ public class CatalogueApp implements MarcComponent, ListSelectionListener {
 		searchSelector = new RecordSelector(new RecordSearchFilter());
 		searchManager = new SearchManager();
 		
-		navSelector.addListSelectionListener(this);
-		searchSelector.addListSelectionListener(this);
+		navSelector.addRecordSelectionListener(this);
+		searchSelector.addRecordSelectionListener(this);
 		scrollNav = new TabManager();
 		scrollNav.addTab(navSelector, "Index", "Index");
 		scrollNav.addTab(searchSelector, "Search", "Search");
@@ -332,26 +343,24 @@ public class CatalogueApp implements MarcComponent, ListSelectionListener {
 		data.updateRecordView(index);
 	}
 
+	
 	@Override
-	public void valueChanged(ListSelectionEvent e) {
-		int row = e.getFirstIndex();
-		int index = ((RecordSelector) e.getSource()).getModelIndex(row);
-		if (e.getSource() == navSelector){
-			/* Show selected Record if selection made from navigation table */
-			updateSelectedRecord(index);
-		} else if (e.getSource() == searchSelector){
+	public void dataUpdated(RecordSelector source) {
+		if (source == searchSelector){
+			scrollNav.displayTabComponent("Search");
+		}
+	}
+	@Override
+	public void selectionUpdated(RecordSelector source, int index, int row) {
+		if (source == searchSelector && source.isValidModelIndex(index)){
 			/* Show selected Record if selection made from search results table.
 			 * Also, select and scroll to corresponding Record in navigation table. */
-			if (searchSelector.isValidModelIndex(index)){
-				// convert searchModel index to navModel index by matching accession number
-				int accession = searchSelector.getAccession(index);
-				index = navSelector.getIndexForAccession(accession);
-				row = navSelector.getRowForModel(index);
-				navSelector.selectRow(row);
-				
-				updateSelectedRecord(index);
-				navSelector.scrollToRow(row);
-			}
+			// convert searchModel index to navModel index by matching accession number
+			int accession = source.getAccession(index);
+			index = navSelector.getIndexForAccession(accession);
+			row = navSelector.getRowForModel(index);
+			navSelector.scrollToRow(row);
 		}
+		updateSelectedRecord(index);
 	}
 }

@@ -28,8 +28,7 @@ public class SearchAction extends AbstractAction {
 			filter.showSearch(true);
 			filter.setFilteredIndices(manager.getSearchResults());
 			selector.updateView();
-			// TODO change focus to display results?
-			// scrollNav.displayTabComponent("Search");
+			selector.fireDataUpdated();
 		}
 		 
 	}
