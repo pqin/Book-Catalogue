@@ -2,7 +2,7 @@ package marc.marc8;
 
 public class ExtendedArabic extends LanguageEncoding {
 	public ExtendedArabic(){
-		super((byte) 0x34);
+		super((byte) 0x34, 1);
 	}
 	
 	protected final char[] buildTable(){
@@ -51,6 +51,15 @@ public class ExtendedArabic extends LanguageEncoding {
 		t[0x78] = '\u06D3';
 		t[0x7D] = '\u0306';
 		t[0x7E] = '\u030C';
+		t = copyToG1(t);
 		return t;
+	}
+	protected final boolean[] buildDiacriticsTable(){
+		boolean b[] = super.buildDiacriticsTable();
+		for (int i = 0x7D; i <= 0x7E; ++i){
+			b[i] = true;
+			b[i+0x80] = true;
+		}
+		return b;
 	}
 }

@@ -2,7 +2,7 @@ package marc.marc8;
 
 public class BasicGreek extends LanguageEncoding {
 	public BasicGreek(){
-		super((byte) 0x53);
+		super((byte) 0x53, 1);
 	}
 	
 	protected final char[] buildTable(){
@@ -74,7 +74,15 @@ public class BasicGreek extends LanguageEncoding {
 		t[0x7C] = '\u03C8';
 		t[0x7D] = '\u03C9';
 		t[0x7E] = '\u03E1';
+		t = copyToG1(t);
 		return t;
 	}
-
+	protected final boolean[] buildDiacriticsTable(){
+		boolean b[] = super.buildDiacriticsTable();
+		for (int i = 0x21; i <= 0x27; ++i){
+			b[i] = true;
+			b[i+0x80] = true;
+		}
+		return b;
+	}
 }

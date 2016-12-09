@@ -2,7 +2,7 @@ package marc.marc8;
 
 public class ExtendedCyrillic extends LanguageEncoding {
 	public ExtendedCyrillic(){
-		super((byte) 0x51);
+		super((byte) 0x51, 1);
 	}
 	
 	protected final char[] buildTable(){
@@ -46,6 +46,7 @@ public class ExtendedCyrillic extends LanguageEncoding {
 		t[0x71] = '\u0472';
 		t[0x72] = '\u0474';
 		t[0x73] = '\u046A';
+		t = copyToG1(t);
 		return t;
 	}
 }

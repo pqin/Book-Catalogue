@@ -2,7 +2,7 @@ package marc.marc8;
 
 public class BasicHebrew extends LanguageEncoding {
 	public BasicHebrew(){
-		super((byte) 0x32);
+		super((byte) 0x32, 1);
 	}
 	
 	protected final char[] buildTable(){
@@ -33,6 +33,15 @@ public class BasicHebrew extends LanguageEncoding {
 		for (int i = 0; i < 3; ++i){
 			t[i+0x7B] = c++;
 		}
+		t = copyToG1(t);
 		return t;
+	}
+	protected final boolean[] buildDiacriticsTable(){
+		boolean b[] = super.buildDiacriticsTable();
+		for (int i = 0x40; i <= 0x4E; ++i){
+			b[i] = true;
+			b[i+0x80] = true;
+		}
+		return b;
 	}
 }

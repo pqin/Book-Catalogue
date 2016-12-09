@@ -2,7 +2,7 @@ package marc.marc8;
 
 public class Superscript extends LanguageEncoding {
 	public Superscript(){
-		super((byte) 0x70);
+		super((byte) 0x70, 1);
 	}
 	
 	protected final char[] buildTable(){
