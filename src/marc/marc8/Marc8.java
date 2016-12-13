@@ -11,11 +11,11 @@ import java.util.Iterator;
 
 public class Marc8 {
 	private static final byte ESC = 0x1B;
+	private static final char NULL = '\0';
 	public static final byte RECORD_TERMINATOR = 0x1D;
 	public static final byte FIELD_TERMINATOR = 0x1E;
 	public static final byte SUBFIELD_DELIMITER = 0x1F;
 	// final character in escape sequence
-	private static final byte EAST_ASIAN = 0x31;		// EACC
 	private static final byte BASIC_LATIN = 0x42;		// ASCII
 	private static final byte EXTENDED_LATIN = 0x45;	// ANSEL
 	private static final byte SUBSCRIPT = 0x62;			// subscript
@@ -33,7 +33,8 @@ public class Marc8 {
 	}
 	// state
 	private ReadState state;
-	private int g, bytesPerChar;
+	private int g;
+	private boolean multiBytesPerChar;
 	private LanguageEncoding[] graphic;
 	
 	public Marc8(){
@@ -70,7 +71,7 @@ public class Marc8 {
 	public final void reset(){
 		state = ReadState.NONE;
 		g = 0;
-		bytesPerChar = 1;
+		multiBytesPerChar = false;
 		graphic[0] = map.get(BASIC_LATIN);
 		graphic[1] = map.get(EXTENDED_LATIN);
 	}
@@ -94,55 +95,54 @@ public class Marc8 {
 			case NONE:
 				if (b == ESC){
 					state = ReadState.ESCAPE;
-				} else if (bytesPerChar == graphic[g].getBytesPerChar()){
+				} else {
 					value = ((int)b) & 0x0FF;	// convert byte to unsigned int
 					if (value >= 0x00 && value < 0x20) {
 						c = (char) value;
-						buffer.put(c);
 					} else if (value >= 0x20 && value < 0x7F){
 						c = graphic[0].decode(value);
 						if (graphic[0].isDiacritic(value)){
 							combining.put(c);
+							c = NULL;
 						} else if (combining.remaining() > 0){
 							combining.flip();
 							diacritics = c + combining.toString();
 							combining.clear();
 							buffer.put(diacritics);
-						} else {
-							buffer.put(c);
+							c = NULL;
 						}
 					} else if (value >= 0x80 && value < 0xA0){
 						c = (char) value;
-						buffer.put(c);
 					} else if (value >= 0xA0 && value < 0xFF){
 						c = graphic[1].decode(value);
 						if (graphic[1].isDiacritic(value)){
 							combining.put(c);
+							c = NULL;
 						} else if (combining.remaining() > 0){
 							combining.flip();
 							diacritics = c + combining.toString();
 							combining.clear();
 							buffer.put(diacritics);
-						} else {
-							buffer.put(c);
+							c = NULL;
 						}
 					}
-				} else {
-					buffer.put(LanguageEncoding.UNKNOWN_CHAR);
+					if (c != NULL){
+						buffer.put(c);
+					}
 				}
 				break;
 			case ESCAPE:
 				if (b == 0x24){
-					bytesPerChar = 3;
+					multiBytesPerChar = true;
 					b = in.get();
-					if (b == EAST_ASIAN){
+					if (map.get(b).bytesPerChar > 1){
 						g = 0;
 						graphic[g] = map.get(b);
 						state = ReadState.NONE;
 						break;
 					}
 				} else {
-					bytesPerChar = 1;
+					multiBytesPerChar = false;
 				}
 				if (b == 0x28 || b == 0x2C){
 					g = 0;
@@ -191,8 +191,9 @@ public class Marc8 {
 	}
 	
 	public final ByteBuffer encode(String in){
-		Charset latin1 = StandardCharsets.ISO_8859_1;
-		ByteBuffer out = latin1.encode(in);
+		// TODO implement MARC-8 encoding?
+		Charset basicLatin = StandardCharsets.US_ASCII;
+		ByteBuffer out = basicLatin.encode(in);
 		return out;
 	}
 }

@@ -68,7 +68,7 @@ public class LanguageEncoding {
 		Arrays.fill(b, false);
 		return b;
 	}
-	public final char decode(int b){
+	public char decode(int b){
 		return table[b];
 	}
 	public final boolean isDiacritic(int b){
