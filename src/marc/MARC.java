@@ -1,6 +1,5 @@
 package marc;
 
-import java.nio.charset.Charset;
 import java.util.HashMap;
 
 import marc.resource.ResourceType;
@@ -58,16 +57,5 @@ public class MARC {
 			format = ResourceType.UNKNOWN;
 		}
 		return format;
-	}
-	
-	public static int parseValue(final byte[] bytes, final Charset charset, final int radix){
-		int value = 0;
-		String s = new String(bytes, charset);
-		try {
-			value = Integer.parseInt(s, radix);
-		} catch (NumberFormatException e){
-			value = 0;
-		}
-		return value;
 	}
 }

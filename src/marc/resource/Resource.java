@@ -8,9 +8,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import marc.MARC;
-import marc.field.ControlField;
+import marc.field.FixedField;
 
-public class Resource extends ControlField {
+public class Resource extends FixedField {
 	private static final int DATE_LENGTH = 4;
 	
 	public static final int ENTRY_DATE = 0;

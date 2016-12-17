@@ -138,25 +138,26 @@ public class FileManager implements MarcComponent {
 			data.subList(RECORD_CAP, size).clear();
 		}
 		// generate accession
-		int r0 = 0;
-		int a1 = 0;
-		Record r = null;
-		Iterator<Record> it = null;
 		if (data != null){
-			it = data.iterator();
-			while (it.hasNext()){
-				r = it.next();
-				r0 = r.getAccession();
-				if (r0 > a1){
-					a1 = r0;
-				} else {
-					r.setAccession(a1);
-				}
-				++a1;
-			}
+			generateAccession(data.iterator(), 1, 1);
 			data.trimToSize();
 		}
 		return data;
+	}
+	private void generateAccession(Iterator<Record> it, int seed, int step){
+		int r0 = 0;
+		int a1 = seed;
+		Record r = null;
+		while (it.hasNext()){
+			r = it.next();
+			r0 = r.getAccession();
+			if (r0 > a1){
+				a1 = r0;
+			} else {
+				r.setAccession(a1);
+			}
+			a1 += step;
+		}
 	}
 	
 	/**

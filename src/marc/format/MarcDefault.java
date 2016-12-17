@@ -30,6 +30,7 @@ public class MarcDefault extends AbstractMarc {
 	private static final Charset UTF8 = StandardCharsets.UTF_8;
 	
 	private static final int DIRECTORY_ENTRY_LENGTH = 12;
+	private static final int RADIX = 10;
 	
 	@Override
 	public FileNameExtensionFilter getExtensionFilter() {
@@ -47,8 +48,7 @@ public class MarcDefault extends AbstractMarc {
 		return leader;
 	}
 	
-    private Record parseRecord(final byte[] data, final Charset encoding){
-    	Marc8 marc8 = new Marc8();
+    private Record parseRecord(final byte[] data){
     	Record record = new Record();
     	// parse Leader
     	Leader leader = parseLeader(data);
@@ -77,11 +77,11 @@ public class MarcDefault extends AbstractMarc {
 		int mapValue = 0;
 		for (int r = 0; r < entryCount; ++r){
 			bytes = Arrays.copyOfRange(directory, index[r][1], index[r][2]);
-			mapValue = MARC.parseValue(bytes, ASCII, 10);
+			mapValue = parseInt(bytes, ASCII, RADIX);
 			map[r][1] = mapValue;	// field length
 			
 			bytes = Arrays.copyOfRange(directory, index[r][2], index[r][3]);
-			mapValue = MARC.parseValue(bytes, ASCII, 10);
+			mapValue = parseInt(bytes, ASCII, RADIX);
 			map[r][0] = mapValue;	// field index
 		}
 		// build Record
@@ -92,14 +92,16 @@ public class MarcDefault extends AbstractMarc {
 		int fieldLength = 0;
 		String fieldData = null;
 		char ind1, ind2;
+		Charset utf8 = UTF8;
+		Marc8 marc8 = new Marc8();
 		String[] subData = null;
 		int index0, index1;
 		for (int r = 0; r < entryCount; ++r){
 			fieldOffset = baseAddress + map[r][0];
 			fieldLength = map[r][1];
 			bytes = Arrays.copyOfRange(data, fieldOffset, fieldOffset + fieldLength);
-			if (encoding.equals(UTF8)){
-				fieldData = new String(bytes, encoding);
+			if (leader.getCharacterCodingScheme() == 'a'){
+				fieldData = new String(bytes, utf8);
 			} else {
 				fieldData = marc8.decode(bytes);
 			}
@@ -147,9 +149,7 @@ public class MarcDefault extends AbstractMarc {
     }
     
 	@Override
-	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {
-		Charset encoding = null;
-		
+	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {		
 		byte[] leader = new byte[MARC.LEADER_FIELD_LENGTH];
 		byte[] directory = null;
 		byte[] fieldData = null;
@@ -170,13 +170,6 @@ public class MarcDefault extends AbstractMarc {
 			directory = new byte[baseAddress - MARC.LEADER_FIELD_LENGTH];
 			fieldData = new byte[recordLength - baseAddress];
 			recordData = new byte[recordLength];
-			
-			if (ldr.getCharacterCodingScheme() == 'a'){
-				encoding = UTF8;
-			} else {
-				encoding = LATIN1;
-				// TODO MARC-8 custom Charset?
-			}
 
 			in.read(directory);
 			in.read(fieldData);
@@ -187,7 +180,7 @@ public class MarcDefault extends AbstractMarc {
 			destPos += directory.length;
 			System.arraycopy(fieldData, 0, recordData, destPos, fieldData.length);
 			
-			record = parseRecord(recordData, encoding);
+			record = parseRecord(recordData);
 			catalogue.add(record);
 		}
 		in.close();
@@ -335,5 +328,15 @@ public class MarcDefault extends AbstractMarc {
 			}
 		}
 		return dest;
+	}
+	private static int parseInt(final byte[] bytes, final Charset charset, final int radix){
+		int value = 0;
+		String s = new String(bytes, charset);
+		try {
+			value = Integer.parseInt(s, radix);
+		} catch (NumberFormatException e){
+			value = 0;
+		}
+		return value;
 	}
 }
