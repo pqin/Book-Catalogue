@@ -2,6 +2,8 @@ package marc.field;
 
 import java.util.ArrayList;
 
+import marc.MARC;
+
 public class DataField extends Field {
 	private ArrayList<Subfield> subfield;
 	
@@ -10,24 +12,12 @@ public class DataField extends Field {
 		subfield = new ArrayList<Subfield>();
 	}
 	public DataField(String tag){
-		super();
+		super(tag, MARC.BLANK_CHAR, MARC.BLANK_CHAR);
 		subfield = new ArrayList<Subfield>();
-		setTag(tag);
 	}
 	public DataField(String tag, char ind1, char ind2){
-		super();
+		super(tag, ind1, ind2);
 		subfield = new ArrayList<Subfield>();
-		setTag(tag);
-		setIndicator1(ind1);
-		setIndicator2(ind2);
-	}
-	
-	/**
-	 * Sets whether this Field is repeatable within a Record or not.
-	 * @param value the Field's repeatability
-	 */
-	public void setRepeatable(boolean value){
-		this.repeatable = value;
 	}
 	
 	@Override
@@ -40,7 +30,6 @@ public class DataField extends Field {
 			buf.append(subfield.get(i).toString());
 		}
 		s = buf.toString();
-			
 		return s;
 	}
 	
@@ -133,16 +122,5 @@ public class DataField extends Field {
 			}
 		}
 		return indices;
-	}
-	
-	@Override
-	public boolean contains(String query, final boolean caseSensitive){
-		boolean match = false;
-		for (int i = 0; i < subfield.size(); ++i){
-			if (subfield.get(i).contains(query, caseSensitive)){
-				match = true;
-			}
-		}
-		return match;
 	}
 }

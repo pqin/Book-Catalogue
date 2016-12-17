@@ -1,23 +1,28 @@
 package marc.field;
 
+import java.util.Arrays;
+
 import marc.MARC;
+import marc.Record;
 
 public class Field implements Comparable<Field> {
+	private static final int RADIX = 10;	// all numbers in data are in base-10
+	
 	protected String tag;
 	protected char indicator1, indicator2;
-	protected boolean repeatable;
+	protected char[] data;
 	
 	public Field(){
 		tag = MARC.UNKNOWN_TAG;
 		indicator1 = MARC.BLANK_CHAR;
 		indicator2 = MARC.BLANK_CHAR;
-		repeatable = false;
+		data = new char[0];
 	}
-	public Field(String tag){
+	public Field(String tag, char ind1, char ind2){
 		this.tag = tag;
-		indicator1 = MARC.BLANK_CHAR;
-		indicator2 = MARC.BLANK_CHAR;
-		repeatable = false;
+		indicator1 = ind1;
+		indicator2 = ind2;
+		data = new char[0];
 	}
 	
 	public String getTag(){
@@ -58,12 +63,78 @@ public class Field implements Comparable<Field> {
 	}
 	
 	/**
-	 * Whether the Field can be repeated in a Record or not.
-	 * @return repeatable
+	 * Returns data at index as char[length], padding with '|' character as necessary.
+	 * @param index the index to query
+	 * @param length the length of the data array to return
+	 * @return the data at index to index+length
 	 */
-	public boolean isRepeatable(){
-		return repeatable;
+	public char[] getData(int index, int length) {
+		char[] value = new char[length];
+		if (index >= 0 && index+length <= data.length){
+			value = Arrays.copyOfRange(data, index, index+length);
+		} else {
+			Arrays.fill(value, MARC.FILL_CHAR);
+		}
+		return value;
 	}
+	
+	/**
+	 * Returns data at index as an integer.
+	 * @param index the index to query
+	 * @param length the length to query
+	 * @return the data at index to index+length as an integer
+	 */
+	public int getValueFromData(int index, int length){
+		int value = 0;
+		String tmp = new String(getData(index, length));
+		try {
+			value = Integer.parseInt(tmp, RADIX);
+		} catch (NumberFormatException e){
+			value = 0;
+		}
+		return value;
+	}
+	
+	/**
+	 * Sets the field character at index to value.
+	 * @param value the value to set to
+	 * @param index the index of the field to set
+	 */
+	public void setData(char value, int index){
+		setDataToValue(value, index);
+	}
+	public void setData(char[] value, int index, int length){
+		setDataToValue(value, MARC.FILL_CHAR, index, length);
+	}
+	
+	protected void setDataToValue(int value, int offset, int length){
+		String format = String.format("%%%02dd", length);
+		String s = String.format(format, value);
+		for (int i = 0; i < s.length(); ++i){
+			data[i+offset] = s.charAt(i);
+		}
+	}
+	protected void setDataToValue(char value, int index){
+		data[index] = value;
+	}
+	/**
+	 * Sets data to value, left-aligned. If the length of value is less than length,
+	 * the extra positions are padded with the specified fill character.
+	 * @param value the value to set
+	 * @param fill the fill character to pad with
+	 * @param offset the position to set data at
+	 * @param length the length to set to, padding if necessary
+	 */
+	protected void setDataToValue(char value[], char fill, int offset, int length){
+		for (int i = 0; i < length; ++i){
+			if (i < value.length){
+				data[i+offset] = value[i];
+			} else {
+				data[i+offset] = fill;
+			}
+		}
+	}
+	
 	public boolean isControlField(){
 		return tag.startsWith("00");
 	}
@@ -73,8 +144,13 @@ public class Field implements Comparable<Field> {
 		return s;
 	}
 	
-	protected boolean contains(String query, final boolean caseSensitive){
-		return false;
+	public boolean contains(String query, final boolean caseSensitive){
+		String reference = String.copyValueOf(data);
+		if (!caseSensitive){
+			reference = reference.toLowerCase(Record.LOCALE);
+			query = query.toLowerCase(Record.LOCALE);
+		}
+		return (reference.indexOf(query) != -1);
 	}
 	
 	@Override

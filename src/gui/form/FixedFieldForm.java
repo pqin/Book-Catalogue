@@ -27,12 +27,12 @@ public class FixedFieldForm extends JPanel implements RecordView, TableModelList
 	private FixedFieldTableModel model;
 	private JLabel resourceLabel;
 
-	public FixedFieldForm(final boolean arg0, final boolean arg1){
+	public FixedFieldForm(final boolean hasBorder, final boolean editable){
 		super();
 		
-		editable = arg1;
+		this.editable = editable;
 		layoutComponents();
-		if (arg0){
+		if (hasBorder){
 			TitledBorder border = BorderFactory.createTitledBorder("Resource");
 			setBorder(border);
 		}
@@ -60,9 +60,6 @@ public class FixedFieldForm extends JPanel implements RecordView, TableModelList
 	}
 	
 	private void clearForm(){
-		/*for (int i = 0; i < map.length; ++i){
-			setFieldChar(defaultResource, i, map[i][INDEX], map[i][LENGTH]);
-		}*/
 		model.setFieldData(defaultLeader, defaultResource);
 	}
 	

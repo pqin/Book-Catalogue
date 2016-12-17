@@ -1,7 +1,5 @@
 package marc.field;
 
-import marc.Record;
-
 public class Subfield {
 	private char code;
 	private String data;
@@ -45,18 +43,5 @@ public class Subfield {
 	@Override
 	public String toString(){
 		return String.format("$%c%s", code, data);
-	}
-	
-	public boolean contains(String query, boolean caseSensitive){
-		String data0 = null;
-		if (caseSensitive){
-			data0 = data;
-		} else {
-			data0 = data.toLowerCase(Record.LOCALE);
-			query = query.toLowerCase(Record.LOCALE);
-		}
-		int index = data0.indexOf(query);
-		boolean match = (index != -1);
-		return match;
 	}
 }

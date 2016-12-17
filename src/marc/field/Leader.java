@@ -1,9 +1,11 @@
 package marc.field;
 
+import java.util.ArrayList;
+
 import marc.MARC;
 
 
-public class Leader extends ControlField {
+public class Leader extends FixedField {
 	public static final int LENGTH = 0;
 	public static final int STATUS = 5;
 	public static final int TYPE = 6;
@@ -77,9 +79,20 @@ public class Leader extends ControlField {
 		return indexLength;
 	}
 	
+	@Override
+	protected FixedDatum[] buildMap(){
+		ArrayList<FixedDatum> tmp = new ArrayList<FixedDatum>();
+		tmp.add(new FixedDatum(6, 1, "Type", null));
+		tmp.add(new FixedDatum(7, 1, "BLvl", null));
+		tmp.add(new FixedDatum(8, 1, "Ctrl", null));
+		tmp.add(new FixedDatum(17, 1, "ELvl", null));
+		tmp.add(new FixedDatum(18, 1, "Desc", null));
+		FixedDatum[] m = new FixedDatum[tmp.size()];
+		m = tmp.toArray(m);
+		return m;
+	}
 	public FixedDatum[] getFixedData(){
-		// TODO
-		return null;
+		return map;
 	}
 	
 	// record length in bytes
