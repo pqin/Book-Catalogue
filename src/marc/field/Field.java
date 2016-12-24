@@ -43,7 +43,11 @@ public class Field implements Comparable<Field> {
 	public void setIndicator2(char indicator){
 		indicator2 = indicator;
 	}
-	public int getSubfieldCount(){
+	public void setIndicators(char ind1, char ind2){
+		indicator1 = ind1;
+		indicator2 = ind2;
+	}
+	public int getDataCount(){
 		return 0;
 	}
 	public Subfield getSubfield(int index){

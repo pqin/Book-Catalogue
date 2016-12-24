@@ -140,7 +140,7 @@ public class FieldForm extends JPanel implements ActionListener,
 			tagField.setText(f.getTag());
 			indicatorField[0].setText(String.valueOf(f.getIndicator1()));
 			indicatorField[1].setText(String.valueOf(f.getIndicator2()));
-			for (int i = 0; i < f.getSubfieldCount(); ++i){
+			for (int i = 0; i < f.getDataCount(); ++i){
 				subfieldListModel.addElement(f.getSubfield(i));
 			}
 		}

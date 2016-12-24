@@ -27,7 +27,6 @@ public class Resource extends FixedField {
 	private Calendar calendar;
 	private Date entryDate;
 	private SimpleDateFormat entryFormat, outputFormat;
-	private char[] place, language;
 	
 	public Resource(){
 		super(MARC.RESOURCE_TAG, MARC.RESOURCE_FIELD_LENGTH);
@@ -42,13 +41,10 @@ public class Resource extends FixedField {
 		outputFormat = new SimpleDateFormat("yyyy-MM-dd", locale);
 		outputFormat.setTimeZone(timeZone);
 		
-		place = new char[3];
-		language = new char[3];
 		char[] defaultPlace = {'x', 'x', MARC.BLANK_CHAR};
-		char[] defaultLanguage = new char[3];
-		Arrays.fill(defaultLanguage, MARC.BLANK_CHAR);
-		setPlace(new String(defaultPlace));
-		setLanguage(new String(defaultLanguage));
+		char[] defaultLanguage = {MARC.BLANK_CHAR, MARC.BLANK_CHAR, MARC.BLANK_CHAR};
+		setData(defaultPlace, Resource.PLACE, defaultPlace.length);
+		setData(defaultLanguage, Resource.LANGUAGE, defaultLanguage.length);
 	}
 	
 	@Override
@@ -95,11 +91,7 @@ public class Resource extends FixedField {
 			setDate(index, value);
 			break;
 		case PLACE:
-			place = Arrays.copyOf(value, place.length);
-			setDataToValue(value, MARC.BLANK_CHAR, index, length);
-			break;
 		case LANGUAGE:
-			language = Arrays.copyOf(value, language.length);
 			setDataToValue(value, MARC.BLANK_CHAR, index, length);
 			break;
 		default:
@@ -111,8 +103,6 @@ public class Resource extends FixedField {
 	@Override
 	final public void setAllSubfields(String value){
 		super.setAllSubfields(value);
-		place = Arrays.copyOfRange(data, PLACE, PLACE + place.length);
-		language = Arrays.copyOfRange(data, LANGUAGE, LANGUAGE + language.length);
 		
 		int year, month, day;
 		year = getDateUnitFromData(0, 2);
@@ -203,22 +193,5 @@ public class Resource extends FixedField {
 		String date = String.copyValueOf(value);
 		String d = date.replace('u', '?');
 		return d;
-	}
-	
-	final public void setPlace(final String value){
-		final char[] v = value.toCharArray();
-		place = Arrays.copyOf(v, place.length);
-		setDataToValue(v, MARC.BLANK_CHAR, PLACE, place.length);
-	}
-	final public String getPlace(){
-		return String.valueOf(place);
-	}
-	final public void setLanguage(final String value){
-		final char[] v = value.toCharArray();
-		language = Arrays.copyOf(v, language.length);
-		setDataToValue(v, MARC.BLANK_CHAR, LANGUAGE, language.length);
-	}
-	final public String getLanguage(){
-		return String.valueOf(language);
 	}
 }

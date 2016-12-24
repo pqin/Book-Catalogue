@@ -26,6 +26,7 @@ public class ClearSearchAction extends AbstractAction {
 		manager.clearResults();
 		filter.clearSearch();
 		selector.updateView();
+		selector.fireDataUpdated();
 	}
 
 }

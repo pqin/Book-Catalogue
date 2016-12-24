@@ -337,13 +337,6 @@ public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 		}
 	}
 	
-	private void updateSelectedRecord(int index){
-		editRecordAction.setRecordIndex(index);
-		deleteRecordAction.setRecordIndex(index);
-		data.updateRecordView(index);
-	}
-
-	
 	@Override
 	public void dataUpdated(RecordSelector source) {
 		if (source == searchSelector){
@@ -355,12 +348,11 @@ public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 		if (source == searchSelector && source.isValidModelIndex(index)){
 			/* Show selected Record if selection made from search results table.
 			 * Also, select and scroll to corresponding Record in navigation table. */
-			// convert searchModel index to navModel index by matching accession number
-			int accession = source.getAccession(index);
-			index = navSelector.getIndexForAccession(accession);
 			row = navSelector.getRowForModel(index);
 			navSelector.scrollToRow(row);
 		}
-		updateSelectedRecord(index);
+		editRecordAction.setRecordIndex(index);
+		deleteRecordAction.setRecordIndex(index);
+		data.updateRecordView(index);
 	}
 }

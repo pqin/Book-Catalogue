@@ -14,6 +14,7 @@ import marc.Catalogue;
 import marc.Record;
 
 public class SearchManager implements MarcComponent, CatalogueView {
+	private static final String WILDCARD = "*";	// match anything
 	private Component parent;
 	private SearchForm searchForm;
 	private Catalogue data;
@@ -74,9 +75,9 @@ public class SearchManager implements MarcComponent, CatalogueView {
 	private void processSearchFormInput(){
 		String[] keyword = searchForm.getKeywords();
 		boolean isCaseSensitive = searchForm.isCaseSensitive();
-		MatchType type = searchForm.getMatchType();
+		MatchType matchType = searchForm.getMatchType();
 		String tag = searchForm.getTag();
-		String lang = searchForm.getLanguage();
+		String language = searchForm.getLanguage();
 		
 		boolean controlSearch = false;
 		boolean controlMatch = false;
@@ -85,16 +86,16 @@ public class SearchManager implements MarcComponent, CatalogueView {
 		String phrase = null;
 		Record result = null;
 		
-		controlSearch = !lang.isEmpty();
+		controlSearch = !language.isEmpty();
 		if (keyword.length > 0){
 			// wildcard matching
 			for (int k = 0; k < keyword.length; ++k){
-				if (keyword[k].equals("*")){
+				if (keyword[k].equals(WILDCARD)){
 					wildcardMatch = true;
 				}
 			}
 			// match phrase
-			if (type == MatchType.MATCH_PHRASE){
+			if (matchType == MatchType.MATCH_PHRASE){
 				phrase = String.join(" ", keyword);
 				keyword = new String[1];
 				keyword[0] = phrase;
@@ -106,8 +107,8 @@ public class SearchManager implements MarcComponent, CatalogueView {
 				// if control fields specified, filter out non-matching Records
 				if (controlSearch){
 					controlMatch = true;
-					if (!lang.isEmpty()){
-						controlMatch &= result.containsLanguage(lang);
+					if (!language.isEmpty()){
+						controlMatch &= result.containsLanguage(language);
 					}
 				} else {
 					controlMatch = true;
@@ -118,9 +119,9 @@ public class SearchManager implements MarcComponent, CatalogueView {
 				} else {
 					dataMatch = result.contains(keyword[0], tag, isCaseSensitive);
 					for (int k = 1; k < keyword.length; ++k){
-						if (type == MatchType.MATCH_ALL){
+						if (matchType == MatchType.MATCH_ALL){
 							dataMatch &= result.contains(keyword[k], tag, isCaseSensitive);
-						} else if (type == MatchType.MATCH_ANY){
+						} else if (matchType == MatchType.MATCH_ANY){
 							dataMatch |= result.contains(keyword[k], tag, isCaseSensitive);
 						}
 					}

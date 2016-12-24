@@ -3,6 +3,7 @@ package marc.field;
 import java.util.ArrayList;
 
 import marc.MARC;
+import marc.Record;
 
 public class DataField extends Field {
 	private ArrayList<Subfield> subfield;
@@ -32,6 +33,24 @@ public class DataField extends Field {
 		s = buf.toString();
 		return s;
 	}
+	@Override
+	public boolean contains(String query, final boolean caseSensitive){
+		boolean match = false;
+		String reference = null;
+		for (int i = 0; i < subfield.size(); ++i){
+			reference = subfield.get(i).getData();
+			if (!caseSensitive){
+				reference = reference.toLowerCase(Record.LOCALE);
+				query = query.toLowerCase(Record.LOCALE);
+			}
+			if (reference.indexOf(query) != -1){
+				match = true;
+				break;
+			}
+		}
+		
+		return match;
+	}
 	
 	public void addSubfield(char code, String data){
 		if (!Character.isLetterOrDigit(code)){
@@ -51,7 +70,7 @@ public class DataField extends Field {
 		}
 	}
 	@Override
-	public int getSubfieldCount(){
+	public int getDataCount(){
 		return subfield.size();
 	}
 	@Override

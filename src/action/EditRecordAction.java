@@ -36,6 +36,7 @@ public class EditRecordAction extends RecordAction {
 			boolean option = manager.showDialog(form.getComponent(), "Edit Record", false);
 			if (option){
 				// TODO
+				catalogue.updateRecordView(recordIndex);
 			}
 		}
 	}

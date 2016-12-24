@@ -30,7 +30,7 @@ public class DeleteRecordAction extends RecordAction {
 			manager.showMessage("No Record selected.", "Delete Record", true);
 		} else {
 			record = catalogue.get(recordIndex);
-			message = String.format("Delete Record #%d?", record.getAccession());
+			message = String.format("Delete Record:%n\"%s\"?", record.getTitle());
 			boolean option = manager.showDialog(message, "Delete Record", true);
 			if (option){
 				record = catalogue.remove(recordIndex);

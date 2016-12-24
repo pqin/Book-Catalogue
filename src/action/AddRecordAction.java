@@ -25,25 +25,5 @@ public class AddRecordAction extends RecordAction {
 			catalogue.add(record);
 			catalogue.updateCatalogueView();
 		}
-		
-		/*
-		if (command.equals(MarcMenuBar.ADD_RECORD)){
-			// create new Record
-			Record record = data.generateRecord();
-			
-			// create and initialize Record form
-			RecordForm form = new RecordForm();
-			form.setRecord(record);
-			boolean option = dialogManager.showDialog(form.getComponent(), "Add Record", false);
-			if (option){
-				data.add(record);
-				navSelector.updateView(data);
-				navSelector.selectLastRow();
-				int addedRow = navSelector.getSelectedRow();
-				displayRow(addedRow);
-				navSelector.scrollToRow(addedRow);
-			}
-		}
-		 */
 	}
 }

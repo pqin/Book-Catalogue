@@ -7,14 +7,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import marc.Record;
 
-public class MainEntryRenderer extends DefaultTableCellRenderer {
+public class TitleRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;
 	private Record record;
 	
-	public MainEntryRenderer(){
+	public TitleRenderer(){
 		super();
 		setOpaque(true);
-		
 		record = null;
 	}
 	
@@ -27,7 +26,7 @@ public class MainEntryRenderer extends DefaultTableCellRenderer {
 		NavigationTableModel model = (NavigationTableModel) table.getModel();
 		int rowIndex = table.convertRowIndexToModel(row);
 		int columnIndex = table.convertColumnIndexToModel(column);
-		if (columnIndex == 2){
+		if (columnIndex == NavigationTableModel.TITLE){
 			record = model.getRecordAt(rowIndex);
 			comp = super.getTableCellRendererComponent(table, record.getTitle(), isSelected, hasFocus, row, column);
 		} else {

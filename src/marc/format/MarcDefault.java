@@ -26,7 +26,6 @@ import marc.resource.Resource;
 
 public class MarcDefault extends AbstractMarc {
 	private static final Charset ASCII = StandardCharsets.US_ASCII;
-	private static final Charset LATIN1 = StandardCharsets.ISO_8859_1;
 	private static final Charset UTF8 = StandardCharsets.UTF_8;
 	
 	private static final int DIRECTORY_ENTRY_LENGTH = 12;
@@ -261,7 +260,7 @@ public class MarcDefault extends AbstractMarc {
 	
 	private static byte[] getBytes(Field f, Charset charset){
 		final boolean controlField = f.isControlField();
-		final int subCount = f.getSubfieldCount();
+		final int subCount = f.getDataCount();
 		Subfield s = null;
 		byte[][] tmp = null;
 		int k = 0;

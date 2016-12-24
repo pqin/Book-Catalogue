@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -137,27 +136,10 @@ public class FileManager implements MarcComponent {
 		if (size > RECORD_CAP){
 			data.subList(RECORD_CAP, size).clear();
 		}
-		// generate accession
 		if (data != null){
-			generateAccession(data.iterator(), 1, 1);
 			data.trimToSize();
 		}
 		return data;
-	}
-	private void generateAccession(Iterator<Record> it, int seed, int step){
-		int r0 = 0;
-		int a1 = seed;
-		Record r = null;
-		while (it.hasNext()){
-			r = it.next();
-			r0 = r.getAccession();
-			if (r0 > a1){
-				a1 = r0;
-			} else {
-				r.setAccession(a1);
-			}
-			a1 += step;
-		}
 	}
 	
 	/**

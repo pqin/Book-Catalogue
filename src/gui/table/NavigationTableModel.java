@@ -12,11 +12,13 @@ import marc.field.DataField;
  */
 public class NavigationTableModel extends MarcTableModel {
 	private static final long serialVersionUID = 1L;
+	protected static final int MAIN_ENTRY = 0;
+	protected static final int TITLE = 1;
 
 	public NavigationTableModel(){
 		super();
 		
-		String[] columnNames = {"Accession", "Main Entry", "Title"};
+		String[] columnNames = {"Main Entry", "Title"};
 		setHeader(columnNames);
 	}
 	
@@ -28,13 +30,10 @@ public class NavigationTableModel extends MarcTableModel {
 	public Class<?> getColumnClass(int columnIndex){
 		Class<?> columnClass = null;
 		switch (columnIndex){
-		case 0:
-			columnClass = Integer.class;
-			break;
-		case 1:
+		case MAIN_ENTRY:
 			columnClass = String.class;
 			break;
-		case 2:
+		case TITLE:
 			columnClass = String.class;
 			break;
 		default:
@@ -55,13 +54,10 @@ public class NavigationTableModel extends MarcTableModel {
 		String tag = null;
 		if (record != null){
 			switch (columnIndex){
-			case 0:
-				value = record.getAccession();
-				break;
-			case 1:
+			case MAIN_ENTRY:
 				value = record.getMainEntry();
 				break;
-			case 2:
+			case TITLE:
 				value = record.getFilingTitle();
 				break;
 			default:
@@ -81,28 +77,5 @@ public class NavigationTableModel extends MarcTableModel {
 	public Record getRecordAt(int rowIndex){
 		Record record = data.get(rowIndex);
 		return record;
-	}
-	
-	public int getAccession(int rowIndex){
-		int accession = -1;
-		Record record = null;
-		if (rowIndex >= 0 && rowIndex < data.size()){
-			record = data.get(rowIndex);
-			accession = record.getAccession();
-		}
-		return accession;
-	}
-	public int getIndexForAccession(int accession){
-		int index = -1;
-		Record record = null;
-		boolean found = false;
-		for (int i = 0; i < data.size() && !found; ++i){
-			record = data.get(i);
-			if (accession == record.getAccession()){
-				index = i;
-				found = true;
-			}
-		}
-		return index;
 	}
 }

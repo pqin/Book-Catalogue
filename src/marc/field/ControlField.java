@@ -24,7 +24,7 @@ public class ControlField extends Field {
 	}
 	
 	@Override
-	public int getSubfieldCount(){
+	public int getDataCount(){
 		return 1;
 	}
 	@Override

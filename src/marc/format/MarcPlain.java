@@ -81,8 +81,7 @@ public class MarcPlain extends AbstractMarc {
     		ind2 = field.getIndicator2();
     		ind1 = (ind1 == '#')? MARC.BLANK_CHAR: ind1;
     		ind2 = (ind2 == '#')? MARC.BLANK_CHAR: ind2;
-    		field.setIndicator1(ind1);
-    		field.setIndicator2(ind2);
+    		field.setIndicators(ind1, ind2);
     		if (tag.startsWith("00")){
     			record.addField(cField);
     		} else {
@@ -118,7 +117,6 @@ public class MarcPlain extends AbstractMarc {
                 if (record != null){
                 	build(record, field);
                     if (tag.equals(MARC.LEADER_TAG)){
-                    	record.setLanguage(record.getLanguage());
                     	record.sortFields();
                         list.add(record);
                     }
@@ -139,7 +137,6 @@ public class MarcPlain extends AbstractMarc {
         // add data from last loop
         if (record != null){
         	build(record, field);
-        	record.setLanguage(record.getLanguage());
         	record.sortFields();
             list.add(record);
         }
@@ -172,7 +169,7 @@ public class MarcPlain extends AbstractMarc {
 				out.write(tag);
 				out.write(ind1);
 				out.write(ind2);
-				for (int s = 0; s < f.getSubfieldCount(); ++s){
+				for (int s = 0; s < f.getDataCount(); ++s){
 					subfield = f.getSubfield(s);
 					out.write('$');
 					out.write(subfield.getCode());

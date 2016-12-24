@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,10 +14,15 @@ import application.MarcComponent;
 import application.RecordView;
 
 public class Catalogue implements MarcComponent {
+	private File file;
+	private GregorianCalendar calendar;
 	private ArrayList<Record> data;
 	private ArrayList<CatalogueView> catalogueView;
 	private ArrayList<RecordView> recordView;
-	private File file;
+	
+	// TODO
+	// import java.time.*; JAVA 8
+	// adding Record sets Record entry date, keep one Calendar within this class
 
 	public Catalogue(){
 		data = new ArrayList<Record>();
@@ -36,6 +42,7 @@ public class Catalogue implements MarcComponent {
 		catalogueView = new ArrayList<CatalogueView>();
 		recordView = new ArrayList<RecordView>();
 		file = new File("");
+		calendar = (GregorianCalendar) GregorianCalendar.getInstance();
 	}
 	@Override
 	public void destroy() {
@@ -114,41 +121,14 @@ public class Catalogue implements MarcComponent {
 		// TODO
 		return data;
 	}
-
-	public boolean hasAccession(final int accession){
-		boolean match = false;
-		Record r = null;
-		Iterator<Record> i = data.iterator();
-		while (!match && i.hasNext()){
-			r = i.next();
-			if (accession == r.getAccession()){
-				match = true;
-			}
-		}
-		return match;
-	}
 	
-	public int generateAccession() {
-		int maxAccession = 0;
-		int a = 0;
-		Record r = null;
-		Iterator<Record> i = data.iterator();
-		while (i.hasNext()){
-			r = i.next();
-			a = r.getAccession();
-			if (a > maxAccession){
-				maxAccession = a;
-			}
-		}
-		++maxAccession;
-		return maxAccession;
-	}
 	public Record generateRecord(){
 		Record record = new Record();
-		Date entryDate = new Date();
-		int accession = generateAccession();
-		record.setEntryDate(entryDate);
-		record.setAccession(accession);
+		calendar.setTime(new Date());
+		int year = calendar.get(GregorianCalendar.YEAR);
+		int month = calendar.get(GregorianCalendar.MONTH) + 1;
+		int day = calendar.get(GregorianCalendar.DAY_OF_MONTH);
+		record.setEntryDate(year, month, day);
 		return record;
 	}
 	
@@ -173,12 +153,13 @@ public class Catalogue implements MarcComponent {
 	}
 	public void updateRecordView(int index){
 		Record record = null;
+		Iterator<RecordView> iterator = null;
 		if (index >= 0 && index < data.size()){
 			record = data.get(index);
-		}
-		Iterator<RecordView> iterator = recordView.iterator();
-		while (iterator.hasNext()){
-			iterator.next().updateView(record);
+			iterator = recordView.iterator();
+			while (iterator.hasNext()){
+				iterator.next().updateView(record);
+			}
 		}
 	}
 	

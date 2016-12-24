@@ -37,7 +37,6 @@ public class MarcXmlHandler extends DefaultHandler {
 	private Subfield subField;
 	private char code;
 	private String data;
-	private int accession;
 	
 	public MarcXmlHandler(){
 		super();
@@ -53,17 +52,8 @@ public class MarcXmlHandler extends DefaultHandler {
 		subField = null;
 		code = 'a';
 		data = null;
-		accession = 0;
 	}
 	
-	/* Adds new accession number if it doesn't exist.
-     */
-    private void addAccession(Record record){
-    	if (record.getAccession() == 0){
-    		++accession;
-    		record.setAccession(accession);
-    	}
-    }
 	public ArrayList<Record> getRecords(){
 		return list;
 	}
@@ -147,8 +137,6 @@ public class MarcXmlHandler extends DefaultHandler {
 		if (qName.equals(CATALOGUE)){
 			// do nothing
 		} else if (qName.equals(RECORD)){
-			addAccession(record);
-			record.setLanguage(record.getLanguage());
         	record.sortFields();
         	if (list == null){
         		list = new ArrayList<Record>();

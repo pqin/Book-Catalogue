@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import marc.field.ControlField;
@@ -16,11 +14,11 @@ import marc.field.Subfield;
 import marc.resource.Resource;
 import marc.resource.ResourceType;
 
-public class Record implements Comparable<Record>, Serializable {
+public class Record implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public static final Locale LOCALE = Locale.ENGLISH;
 	
-	private int length, accession;
+	private int length;
 	private Leader leader;
 	private ResourceType format;
 	private Resource resource;
@@ -36,12 +34,13 @@ public class Record implements Comparable<Record>, Serializable {
 		dataField = new ArrayList<DataField>();
 		length = 0;
 		resource = new Resource();
-		//setAccession(0);
 	}
-	// copy constructor
+	// TODO write copy constructor
+	/*
 	private Record(Record r){
 		this();
 	}
+	*/
 	
 	public void setLength(int recordLength){
 		length = recordLength;
@@ -50,65 +49,13 @@ public class Record implements Comparable<Record>, Serializable {
 	public int getLength(){
 		return length;
 	}
-	public void setAccession(int a){
-		accession = a;
-		int year = resource.getEntryYear();
-		String tag = "541";
-		char code = 'e';
-		String subData = getData(tag, code);
-		if (subData != null){
-			removeData(tag, code, subData);
-		}
-		addData(tag, code, String.format("%d:%06d", year, accession));
-	}
-	public int getAccession(){
-		String a = getData("541", 'e');
-		int beginIndex = 0;
-		int endIndex = 0;
-		String aData = null;
-		int value = 0;
-		int year = resource.getEntryYear();
-		if (a == null){
-			accession = 0;
-			addData("541", 'e', String.format("%d:%06d", year, accession));
-		} else {
-			beginIndex = a.indexOf(':') + 1;
-			endIndex = a.length();
-			aData = a.substring(beginIndex, endIndex);
-			value = Integer.parseInt(aData, 10);
-		}
-		accession = value;
-		return accession;
-	}
-	public void setEntryDate(Date date){
-		int year, month, day;
-		GregorianCalendar calendar = (GregorianCalendar) GregorianCalendar.getInstance();
-		calendar.setTime(date);
-		year = calendar.get(GregorianCalendar.YEAR);
-		month = calendar.get(GregorianCalendar.MONTH) + 1;
-		day = calendar.get(GregorianCalendar.DAY_OF_MONTH);
-		resource.setEntryDate(year, month, day);		
-	}
+	
 	public void setEntryDate(int year, int month, int day){
 		resource.setEntryDate(year, month, day);		
 	}
-	public void setLanguage(String language){
-		char[] lang = Arrays.copyOf(language.toCharArray(), 3);
-		for (int i = 0; i < lang.length; ++i){
-			if (lang[i] == '\u0000'){
-				lang[i] = MARC.FILL_CHAR;
-			}
-		}
-		language = String.copyValueOf(lang);
-		addData("041", 'a', language);
-		resource.setLanguage(language);
-	}
-	public String getLanguage(){
-		return resource.getLanguage();
-	}
 	
 	private String getFormattedData(DataField f, char[] code, String delimiter){
-		int subLength = f.getSubfieldCount();
+		int subLength = f.getDataCount();
 		String[] subData = new String[subLength];
 		Subfield s = null;
 		char subfieldCode = '?';
@@ -380,55 +327,6 @@ public class Record implements Comparable<Record>, Serializable {
 		dataField.remove(f);
 	}
 	
-	private void addData(String tag, char code, String data){
-		ArrayList<Integer> indices = getDataFieldIndices(tag);
-		int index = -1;
-		boolean hasField = indices.size() > 0;
-		int codeIndex = -1;
-		int dataIndex = -1;
-		DataField f = null;
-		Subfield s = null;
-		for (int i = 0; i < indices.size(); ++i){
-			index = indices.get(i);
-			f = dataField.get(index);
-			for (int j = 0; j < f.getSubfieldCount(); ++j){
-				s = f.getSubfield(j);
-				if (s.getCode() == code){
-					codeIndex = j;
-					if (s.getData() == null){
-						s.setData("");
-					} else if (s.getData().equals(data)){
-						dataIndex = j;
-						break;
-					}
-				}
-			}
-			if (dataIndex >= 0){
-				break;
-			}
-		}
-		if (hasField){
-			index = indices.get(0);
-			f = dataField.get(index);
-			if (codeIndex >= 0){
-				if (dataIndex < 0){
-					s = f.getSubfield(codeIndex);
-					if (s.getData().isEmpty()){
-						s.setData(data);
-					} else if (!s.getData().equals(data)){
-						f.addSubfield(code, data);
-					}
-				}
-			} else {
-				f.addSubfield(code, data);
-			}
-		} else {
-			f = new DataField(tag);
-			f.addSubfield(code, data);
-			dataField.add(f);
-		}
-	}
-	
 	private String getData(String tag, char code){
 		ArrayList<Integer> indices = getDataFieldIndices(tag);
 		int index = -1;
@@ -439,7 +337,7 @@ public class Record implements Comparable<Record>, Serializable {
 		for (int i = 0; i < indices.size() && !found; ++i){
 			index = indices.get(i);
 			f = dataField.get(index);
-			for (int j = 0; j < f.getSubfieldCount() && !found; ++j){
+			for (int j = 0; j < f.getDataCount() && !found; ++j){
 				s = f.getSubfield(j);
 				if (s.getCode() == code){
 					found = true;
@@ -448,29 +346,6 @@ public class Record implements Comparable<Record>, Serializable {
 			}
 		}
 		return data;
-	}
-	
-	private void removeData(String tag, char code, String data){
-		ArrayList<Integer> indices = this.getDataFieldIndices(tag);
-		int index = -1;
-		int subindex = -1;
-		DataField f = null;
-		Subfield s = null;
-		for (int i = 0; i < indices.size(); ++i){
-			index = indices.get(i);
-			f = dataField.get(index);
-			subindex = 0;
-			while (subindex < f.getSubfieldCount()){
-				s = f.getSubfield(subindex);
-				while (s != null){
-					if (s.getCode() == code && s.getData().equals(data)){
-						f.removeSubfield(subindex);
-					}
-					s = f.getSubfield(subindex);
-				}
-				++subindex;
-			}
-		}
 	}
 	
 	public boolean contains(char[] query, int index, String tag){
@@ -519,20 +394,14 @@ public class Record implements Comparable<Record>, Serializable {
 	}
 	public boolean containsLanguage(String language){
 		boolean match = false;
-		match |= resource.getLanguage().equals(language);
+		String resourceLanguage = String.valueOf(resource.getData(Resource.LANGUAGE, 3));
+		match |= resourceLanguage.equals(language);
 		match |= contains(language, "041", false);
 		return match;
 	}
 	
 	public void sortFields(){
 		Collections.sort(dataField);
-	}
-	
-	@Override
-	public int compareTo(Record arg0) {
-		int a0 = this.getAccession();
-		int a1 = arg0.getAccession();
-		return (a0 - a1);
 	}
 	
 	/* TODO

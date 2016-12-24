@@ -87,7 +87,7 @@ public class MarcXML extends AbstractMarc {
 		String element = String.format("    <datafield tag=\"%s\" ind1=\"%c\" ind2=\"%c\">", tag, ind1, ind2);
 		out.write(element);
 		out.newLine();
-		for (int s = 0; s < field.getSubfieldCount(); ++s){
+		for (int s = 0; s < field.getDataCount(); ++s){
 			subfield = field.getSubfield(s);
 			element = String.format("      <subfield code=\"%c\">%s</subfield>", subfield.getCode(), subfield.getData());
 			out.write(element);

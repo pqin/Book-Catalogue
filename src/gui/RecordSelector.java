@@ -15,20 +15,16 @@ import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
 import application.CatalogueView;
 import application.MarcComponent;
-import gui.table.MainEntryRenderer;
 import gui.table.NavigationTableModel;
 import gui.table.RecordSearchFilter;
+import gui.table.TitleRenderer;
 import marc.Catalogue;
 
 public class RecordSelector implements MarcComponent, CatalogueView, ListSelectionListener {
-	private static final int DEFAULT_COL_WIDTH = 80;
-	private static final int MAX_COL_WIDTH = 100000;
 	private static String STATUS_FORMAT = "Record: %d / %d";
 
 	private JPanel panel;
@@ -60,32 +56,8 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 	@Override
 	public void create() {
 		table = new JTable(model);
-		TableColumnModel columnModel = table.getColumnModel();
-		int colNum = columnModel.getColumnCount();
-		int tableWidth = table.getPreferredSize().width;
-				
-		TableColumn column = null;
-		int width0 = DEFAULT_COL_WIDTH;
-		int width1 = 0;
-		int widthSum = 0;
-		for (int i = 0; i < colNum; ++i){
-			column = columnModel.getColumn(i);
-			if (i < 1){
-				column.setMinWidth(width0);
-				column.setMaxWidth(width0);
-				column.setPreferredWidth(width0);
-				column.setResizable(false);
-				widthSum += width0;
-			} else {
-				width1 = (tableWidth - widthSum) / (colNum - 1);
-				column.setMinWidth(width1);
-				column.setMaxWidth(MAX_COL_WIDTH);
-				column.setPreferredWidth(width1);
-				column.setResizable(true);
-			}
-		}
 		table.setDefaultRenderer(String.class, null);
-		table.setDefaultRenderer(String.class, new MainEntryRenderer());
+		table.setDefaultRenderer(String.class, new TitleRenderer());
 
 		TableRowSorter<NavigationTableModel> sorter = new TableRowSorter<NavigationTableModel>(model);
 		if (filter != null){
@@ -216,14 +188,6 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 			viewIndex = table.convertRowIndexToView(modelIndex);
 		}
 		return viewIndex;
-	}
-	public int getAccession(int index){
-		int accession = model.getAccession(index);
-		return accession;
-	}
-	public int getIndexForAccession(int accession){
-		int index = model.getIndexForAccession(accession);
-		return index;
 	}
 	
 	public boolean isValidRow(int row){
