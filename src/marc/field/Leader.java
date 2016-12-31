@@ -3,9 +3,10 @@ package marc.field;
 import java.util.ArrayList;
 
 import marc.MARC;
+import marc.resource.ResourceType;
 
 
-public class Leader extends FixedField {
+public final class Leader extends FixedField {
 	public static final int LENGTH = 0;
 	public static final int STATUS = 5;
 	public static final int TYPE = 6;
@@ -82,17 +83,20 @@ public class Leader extends FixedField {
 	@Override
 	protected FixedDatum[] buildMap(){
 		ArrayList<FixedDatum> tmp = new ArrayList<FixedDatum>();
-		tmp.add(new FixedDatum(6, 1, "Type", null));
-		tmp.add(new FixedDatum(7, 1, "BLvl", null));
-		tmp.add(new FixedDatum(8, 1, "Ctrl", null));
-		tmp.add(new FixedDatum(17, 1, "ELvl", null));
-		tmp.add(new FixedDatum(18, 1, "Desc", null));
+		tmp.add(new FixedDatum(6, 1, "Type"));
+		tmp.add(new FixedDatum(7, 1, "BLvl"));
+		tmp.add(new FixedDatum(8, 1, "Ctrl"));
+		tmp.add(new FixedDatum(17, 1, "ELvl"));
+		tmp.add(new FixedDatum(18, 1, "Desc"));
 		FixedDatum[] m = new FixedDatum[tmp.size()];
 		m = tmp.toArray(m);
 		return m;
 	}
-	public FixedDatum[] getFixedData(){
-		return map;
+	
+	public ResourceType getFormat(){
+		final char type = data[TYPE];
+		final char level = data[BIBLIO_LEVEL];
+		return MARC.getFormat(type, level);
 	}
 	
 	// record length in bytes
@@ -106,34 +110,6 @@ public class Leader extends FixedField {
 			length = value;
 			setDataToValue(length, LENGTH, 5);
 		}
-	}
-	// record status
-	public char getStatus(){
-		return data[STATUS];
-	}
-	public void setStatus(char value){
-		data[STATUS] = value;
-	}
-	// record type
-	public char getType(){
-		return data[TYPE];
-	}
-	public void setType(char value){
-		data[TYPE] = value;
-	}
-	// bibliographic level
-	public char getBiblioLevel(){
-		return data[BIBLIO_LEVEL];
-	}
-	public void setBiblioLevel(char value){
-		data[BIBLIO_LEVEL] = value;
-	}
-	// control type
-	public char getControlType(){
-		return data[CONTROL_TYPE];
-	}
-	public void setControlType(char value){
-		data[CONTROL_TYPE] = value;
 	}
 	// character coding scheme
 	public char getCharacterCodingScheme(){
@@ -154,25 +130,13 @@ public class Leader extends FixedField {
 			setDataToValue(baseAddress, BASE_ADDRESS, 5);
 		}
 	}
-	// encoding level
-	public char getEncodingLevel(){
-		return data[ENCODING_LEVEL];
-	}
-	public void setEncodingLevel(char value){
-		data[ENCODING_LEVEL] = value;
-	}
-	// descriptive cataloguing form
-	public char getDescriptiveCataloguingForm(){
-		return data[DESCRIPTIVE_CATALOGUING_FORM];
-	}
-	public void setDescriptiveCataloguingForm(char value){
-		data[DESCRIPTIVE_CATALOGUING_FORM] = value;
-	}
-	// multipart source level
-	public char getMultipartLevel(){
-		return data[MULTIPART_LEVEL];
-	}
-	public void setMultipartLevel(char value){
-		data[MULTIPART_LEVEL] = value;
+	
+	public Leader copy(){
+		Leader copy = new Leader();
+		copy.setFieldData(this.data);
+		copy.map = this.getFixedData();
+		copy.length = this.length;
+		copy.baseAddress = this.baseAddress;
+		return copy;
 	}
 }

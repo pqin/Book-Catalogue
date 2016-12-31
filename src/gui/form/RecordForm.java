@@ -192,8 +192,6 @@ public class RecordForm extends RecordPanel implements ActionListener, ListSelec
 					removeButton.setEnabled(false);
 				} else if (tag.equals(MARC.RESOURCE_TAG)){
 					removeButton.setEnabled(false);
-				} else if (tag.equals("541")){
-					removeButton.setEnabled(false);
 				} else {
 					removeButton.setEnabled(ready);
 				}

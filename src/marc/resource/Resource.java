@@ -1,17 +1,17 @@
 package marc.resource;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import marc.MARC;
 import marc.field.FixedField;
 
-public class Resource extends FixedField {
+public final class Resource extends FixedField {
 	private static final int DATE_LENGTH = 4;
+	private static final DateTimeFormatter formatter = buildFormatter();
 	
 	public static final int ENTRY_DATE = 0;
 	public static final int DATE_TYPE = 6;
@@ -22,29 +22,25 @@ public class Resource extends FixedField {
 	public static final int MODIFIED_RECORD = 38;
 	public static final int CATALOGUING_SOURCE = 39;
 	
-	private TimeZone timeZone;
-	private Locale locale;
-	private Calendar calendar;
-	private Date entryDate;
-	private SimpleDateFormat entryFormat, outputFormat;
-	
 	public Resource(){
 		super(MARC.RESOURCE_TAG, MARC.RESOURCE_FIELD_LENGTH);
-		
-		timeZone = TimeZone.getTimeZone("GMT");
-		locale = Locale.US;
-		calendar = Calendar.getInstance(timeZone, locale);
-		calendar.set(MARC.EPOCH_START, 0, 1, 0, 0, 0);
-		entryDate = calendar.getTime();
-		entryFormat = new SimpleDateFormat("yyMMdd", locale);
-		entryFormat.setTimeZone(timeZone);
-		outputFormat = new SimpleDateFormat("yyyy-MM-dd", locale);
-		outputFormat.setTimeZone(timeZone);
 		
 		char[] defaultPlace = {'x', 'x', MARC.BLANK_CHAR};
 		char[] defaultLanguage = {MARC.BLANK_CHAR, MARC.BLANK_CHAR, MARC.BLANK_CHAR};
 		setData(defaultPlace, Resource.PLACE, defaultPlace.length);
 		setData(defaultLanguage, Resource.LANGUAGE, defaultLanguage.length);
+		setEntryDate(MARC.EPOCH_START);
+	}
+	
+	private static final DateTimeFormatter buildFormatter(){
+		// build DateTimeFormatter with pattern: yyMMdd, where years are in the range 1968 - 2067
+		final int width = 2;
+		DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
+		builder = builder.appendValueReduced(ChronoField.YEAR, width, width, MARC.EPOCH_START);
+		builder = builder.appendValue(ChronoField.MONTH_OF_YEAR, width);
+		builder = builder.appendValue(ChronoField.DAY_OF_MONTH, width);
+		DateTimeFormatter f = builder.toFormatter(MARC.LANGUAGE_LOCALE);
+		return f;
 	}
 	
 	@Override
@@ -103,68 +99,22 @@ public class Resource extends FixedField {
 	@Override
 	final public void setAllSubfields(String value){
 		super.setAllSubfields(value);
-		
-		int year, month, day;
-		year = getDateUnitFromData(0, 2);
-		month = getDateUnitFromData(2, 2);
-		day = getDateUnitFromData(4, 2);
-		if (year >= 0 && year < 100){
-			if (year < (MARC.EPOCH_START - 1900)){
-				year += 2000;
-			} else {
-				year += 1900;
-			}
-		} else {
-			year = MARC.EPOCH_START;
-		}
-		if (month < 0){
-			month = 1;
-		}
-		if (day < 0){
-			day = 1;
-		}
-		
-		calendar.set(year, month-1, day, 0, 0, 0);
-		entryDate = calendar.getTime();
 	}
 	
-	// Date Record was entered into system. Format: yymmdd
-	// Epoch start: 1968
-	final public void setEntryDate(int year, int month, int day){
-		calendar.set(year, month-1, day, 0, 0, 0);
-		entryDate = calendar.getTime();
-		
-		year = calendar.get(Calendar.YEAR) % 100;
-		month = calendar.get(Calendar.MONTH) + 1;
-		day = calendar.get(Calendar.DAY_OF_MONTH);
-		setDataToValue(year, 0, 2);
+	
+	final public void setEntryDate(int year, int month, int day){		
+		setDataToValue(year % 100, 0, 2);
 		setDataToValue(month, 2, 2);
 		setDataToValue(day, 4, 2);
 	}
-	final private int getDateUnitFromData(int index, int length){
-		char[] raw = Arrays.copyOfRange(data, index, index + length);
-		String s = String.copyValueOf(raw);
-		int unit = -1;
-		try {
-			unit = Integer.parseInt(s, 10);
-		} catch (NumberFormatException ignore){}
-		return unit;
+	final public void setEntryDate(LocalDate entryDate){
+		char[] value = entryDate.format(formatter).toCharArray();
+		setData(value, ENTRY_DATE, value.length);
 	}
-	final public String getEntryDate(){
-		String d = outputFormat.format(entryDate);
-		return d;
-	}
-	final public int getEntryYear(){
-		int year = calendar.get(Calendar.YEAR);
-		return year;
-	}
-	final public int getEntryMonth(){
-		int month = calendar.get(Calendar.MONTH) + 1;
-		return month;
-	}
-	final public int getEntryDay(){
-		int day = calendar.get(Calendar.DAY_OF_MONTH);
-		return day;
+	final public LocalDate getEntryDate(){
+		String text = String.copyValueOf(data, ENTRY_DATE, DATE_TYPE - ENTRY_DATE);
+		LocalDate entryDate = LocalDate.parse(text, formatter);
+		return entryDate;
 	}
 
 	final public void setDate1(String date){
@@ -193,5 +143,12 @@ public class Resource extends FixedField {
 		String date = String.copyValueOf(value);
 		String d = date.replace('u', '?');
 		return d;
+	}
+	
+	public Resource copy(){
+		Resource copy = new Resource();
+		copy.setFieldData(this.data);
+		copy.map = this.getFixedData();
+		return copy;
 	}
 }

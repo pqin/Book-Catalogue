@@ -37,6 +37,10 @@ public class SearchForm extends JPanel {
 		
 		langField = new JTextField(10);
 		
+		layoutComponents();
+	}
+
+	private void layoutComponents() {
 		setLayout(new GridBagLayout());
 		GridBagConstraints cons = new GridBagConstraints();
 		cons.anchor = GridBagConstraints.NORTHWEST;

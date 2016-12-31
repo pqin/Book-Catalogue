@@ -19,7 +19,6 @@ public class EditRecordAction extends RecordAction {
 	public void setRecordIndex(int i){
 		recordIndex = i;
 		if (i >= 0 && i < catalogue.size()){
-			form.setRecord(catalogue.get(recordIndex));
 			setEnabled(true);
 		} else {
 			setEnabled(false);
@@ -32,10 +31,11 @@ public class EditRecordAction extends RecordAction {
 		if (recordIndex == -1){
 			manager.showMessage("No Record selected.", "Edit Record", true);
 		} else {
-			record = catalogue.get(recordIndex);
+			record = catalogue.get(recordIndex).copy();
+			form.setRecord(record);
 			boolean option = manager.showDialog(form.getComponent(), "Edit Record", false);
 			if (option){
-				// TODO
+				catalogue.set(recordIndex, record);
 				catalogue.updateRecordView(recordIndex);
 			}
 		}

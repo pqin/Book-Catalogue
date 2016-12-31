@@ -1,6 +1,6 @@
 package marc.field;
 
-public class Subfield {
+public final class Subfield {
 	private char code;
 	private String data;
 	
@@ -43,5 +43,23 @@ public class Subfield {
 	@Override
 	public String toString(){
 		return String.format("$%c%s", code, data);
+	}
+	@Override
+	public boolean equals(Object o){
+		boolean status = false;
+		if (o == null){
+			status = false;
+		} else if (o instanceof Subfield){
+			Subfield b = (Subfield) o;
+			status = (this.code == b.code) & this.data.equals(b.data);
+		} else {
+			status = false;
+		}
+		return status;
+	}
+
+	public Subfield copy(){
+		Subfield clone = new Subfield(code, data);
+		return clone;
 	}
 }

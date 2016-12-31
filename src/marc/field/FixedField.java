@@ -55,4 +55,18 @@ public class FixedField extends ControlField {
 		FixedDatum[] m = new FixedDatum[0];
 		return m;
 	}
+	public FixedDatum[] getFixedData(){
+		FixedDatum[] value = new FixedDatum[map.length];
+		for (int i = 0; i < map.length; ++i){
+			value[i] = map[i].copy();
+		}
+		return value;
+	}
+	
+	public FixedField copy(){
+		FixedField copy = new FixedField(this.tag, data.length);
+		copy.setFieldData(this.data);
+		copy.map = this.getFixedData();
+		return copy;
+	}
 }

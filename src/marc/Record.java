@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Locale;
+import java.util.Iterator;
 
 import marc.field.ControlField;
 import marc.field.DataField;
@@ -16,7 +16,6 @@ import marc.resource.ResourceType;
 
 public class Record implements Serializable {
 	private static final long serialVersionUID = 1L;
-	public static final Locale LOCALE = Locale.ENGLISH;
 	
 	private int length;
 	private Leader leader;
@@ -26,21 +25,13 @@ public class Record implements Serializable {
 	private ArrayList<DataField> dataField;
 	
 	public Record(){
+		length = 0;
 		leader = new Leader();
-		char[] type = leader.getData(Leader.TYPE, 1);
-		char[] level = leader.getData(Leader.BIBLIO_LEVEL, 1);
-		format = MARC.getFormat( type[0], level[0]);
+		format = leader.getFormat();
+		resource = new Resource();
 		controlField = new ArrayList<ControlField>();
 		dataField = new ArrayList<DataField>();
-		length = 0;
-		resource = new Resource();
 	}
-	// TODO write copy constructor
-	/*
-	private Record(Record r){
-		this();
-	}
-	*/
 	
 	public void setLength(int recordLength){
 		length = recordLength;
@@ -404,10 +395,23 @@ public class Record implements Serializable {
 		Collections.sort(dataField);
 	}
 	
-	/* TODO
-	 * Record clone()
-	 * boolean equals(Record b)
-	 */
+	public Record copy(){
+		Record copy = new Record();
+		// TODO
+		copy.length = this.length;
+		copy.leader = this.leader.copy();
+		copy.format = this.leader.getFormat();
+		copy.resource = this.resource.copy();
+		Iterator<ControlField> c = controlField.iterator();
+		while (c.hasNext()){
+			copy.addField(c.next().copy());
+		}
+		Iterator<DataField> d = dataField.iterator();
+		while (d.hasNext()){
+			copy.addField(d.next().copy());
+		}
+		return copy;
+	}
 	
 	@Override
 	public String toString(){

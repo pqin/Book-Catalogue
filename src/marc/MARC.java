@@ -1,6 +1,8 @@
 package marc;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Locale;
 
 import marc.resource.ResourceType;
 
@@ -20,7 +22,9 @@ public class MARC {
 	public static final String RESOURCE_TAG = "008";
 	public static final int RESOURCE_FIELD_LENGTH = 40;
 	
-	public static final int EPOCH_START = 1968;
+	public static final LocalDate EPOCH_START = LocalDate.of(1968, 1, 1);
+	public static final Locale COUNTRY_LOCALE = Locale.US;
+	public static final Locale LANGUAGE_LOCALE = Locale.ENGLISH;
 	
 	private static HashMap<Character, ResourceType> buildResourceTypeMap(){
 		HashMap<Character, ResourceType> map = new HashMap<Character, ResourceType>();

@@ -3,7 +3,6 @@ package marc.field;
 import java.util.ArrayList;
 
 import marc.MARC;
-import marc.Record;
 
 public class DataField extends Field {
 	private ArrayList<Subfield> subfield;
@@ -40,8 +39,8 @@ public class DataField extends Field {
 		for (int i = 0; i < subfield.size(); ++i){
 			reference = subfield.get(i).getData();
 			if (!caseSensitive){
-				reference = reference.toLowerCase(Record.LOCALE);
-				query = query.toLowerCase(Record.LOCALE);
+				reference = reference.toLowerCase(MARC.LANGUAGE_LOCALE);
+				query = query.toLowerCase(MARC.LANGUAGE_LOCALE);
 			}
 			if (reference.indexOf(query) != -1){
 				match = true;
@@ -50,6 +49,15 @@ public class DataField extends Field {
 		}
 		
 		return match;
+	}
+	public DataField copy(){
+		DataField copy = new DataField(this.tag, this.indicator1, this.indicator2);
+		Subfield s = null;
+		for (int i = 0; i < subfield.size(); ++i){
+			s = subfield.get(i);
+			copy.addSubfield(s.getCode(), s.getData());
+		}
+		return copy;
 	}
 	
 	public void addSubfield(char code, String data){
@@ -91,7 +99,7 @@ public class DataField extends Field {
 		s = buffer.toString();
 		return s;
 	}
-	@Override
+	
 	public void setAllSubfields(String value){
 		String[] token = value.split("\\$");
 		String tmp = null;
@@ -108,17 +116,15 @@ public class DataField extends Field {
 	}
 	@Override
 	public void setAllSubfields(Subfield[] value){
-		Subfield tmp = null;
 		if (value == null){
 			value = new Subfield[0];
 		}
 		subfield.clear();
 		for (int i = 0; i < value.length; ++i){
-			tmp = new Subfield(value[i].getCode(), value[i].getData());
-			subfield.add(tmp);
+			subfield.add(value[i].copy());
 		}
 	}
-	@Override
+	
 	public void setSubfield(int index, Subfield value){
 		if (value == null){
 			value = new Subfield('?', "");

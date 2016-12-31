@@ -6,8 +6,8 @@ import java.util.Arrays;
 import javax.swing.table.AbstractTableModel;
 
 import marc.MARC;
-import marc.field.ControlField;
 import marc.field.FixedDatum;
+import marc.field.FixedField;
 import marc.field.Leader;
 import marc.resource.Resource;
 import marc.resource.ResourceFactory;
@@ -76,25 +76,25 @@ public class FixedFieldTableModel extends AbstractTableModel {
 	
 	private FixedDatum[] buildLeaderMap(){
 		ArrayList<FixedDatum> tmp = new ArrayList<FixedDatum>();
-		tmp.add(new FixedDatum(6, 1, "Type", null));
-		tmp.add(new FixedDatum(7, 1, "BLvl", null));
-		tmp.add(new FixedDatum(8, 1, "Ctrl", null));
-		tmp.add(new FixedDatum(17, 1, "ELvl", null));
-		tmp.add(new FixedDatum(18, 1, "Desc", null));
+		tmp.add(new FixedDatum(6, 1, "Type"));
+		tmp.add(new FixedDatum(7, 1, "BLvl"));
+		tmp.add(new FixedDatum(8, 1, "Ctrl"));
+		tmp.add(new FixedDatum(17, 1, "ELvl"));
+		tmp.add(new FixedDatum(18, 1, "Desc"));
 		FixedDatum[] map = new FixedDatum[tmp.size()];
 		map = tmp.toArray(map);
 		return map;
 	}
 	private FixedDatum[] buildResourceMap(){
 		ArrayList<FixedDatum> tmp = new ArrayList<FixedDatum>();
-		tmp.add(new FixedDatum(0, 6, "Entered", null));
-		tmp.add(new FixedDatum(6, 1, "DtSt", null));
-		tmp.add(new FixedDatum(7, 4, "Date1", null));
-		tmp.add(new FixedDatum(11, 4, "Date2", null));
-		tmp.add(new FixedDatum(15, 3, "Ctry", null));
-		tmp.add(new FixedDatum(35, 3, "Lang", null));
-		tmp.add(new FixedDatum(38, 1, "MRec", null));
-		tmp.add(new FixedDatum(39, 1, "Srce", null));
+		tmp.add(new FixedDatum(0, 6, "Entered"));
+		tmp.add(new FixedDatum(6, 1, "DtSt"));
+		tmp.add(new FixedDatum(7, 4, "Date1"));
+		tmp.add(new FixedDatum(11, 4, "Date2"));
+		tmp.add(new FixedDatum(15, 3, "Ctry"));
+		tmp.add(new FixedDatum(35, 3, "Lang"));
+		tmp.add(new FixedDatum(38, 1, "MRec"));
+		tmp.add(new FixedDatum(39, 1, "Srce"));
 		FixedDatum[] map = new FixedDatum[tmp.size()];
 		map = tmp.toArray(map);
 		return map;
@@ -211,7 +211,7 @@ public class FixedFieldTableModel extends AbstractTableModel {
 			}
 		}
 	}
-	private void getMaskData(ControlField field, final int offset, final FixedDatum[] mask){
+	private void getMaskData(FixedField field, final int offset, final FixedDatum[] mask){
 		int index = 0;
 		int length = 0;
 		char[] value = null;
@@ -264,9 +264,7 @@ public class FixedFieldTableModel extends AbstractTableModel {
 		this.leader = leader;
 		this.resource = resource;
 		
-		final char type = leader.getType();
-		final char level = leader.getBiblioLevel();
-		final ResourceType resType = MARC.getFormat(type, level);
+		final ResourceType resType = leader.getFormat();
 		char[] leaderData = leader.getData(0, MARC.LEADER_FIELD_LENGTH);
 		char[] resourceData = resource.getData(0, MARC.RESOURCE_FIELD_LENGTH);
 		

@@ -21,11 +21,9 @@ public class FixedFieldForm extends JPanel implements RecordView, TableModelList
 	private static final Leader defaultLeader = new Leader();
 	private static final Resource defaultResource = new Resource();
 	
-	private Leader leader;
-	private Resource resource;
 	private final boolean editable;
 	private FixedFieldTableModel model;
-	private JLabel resourceLabel;
+	private JLabel resourceLabel, entryDateLabel;
 
 	public FixedFieldForm(final boolean hasBorder, final boolean editable){
 		super();
@@ -36,8 +34,6 @@ public class FixedFieldForm extends JPanel implements RecordView, TableModelList
 			TitledBorder border = BorderFactory.createTitledBorder("Resource");
 			setBorder(border);
 		}
-		leader = new Leader();
-		resource = new Resource();
 	}
 	protected void layoutComponents(){
 		model = new FixedFieldTableModel(editable);
@@ -45,10 +41,12 @@ public class FixedFieldForm extends JPanel implements RecordView, TableModelList
 		model.addTableModelListener(this);
 		
 		resourceLabel = new JLabel(model.getResourceType().getName());
+		entryDateLabel = new JLabel(String.format("Entry Date: %s", model.getResource().getEntryDate()));
 		
 		setLayout(new BorderLayout());
 		add(new JScrollPane(table), BorderLayout.CENTER);
 		add(resourceLabel, BorderLayout.NORTH);
+		add(entryDateLabel, BorderLayout.SOUTH);
 	}
 	
 	public void setRecord(Record value){
@@ -67,25 +65,20 @@ public class FixedFieldForm extends JPanel implements RecordView, TableModelList
 	 * @return the leader
 	 */
 	public Leader getLeader() {
-		leader = model.getLeader();
-		return leader;
+		return model.getLeader();
 	}
 	/**
 	 * @return the resource
 	 */
 	public Resource getResource() {
-		// skip setting entry date
-		resource = model.getResource();
-		return resource;
+		return model.getResource();
 	}
 
 	/**
-	 * @param value0 the leader to set
-	 * @param value1 the resource to set
+	 * @param leader the Leader to set
+	 * @param resource the Resource to set
 	 */
-	public void setFixedField(Leader value0, Resource value1) {
-		leader = value0;
-		resource = value1;
+	public void setFixedField(Leader leader, Resource resource) {
 		model.setFieldData(leader, resource);
 	}
 
@@ -97,5 +90,7 @@ public class FixedFieldForm extends JPanel implements RecordView, TableModelList
 	public void tableChanged(TableModelEvent arg0) {
 		String name = model.getResourceType().getName();
 		resourceLabel.setText(name);
+		String entryDate = String.format("Entry Date: %s", model.getResource().getEntryDate());
+		entryDateLabel.setText(entryDate);
 	}
 }

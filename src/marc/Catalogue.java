@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import application.CatalogueView;
 import application.MarcComponent;
@@ -42,7 +43,8 @@ public class Catalogue implements MarcComponent {
 		catalogueView = new ArrayList<CatalogueView>();
 		recordView = new ArrayList<RecordView>();
 		file = new File("");
-		calendar = (GregorianCalendar) GregorianCalendar.getInstance();
+		TimeZone timeZone = TimeZone.getDefault();
+		calendar = (GregorianCalendar) GregorianCalendar.getInstance(timeZone, MARC.COUNTRY_LOCALE);
 	}
 	@Override
 	public void destroy() {
@@ -104,6 +106,9 @@ public class Catalogue implements MarcComponent {
 	public void setData(ArrayList<Record> records) {
 		data.clear();
 		data.addAll(records);
+	}
+	public void set(int index, Record record){
+		data.set(index, record);
 	}
 	
 	public Record remove(int index){

@@ -31,7 +31,7 @@ import marc.resource.Resource;
 
 public class MarcPlain extends AbstractMarc {
 	public static final Pattern FIELD_REGEX = Pattern.compile("(LDR|\\d{3})([#\\d])([#\\d])");
-    public static final Pattern SUBFIELD_REGEX = Pattern.compile("\\$([a-z])([^\\$\\r\\n]*)");
+    public static final Pattern SUBFIELD_REGEX = Pattern.compile("\\$([a-z0-9])([^\\$\\r\\n]*)");
 	
     @Override
 	public FileNameExtensionFilter getExtensionFilter() {
