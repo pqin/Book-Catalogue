@@ -1,33 +1,47 @@
 package marc.format;
 
-import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import marc.MARC;
 import marc.Record;
+import marc.field.ControlField;
+import marc.field.DataField;
 import marc.field.Field;
 import marc.field.Leader;
 import marc.field.Subfield;
+import marc.resource.Resource;
 
 public class MarcXML extends AbstractMarc {
+	private static final String NAMESPACE = "xmlns";
+	private static final String NAMESPACE_URL = "http://www.loc.gov/MARC21/slim";
+	private static final String CATALOGUE = "collection";
+	private static final String RECORD = "record";
+	private static final String LEADER = "leader";
+	private static final String CONTROLFIELD = "controlfield";
+	private static final String DATAFIELD = "datafield";
+	private static final String TAG = "tag";
+	private static final String INDICATOR1 = "ind1";
+	private static final String INDICATOR2 = "ind2";
+	private static final String SUBFIELD = "subfield";
+	private static final String CODE = "code";
+	
 	@Override
 	public FileNameExtensionFilter getExtensionFilter() {
     	String description = "MARC XML";
@@ -40,105 +54,244 @@ public class MarcXML extends AbstractMarc {
 	@Override
 	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {
 		ArrayList<Record> list = null;
+		Record record = null;
+		String tag = MARC.UNKNOWN_TAG;
+		char ind1 = MARC.BLANK_CHAR;
+		char ind2 = MARC.BLANK_CHAR;
+		ControlField cField = null;
+		Leader leader = null;
+		Resource resource = null;
+		DataField dField = null;
+		char code = '\u0000';
         
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        MarcXmlHandler userhandler = new MarcXmlHandler();
-        SAXParser parser = null;
-        try {
-        	parser = factory.newSAXParser();
-        	parser.parse(file, userhandler);
-        } catch (SAXException e){
-        	e.printStackTrace();
-        } catch (ParserConfigurationException e) {
+		XMLInputFactory factory = XMLInputFactory.newInstance();
+		FileInputStream in = new FileInputStream(file);
+	    XMLStreamReader reader = null;
+	    String localName = null;
+	    String content = null;
+	    
+	    try {
+			reader = factory.createXMLStreamReader(in);
+			while (reader.hasNext()){
+				switch (reader.next()){
+				case XMLStreamConstants.START_ELEMENT:
+					localName = reader.getLocalName();
+					switch (localName){
+					case CATALOGUE:
+						if (list == null){
+							list = new ArrayList<Record>();
+						}
+						break;
+					case RECORD:
+						record = new Record();
+						break;
+					case LEADER:
+						leader = new Leader();
+						break;
+					case CONTROLFIELD:
+						cField = new ControlField();
+						tag = MARC.UNKNOWN_TAG;
+						for (int i = 0; i < reader.getAttributeCount(); ++i){
+							switch (reader.getAttributeLocalName(i)){
+							case TAG:
+								tag = reader.getAttributeValue(i);
+								break;
+							default:
+								break;
+							}
+						}
+						cField.setTag(tag);
+						break;
+					case DATAFIELD:
+						dField = new DataField();
+						tag = MARC.UNKNOWN_TAG;
+						ind1 = MARC.BLANK_CHAR;
+						ind2 = MARC.BLANK_CHAR;
+						for (int i = 0; i < reader.getAttributeCount(); ++i){
+							switch (reader.getAttributeLocalName(i)){
+							case TAG:
+								tag = reader.getAttributeValue(i);
+								break;
+							case INDICATOR1:
+								ind1 = reader.getAttributeValue(i).charAt(0);
+								break;
+							case INDICATOR2:
+								ind2 = reader.getAttributeValue(i).charAt(0);
+								break;
+							default:
+								break;
+							}
+						}
+						dField.setTag(tag);
+						dField.setIndicators(ind1, ind2);
+						break;
+					case SUBFIELD:
+						code = '\u0000';
+						for (int i = 0; i < reader.getAttributeCount(); ++i){
+							switch (reader.getAttributeLocalName(i)){
+							case CODE:
+								code = reader.getAttributeValue(i).charAt(0);
+								break;
+							default:
+								break;
+							}
+						}
+						break;
+					default:
+						break;
+					}
+					break;
+				case XMLStreamConstants.CHARACTERS:
+					content = reader.getText().trim();
+					break;
+				case XMLStreamConstants.END_ELEMENT:
+					localName = reader.getLocalName();
+					switch (localName){
+					case RECORD:
+						list.add(record);
+						break;
+					case LEADER:
+						leader.setFieldData(content.toCharArray());
+						record.setLeader(leader);
+						break;
+					case CONTROLFIELD:
+						if (cField.getTag().equals(MARC.RESOURCE_TAG)){
+							resource = new Resource();
+							resource.setFieldData(content.toCharArray());
+							record.setResource(resource);
+						} else {
+							cField.setFieldData(content.toCharArray());
+							record.addField(cField);
+						}
+						break;
+					case DATAFIELD:
+						record.addField(dField);
+						break;
+					case SUBFIELD:
+						if (code != '\u0000'){
+							dField.addSubfield(code, content);
+						}
+						break;
+					default:
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		} finally {
-			list = userhandler.getRecords();
+			try {
+				reader.close();
+			} catch (XMLStreamException e) {
+				e.printStackTrace();
+			}
+			try {
+				in.close();
+			} catch (IOException e){
+				e.printStackTrace();
+			}
 		}
 		return list;
 	}
-
-	private void writeLeader(BufferedWriter out, Leader leader) throws IOException{
-		Subfield subfield = leader.getSubfield(0);
-		String data = subfield.getData().replace(MARC.BLANK_CHAR, ' ');
-		String element = String.format("    <leader>%s</leader>", data);
-		out.write(element);
-		out.newLine();
-	}
-	private void writeControlField(BufferedWriter out, Field field) throws IOException{
-		String tag = field.getTag();
-		Subfield subfield = field.getSubfield(0);
-		String data = subfield.getData();
-		if (tag.equals(MARC.RESOURCE_TAG)){
-			data = data.replace(MARC.BLANK_CHAR, ' ');
-		}
-		String element = String.format("    <controlfield tag=\"%s\">%s</controlfield>", tag, data);
-		out.write(element);
-		out.newLine();
-	}
-	private void writeDataField(BufferedWriter out, Field field) throws IOException {
-		String tag = field.getTag();
-		char ind1 = field.getIndicator1();
-		char ind2 = field.getIndicator2();
-		Subfield subfield = null;
-		
-		ind1 = (ind1 == MARC.BLANK_CHAR) ? ' ': ind1;
-		ind2 = (ind2 == MARC.BLANK_CHAR) ? ' ': ind2;
-		
-		String element = String.format("    <datafield tag=\"%s\" ind1=\"%c\" ind2=\"%c\">", tag, ind1, ind2);
-		out.write(element);
-		out.newLine();
-		for (int s = 0; s < field.getDataCount(); ++s){
-			subfield = field.getSubfield(s);
-			element = String.format("      <subfield code=\"%c\">%s</subfield>", subfield.getCode(), subfield.getData());
-			out.write(element);
-			out.newLine();
-		}
-		out.write("    </datafield>");
-		out.newLine();
-	}
 	
 	public void write(File file, List<Record> data) throws FileNotFoundException, IOException {
-		final int version = 1;
+		final String version = "1.0";
 		final Charset encoding = StandardCharsets.UTF_8;
-		final String charsetName = encoding.displayName(Locale.US);
-		BufferedWriter out = null;
+		final String charsetName = encoding.name();
+		final String newline = System.lineSeparator();
+		final String indent = "  ";
 		
 		Record record = null;
-		ArrayList<Field> field;
+		ArrayList<Field> field = null;
+		Field f = null;
 		String tag = null;
+		Subfield subfield = null;
+		int subfieldCount = 0;
+		String content = null;
 		Iterator<Record> it = null;
 		
-		out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charsetName));
-		out.write(String.format("<?xml version=\"%d.0\" encoding=\"%s\"?>", version, charsetName));
-		out.newLine();
-		out.write(String.format("<collection xmlns=\"%s\">", "http://www.loc.gov/MARC21/slim"));
-		out.newLine();
-		
-		it = data.iterator();
-		while (it.hasNext()){
-			record = it.next();
-			out.write("  <record>");
-			out.newLine();
-			writeLeader(out, record.getLeader());
-			field = record.getFields();
-			Collections.sort(field);
-			for (Field f : field){
-				tag = f.getTag();
-				if (tag.equals(MARC.LEADER_TAG)){
-					// do nothing
-				} else if (tag.startsWith("00")){
-					writeControlField(out, f);
-				} else {
-					writeDataField(out, f);
+		XMLOutputFactory factory = XMLOutputFactory.newInstance();
+	    XMLStreamWriter writer = null;
+	    FileOutputStream out = new FileOutputStream(file);
+	    try {
+			writer = factory.createXMLStreamWriter(out, charsetName);
+			writer.writeStartDocument(charsetName, version);
+			writer.writeCharacters(newline);
+			writer.writeStartElement(CATALOGUE);
+			writer.writeNamespace(NAMESPACE, NAMESPACE_URL);
+			writer.writeCharacters(newline);
+			it = data.iterator();
+			while (it.hasNext()){
+				record = it.next();
+				field = record.getFields();
+				
+				writer.writeCharacters(indent);
+				writer.writeStartElement(RECORD);
+				writer.writeCharacters(newline);
+				for (int i = 0; i < field.size(); ++i){
+					writer.writeCharacters(indent);
+					writer.writeCharacters(indent);
+					f = field.get(i);
+					tag = f.getTag();
+					if (MARC.LEADER_TAG.equals(tag)){
+						content = String.valueOf(f.getFieldData());
+						writer.writeStartElement(LEADER);
+						writer.writeCharacters(content);
+						writer.writeEndElement();
+						writer.writeCharacters(newline);
+					} else if (tag.startsWith("00")){
+						content = String.valueOf(f.getFieldData());
+						writer.writeStartElement(CONTROLFIELD);
+						writer.writeAttribute(TAG, tag);
+						writer.writeCharacters(content);
+						writer.writeEndElement();
+						writer.writeCharacters(newline);
+					} else {
+						writer.writeStartElement(DATAFIELD);
+						writer.writeAttribute(TAG, tag);
+						writer.writeAttribute(INDICATOR1, String.valueOf(f.getIndicator1()));
+						writer.writeAttribute(INDICATOR2, String.valueOf(f.getIndicator2()));
+						writer.writeCharacters(newline);
+						subfieldCount = f.getDataCount();
+						for (int s = 0; s < subfieldCount; ++s){
+							subfield = f.getSubfield(s);
+							writer.writeCharacters(indent);
+							writer.writeCharacters(indent);
+							writer.writeCharacters(indent);
+							writer.writeStartElement(SUBFIELD);
+							writer.writeAttribute(CODE, String.valueOf(subfield.getCode()));
+							writer.writeCharacters(subfield.getData());
+							writer.writeEndElement();
+							writer.writeCharacters(newline);
+						}
+						writer.writeCharacters(indent);
+						writer.writeCharacters(indent);
+						writer.writeEndElement();
+						writer.writeCharacters(newline);
+					}
 				}
+				writer.writeCharacters(indent);
+				writer.writeEndElement();
+				writer.writeCharacters(newline);
 			}
-			out.write("  </record>");
-			out.newLine();
+			writer.writeEndElement();
+			writer.writeCharacters(newline);
+			writer.writeEndDocument();
+			writer.flush();
+			writer.close();
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				out.close();
+			} catch (IOException e){
+				e.printStackTrace();
+			}
 		}
-		
-		out.write("</collection>");
-		out.newLine();
-		out.close();
 	}
 
 }
