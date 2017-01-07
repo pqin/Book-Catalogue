@@ -11,7 +11,6 @@ import java.util.Iterator;
 
 public class Marc8 {
 	private static final byte ESC = 0x1B;
-	private static final char NULL = '\0';
 	public static final byte RECORD_TERMINATOR = 0x1D;
 	public static final byte FIELD_TERMINATOR = 0x1E;
 	public static final byte SUBFIELD_DELIMITER = 0x1F;
@@ -34,7 +33,6 @@ public class Marc8 {
 	// state
 	private ReadState state;
 	private int g;
-	private boolean multiBytesPerChar;
 	private LanguageEncoding[] graphic;
 	
 	public Marc8(){
@@ -71,7 +69,6 @@ public class Marc8 {
 	public final void reset(){
 		state = ReadState.NONE;
 		g = 0;
-		multiBytesPerChar = false;
 		graphic[0] = map.get(BASIC_LATIN);
 		graphic[1] = map.get(EXTENDED_LATIN);
 	}
@@ -87,7 +84,7 @@ public class Marc8 {
 		
 		byte b = 0x00;
 		int value = 0;
-		char c = '\0';
+		char c = '\u0000';
 		String diacritics = null;
 		while (in.hasRemaining()){
 			b = in.get();
@@ -103,13 +100,13 @@ public class Marc8 {
 						c = graphic[0].decode(value);
 						if (graphic[0].isDiacritic(value)){
 							combining.put(c);
-							c = NULL;
+							c = '\u0000';
 						} else if (combining.remaining() > 0){
 							combining.flip();
 							diacritics = c + combining.toString();
 							combining.clear();
 							buffer.put(diacritics);
-							c = NULL;
+							c = '\u0000';
 						}
 					} else if (value >= 0x80 && value < 0xA0){
 						c = (char) value;
@@ -117,23 +114,22 @@ public class Marc8 {
 						c = graphic[1].decode(value);
 						if (graphic[1].isDiacritic(value)){
 							combining.put(c);
-							c = NULL;
+							c = '\u0000';
 						} else if (combining.remaining() > 0){
 							combining.flip();
 							diacritics = c + combining.toString();
 							combining.clear();
 							buffer.put(diacritics);
-							c = NULL;
+							c = '\u0000';
 						}
 					}
-					if (c != NULL){
+					if (c != '\u0000'){
 						buffer.put(c);
 					}
 				}
 				break;
 			case ESCAPE:
 				if (b == 0x24){
-					multiBytesPerChar = true;
 					b = in.get();
 					if (map.get(b).bytesPerChar > 1){
 						g = 0;
@@ -141,8 +137,6 @@ public class Marc8 {
 						state = ReadState.NONE;
 						break;
 					}
-				} else {
-					multiBytesPerChar = false;
 				}
 				if (b == 0x28 || b == 0x2C){
 					g = 0;

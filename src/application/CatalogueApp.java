@@ -186,7 +186,7 @@ public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 		
 		RecordTable recordTable = new RecordTable(new RecordTableModel(), 3, 40);
 		CatalogCardPanel recordCard = new CatalogCardPanel();
-		FixedFieldForm recordResourcePanel = new FixedFieldForm(true, false);
+		FixedFieldForm recordResourcePanel = new FixedFieldForm(true, false, true);
 		recordDataPanel = new TabManager();
 		recordDataPanel.addTab(recordCard, "Catalog Card", "Catalog Card");
 		recordDataPanel.addTab(new JScrollPane(recordTable), "MARC", "MARC21");

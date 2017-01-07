@@ -1,6 +1,7 @@
 package marc;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,8 +42,8 @@ public class Record implements Serializable {
 		return length;
 	}
 	
-	public void setEntryDate(int year, int month, int day){
-		resource.setEntryDate(year, month, day);		
+	public void setEntryDate(LocalDate date){
+		resource.setEntryDate(date);		
 	}
 	
 	private String getFormattedData(DataField f, char[] code, String delimiter){
@@ -178,6 +179,14 @@ public class Record implements Serializable {
 		}
 		return bookNumber;
 	}
+	public String getDCC(){
+		String dcc = getData("082", 'a');
+		return dcc;
+	}
+	public String getLCCN(){
+		String lccn = getData("010", 'a');
+		return lccn;
+	}
 	public String getSummary(){
 		String text = getData("520", 'a');
 		return text;
@@ -266,15 +275,16 @@ public class Record implements Serializable {
 	}
 	public ArrayList<Field> getFields(){
 		ArrayList<Field> tmp = new ArrayList<Field>();
+		tmp.add(leader);
 		tmp.add(resource);
 		tmp.addAll(controlField);
 		tmp.addAll(dataField);
 		Collections.sort(tmp);
-		
-		ArrayList<Field> marcFields = new ArrayList<Field>();
-		marcFields.add(leader);
-		marcFields.addAll(tmp);
-		return marcFields;
+		return tmp;
+	}
+	public int getFieldCount(){
+		int count = controlField.size() + dataField.size() + 2;
+		return count;
 	}
 	public ArrayList<Integer> getDataFieldIndices(String tag){
 		ArrayList<Integer> indices = new ArrayList<Integer>();

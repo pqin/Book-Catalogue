@@ -41,7 +41,7 @@ public class RecordForm extends RecordPanel implements ActionListener, ListSelec
 		model = new RecordTableModel();
 		table = new RecordTable(model);
 		table.getSelectionModel().addListSelectionListener(this);
-		resourceForm = new FixedFieldForm(false, true);
+		resourceForm = new FixedFieldForm(false, true, false);
 		fieldForm = new FieldForm();
 		
 		addButton = new JButton("Add");

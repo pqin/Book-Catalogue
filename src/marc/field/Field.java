@@ -77,12 +77,10 @@ public class Field implements Comparable<Field> {
 		String tag0 = this.tag;
 		String tag1 = o.tag;
 		int result = tag0.compareTo(tag1);
-		if (result != 0){
-			if (tag0.equals(MARC.UNKNOWN_TAG)){
-				result = 1;
-			} else if (tag0.equals(MARC.LEADER_TAG)){
-				result = -1;
-			}
+		if (MARC.LEADER_TAG.equals(tag0)){
+			result = -1 * Math.abs(result);
+		} else if (MARC.LEADER_TAG.equals(tag1)){
+			result = Math.abs(result);
 		}
 		return result;
 	}

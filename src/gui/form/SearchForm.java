@@ -22,7 +22,7 @@ import gui.MatchType;
 public class SearchForm extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JTextField keywordField;
-	private JTextField tagField;
+	private JTextField tagField, indicator1Field, indicator2Field;
 	private JComboBox<MatchType> matchType;
 	private JCheckBox caseSensitiveBox;
 	private JTextField langField;

@@ -2,13 +2,11 @@ package marc;
 
 import java.awt.Component;
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TimeZone;
 
 import application.CatalogueView;
 import application.MarcComponent;
@@ -16,14 +14,9 @@ import application.RecordView;
 
 public class Catalogue implements MarcComponent {
 	private File file;
-	private GregorianCalendar calendar;
 	private ArrayList<Record> data;
 	private ArrayList<CatalogueView> catalogueView;
 	private ArrayList<RecordView> recordView;
-	
-	// TODO
-	// import java.time.*; JAVA 8
-	// adding Record sets Record entry date, keep one Calendar within this class
 
 	public Catalogue(){
 		data = new ArrayList<Record>();
@@ -43,8 +36,6 @@ public class Catalogue implements MarcComponent {
 		catalogueView = new ArrayList<CatalogueView>();
 		recordView = new ArrayList<RecordView>();
 		file = new File("");
-		TimeZone timeZone = TimeZone.getDefault();
-		calendar = (GregorianCalendar) GregorianCalendar.getInstance(timeZone, MARC.COUNTRY_LOCALE);
 	}
 	@Override
 	public void destroy() {
@@ -122,18 +113,15 @@ public class Catalogue implements MarcComponent {
 	public void clear(){
 		data.clear();
 	}
-	public List<Record> split(int index, int length){
-		// TODO
-		return data;
+	public List<Record> extract(int index, int length){
+		List<Record> sublist = data.subList(index, index + length);
+		return sublist;
 	}
 	
 	public Record generateRecord(){
 		Record record = new Record();
-		calendar.setTime(new Date());
-		int year = calendar.get(GregorianCalendar.YEAR);
-		int month = calendar.get(GregorianCalendar.MONTH) + 1;
-		int day = calendar.get(GregorianCalendar.DAY_OF_MONTH);
-		record.setEntryDate(year, month, day);
+		LocalDate currentDate = LocalDate.now(MARC.TIME_ZONE);
+		record.setEntryDate(currentDate);
 		return record;
 	}
 	

@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -146,7 +145,7 @@ public class MarcPlain extends AbstractMarc {
 	@Override
 	public void write(File file, List<Record> data) throws FileNotFoundException, IOException {
 		final Charset encoding = StandardCharsets.UTF_8;
-		final String charsetName = encoding.displayName(Locale.US);
+		final String charsetName = encoding.displayName(MARC.COUNTRY_LOCALE);
 		BufferedWriter out = null;
 		
 		Record record = null;

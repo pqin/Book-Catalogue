@@ -1,15 +1,17 @@
 package gui.form;
 
 import java.awt.BorderLayout;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import application.RecordView;
 import marc.Record;
@@ -23,30 +25,40 @@ public class FixedFieldForm extends JPanel implements RecordView, TableModelList
 	
 	private final boolean editable;
 	private FixedFieldTableModel model;
-	private JLabel resourceLabel, entryDateLabel;
+	private TableModel dataTableModel;
+	private JTable dataTable;
+	private DateTimeFormatter formatter;
 
-	public FixedFieldForm(final boolean hasBorder, final boolean editable){
+	public FixedFieldForm(final boolean hasBorder, final boolean editable, final boolean showDetails){
 		super();
 		
 		this.editable = editable;
-		layoutComponents();
+		layoutComponents(showDetails);
 		if (hasBorder){
 			TitledBorder border = BorderFactory.createTitledBorder("Resource");
 			setBorder(border);
 		}
 	}
-	protected void layoutComponents(){
+	protected void layoutComponents(final boolean showDetails){
 		model = new FixedFieldTableModel(editable);
 		JTable table = new JTable(model);
-		model.addTableModelListener(this);
-		
-		resourceLabel = new JLabel(model.getResourceType().getName());
-		entryDateLabel = new JLabel(String.format("Entry Date: %s", model.getResource().getEntryDate()));
-		
+		if (showDetails){
+			model.addTableModelListener(this);
+			// create detailed components
+			formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+			String[] header = {"", ""};
+			String[][] data = {
+					{"Resource", model.getResourceType().getName()},
+					{"Entry Date", model.getResource().getEntryDate().format(formatter)}
+			};
+			dataTableModel = new DefaultTableModel(data, header);
+			dataTable = new JTable(dataTableModel);
+		}
 		setLayout(new BorderLayout());
 		add(new JScrollPane(table), BorderLayout.CENTER);
-		add(resourceLabel, BorderLayout.NORTH);
-		add(entryDateLabel, BorderLayout.SOUTH);
+		if (showDetails){
+			add(new JScrollPane(dataTable), BorderLayout.SOUTH);
+		}
 	}
 	
 	public void setRecord(Record value){
@@ -88,9 +100,10 @@ public class FixedFieldForm extends JPanel implements RecordView, TableModelList
 	}
 	@Override
 	public void tableChanged(TableModelEvent arg0) {
-		String name = model.getResourceType().getName();
-		resourceLabel.setText(name);
-		String entryDate = String.format("Entry Date: %s", model.getResource().getEntryDate());
-		entryDateLabel.setText(entryDate);
+		String resourceName = model.getResourceType().getName();
+		String entryDate = model.getResource().getEntryDate().format(formatter);
+		
+		dataTableModel.setValueAt(resourceName, 0, 1);
+		dataTableModel.setValueAt(entryDate, 1, 1);
 	}
 }

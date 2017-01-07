@@ -42,20 +42,24 @@ public class CatalogCardPanel extends RecordPanel {
 				"Edition",
 				"Series",
 				"Book Number",
+				"DCC",
+				"LCCN",
 				"Summary",
 				"Notes",
 				"Subject",
 				"Tracing"
 		};
 		String[] areaLabel = {
-				label[8],	// Notes
-				label[7]	// Summary
+				label[9],	// Summary
+				label[10]	// Notes
 		};
+		Arrays.sort(areaLabel);
 		String[] listLabel = {
 				label[2],	// Imprint
-				label[9],	// Subject
-				label[10]	// Tracing
+				label[11],	// Subject
+				label[12]	// Tracing
 		};
+		Arrays.sort(listLabel);
 		
 		JTextField tf_Component = null;
 		JTextArea ta_Component = null;
@@ -163,6 +167,8 @@ public class CatalogCardPanel extends RecordPanel {
 		field[3].setText(record.getEdition());
 		field[4].setText(record.getSeries());
 		field[5].setText(record.getStandardBookNumber());
+		field[6].setText(record.getDCC());
+		field[7].setText(record.getLCCN());
 		
 		summaryLabel.setText(record.getSummaryLabel());
 		area[0].setText(record.getSummary());

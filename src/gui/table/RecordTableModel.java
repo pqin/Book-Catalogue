@@ -74,7 +74,7 @@ public class RecordTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		int rows = (data == null) ? 0 : data.getFields().size();
+		int rows = (data == null) ? 0 : data.getFieldCount();
 		return rows;
 	}
 }
