@@ -1,4 +1,4 @@
-package controller;
+package gui.search;
 
 import java.awt.Component;
 import java.util.ArrayList;
@@ -8,15 +8,12 @@ import javax.swing.JOptionPane;
 
 import application.CatalogueView;
 import application.MarcComponent;
-import gui.MatchType;
-import gui.form.SearchForm;
 import marc.Catalogue;
-import marc.Record;
 
 public class SearchManager implements MarcComponent, CatalogueView {
-	private static final String WILDCARD = "*";	// match anything
 	private Component parent;
 	private SearchForm searchForm;
+	private SearchParser parser;
 	private Catalogue data;
 	private ArrayList<Integer> searchResults;
 
@@ -34,12 +31,14 @@ public class SearchManager implements MarcComponent, CatalogueView {
 	@Override
 	public void create() {
 		searchForm = new SearchForm();
+		parser = new SearchParser(searchForm);
 		searchResults = new ArrayList<Integer>();
 	}
 
 	@Override
 	public void destroy() {
 		searchForm.resetForm();
+		parser.reset();
 		searchResults.clear();
 		data = null;
 		parent = null;
@@ -73,20 +72,33 @@ public class SearchManager implements MarcComponent, CatalogueView {
 		return status;
 	}
 	private void processSearchFormInput(){
-		String[] keyword = searchForm.getKeywords();
+		parser.reset();
+		parser.parseQuery(searchForm);
+		for (int i = 0; i < data.size(); ++i){
+			if (parser.match(data.get(i))){
+				searchResults.add(i);
+			}
+		}
+	}
+	/*
+	private void processSearchFormInput(){
+		String tag = searchForm.getTag(0);
+		String[] keyword = searchForm.getKeywords(0);
+		MatchType matchType = searchForm.getMatchType(0);
 		boolean isCaseSensitive = searchForm.isCaseSensitive();
-		MatchType matchType = searchForm.getMatchType();
-		String tag = searchForm.getTag();
+		int fixedIndex = searchForm.getFixedIndex();
+		String fixedValue = searchForm.getFixedValue();
+		char[] fixedData = null;
 		String language = searchForm.getLanguage();
+		String place = searchForm.getPlace();
 		
 		boolean controlSearch = false;
 		boolean controlMatch = false;
 		boolean wildcardMatch = false;
 		boolean dataMatch = false;
-		String phrase = null;
 		Record result = null;
 		
-		controlSearch = !language.isEmpty();
+		controlSearch = !( language.isEmpty() && place.isEmpty() && fixedValue.isEmpty());
 		if (keyword.length > 0){
 			// wildcard matching
 			for (int k = 0; k < keyword.length; ++k){
@@ -94,24 +106,23 @@ public class SearchManager implements MarcComponent, CatalogueView {
 					wildcardMatch = true;
 				}
 			}
-			// match phrase
-			if (matchType == MatchType.MATCH_PHRASE){
-				phrase = String.join(" ", keyword);
-				keyword = new String[1];
-				keyword[0] = phrase;
-			}
 			
 			for (int i = 0; i < data.size(); ++i){
 				// get potential result
 				result = data.get(i);
 				// if control fields specified, filter out non-matching Records
+				controlMatch = true;
 				if (controlSearch){
-					controlMatch = true;
+					if (!fixedValue.isEmpty()){
+						fixedData = result.getResource().getData(fixedIndex, fixedValue.length());
+						controlMatch &= String.valueOf(fixedData).equals(fixedValue);
+					}
 					if (!language.isEmpty()){
 						controlMatch &= result.containsLanguage(language);
 					}
-				} else {
-					controlMatch = true;
+					if (!place.isEmpty()){
+						controlMatch &= result.containsPlace(place);
+					}
 				}
 				// find keywords
 				if (wildcardMatch){
@@ -119,9 +130,9 @@ public class SearchManager implements MarcComponent, CatalogueView {
 				} else {
 					dataMatch = result.contains(keyword[0], tag, isCaseSensitive);
 					for (int k = 1; k < keyword.length; ++k){
-						if (matchType == MatchType.MATCH_ALL){
+						if (matchType == MatchType.AND){
 							dataMatch &= result.contains(keyword[k], tag, isCaseSensitive);
-						} else if (matchType == MatchType.MATCH_ANY){
+						} else if (matchType == MatchType.OR){
 							dataMatch |= result.contains(keyword[k], tag, isCaseSensitive);
 						}
 					}
@@ -132,6 +143,8 @@ public class SearchManager implements MarcComponent, CatalogueView {
 			}
 		}
 	}
+	*/
+	
 	@Override
 	public void updateView(Catalogue catalogue) {
 		data = catalogue;
