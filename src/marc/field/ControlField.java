@@ -2,6 +2,8 @@ package marc.field;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import marc.MARC;
 
@@ -177,6 +179,13 @@ public class ControlField extends Field {
 			query = query.toLowerCase(MARC.LANGUAGE_LOCALE);
 		}
 		return (reference.indexOf(query) != -1);
+	}
+	@Override
+	public boolean contains(Pattern query){
+		String reference = String.copyValueOf(data);
+		Matcher m = query.matcher(reference);
+		boolean match = m.find();
+		return match;
 	}
 	
 	public ControlField copy(){

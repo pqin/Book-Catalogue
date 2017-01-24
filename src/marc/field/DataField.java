@@ -1,6 +1,8 @@
 package marc.field;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import marc.MARC;
 
@@ -34,6 +36,8 @@ public class DataField extends Field {
 	}
 	@Override
 	public boolean contains(String query, final boolean caseSensitive){
+		// TODO match whole words only
+		// regex to the rescue?
 		boolean match = false;
 		String reference = null;
 		for (int i = 0; i < subfield.size(); ++i){
@@ -50,6 +54,22 @@ public class DataField extends Field {
 		
 		return match;
 	}
+	@Override
+	public boolean contains(Pattern query){
+		Matcher m = null;
+		String reference = null;
+		boolean match = false;
+		for (int i = 0; i < subfield.size(); ++i){
+			reference = subfield.get(i).getData();
+			m = query.matcher(reference);
+			if (m.find()){
+				match = true;
+				break;
+			}
+		}
+		return match;
+	}
+	
 	public DataField copy(){
 		DataField copy = new DataField(this.tag, this.indicator1, this.indicator2);
 		Subfield s = null;

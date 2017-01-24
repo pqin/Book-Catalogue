@@ -4,69 +4,94 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import gui.search.Token.Type;
+
 public class QueryLexer {
 	private static final Pattern KEYWORD_REGEX = Pattern.compile("\"([^\"]*)\"|(\\S+)");
 	private static final Pattern PAREN_REGEX = Pattern.compile("([()])");
+	// keywords
+	// phrases / string literals
+	// parenthesis
 	
-	private ArrayList<String> buffer;
+	private ArrayList<Token> buffer;
 	
 	public QueryLexer(){
-		buffer = new ArrayList<String>();
+		buffer = new ArrayList<Token>();
 	}
 	
 	public void reset(){
 		buffer.clear();
 	}
 	
-	public String[] tokenize(String input){
+	public Token[] tokenize(String input){
 		buffer.clear();
+		// preprocess input so regex will match correctly
+		input = input.replace("(", "( ");
+		input = input.replace(")", ") ");
 		
 		Matcher m = KEYWORD_REGEX.matcher(input);
 		Matcher m2 = null;
 		String group1 = null;
 		String group2 = null;
-		int start = -1;
-		int end = -1;
-		int parenCount = 0;
+		int start, end;
 		while (m.find()){
-			if (m.group(1) != null){
-				buffer.add(m.group(1));
-			} else if (m.group(2) != null){
-				group2 = m.group(2);
+			group1 = m.group(1);
+			group2 = m.group(2);
+			if (group1 != null && !group1.isEmpty()){
+				buffer.add(new Token(Type.Keyword, group1));
+			} else if (group2 != null){
 				m2 = PAREN_REGEX.matcher(group2);
-				parenCount = 0;
+				start = 0;
 				while (m2.find()){
-					group1 = m2.group();
-					start = 0;
 					end = m2.start();
 					if (start < end){
-						buffer.add(group2.substring(start, end));
+						buffer.add(new Token(Type.Unknown, group2.substring(start, end)));
 					}
-					buffer.add(group1);
+					if (Token.OPEN_PAREN.getValue().equals(m2.group())){
+						buffer.add(Token.OPEN_PAREN);
+					} else {
+						buffer.add(Token.CLOSE_PAREN);
+					}
 					start = m2.end();
-					end = group2.length() - 1;
-					if (start < end){
-						buffer.add(group2.substring(start));
-					}
-					++parenCount;
 				}
-				if (parenCount == 0){
-					buffer.add(group2);
-				}
+				end = group2.length();
+				buffer.add(new Token(Type.Unknown, group2.substring(start, end)));
 			}
 		}
-		// remove empty Strings from buffer
-		String b = null;
+		// remove empty Tokens from buffer
+		Token t = null;
+		Token op = null;
 		int bufferIndex = 0;
 		while (bufferIndex < buffer.size()){
-			b = buffer.get(bufferIndex);
-			if (b.isEmpty()){
+			t = buffer.get(bufferIndex);
+			if (t.getValue().isEmpty()){
 				buffer.remove(bufferIndex);
 			} else {
+				if (t.getType() == Type.Unknown){
+					op = null;
+					switch (t.getValue()){
+					case "OR":
+						op = Token.OR;
+						break;
+					case "AND":
+						op = Token.AND;
+						break;
+					case "NOT":
+						op = Token.NOT;
+						break;
+					default:
+						break;
+					}
+					if (op == null){
+						t.defineType(Type.Keyword);
+					} else {
+						buffer.set(bufferIndex, op);
+					}
+				}
 				++bufferIndex;
 			}
 		}
-		String[] token = new String[buffer.size()];
+		Token[] token = new Token[buffer.size()];
 		token = buffer.toArray(token);
 		return token;
 	}

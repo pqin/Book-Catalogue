@@ -1,12 +1,14 @@
 package gui.search;
 
 import java.util.Stack;
+import java.util.regex.Pattern;
 
+import gui.search.Token.Type;
 import marc.Record;
 
 public class SearchParser {
 	private String[] tag;
-	private String[][] keyword;
+	private Token[][] keyword;
 	private MatchType[] matchType;
 	private final int rowCount;
 	private QueryLexer lexer;
@@ -27,7 +29,7 @@ public class SearchParser {
 	public SearchParser(SearchForm form){
 		rowCount = form.getKeywordRowCount();
 		tag = new String[rowCount];
-		keyword = new String[rowCount][];
+		keyword = new Token[rowCount][];
 		matchType = new MatchType[rowCount];
 		
 		lexer = new QueryLexer();
@@ -48,13 +50,13 @@ public class SearchParser {
 		dataMatch = false;
 	}
 	public void parseQuery(SearchForm form){
+		isCaseSensitive = form.isCaseSensitive();
 		for (int i = 0; i < rowCount; ++i){
 			tag[i] = form.getTag(i);
 			keyword[i] = parseQuery(form.getQueryExpression(i));
 			matchType[i] = form.getMatchType(i);
+			buildRegex(keyword[i], isCaseSensitive);
 		}
-		
-		isCaseSensitive = form.isCaseSensitive();
 		
 		fixedIndex = form.getFixedIndex();
 		fixedValue = form.getFixedValue();
@@ -65,37 +67,29 @@ public class SearchParser {
 		controlMatch = false;
 		dataMatch = false;
 		controlSearch = !( language.isEmpty() && place.isEmpty() && fixedValue.isEmpty());
-		boolean wildcardMatch = false;
-		for (int r = 0; r < rowCount; ++r){
-			wildcardMatch = false;
-			for (int k = 0; k < keyword[r].length; ++k){
-				if (keyword[r][k].equals("*")){
-					wildcardMatch = true;
-					break;
-				}
-			}
-			if (wildcardMatch){
-				keyword[r] = new String[1];
-				keyword[r][0] = "";
-			}
-		}
-		
 	}
 	
-	private String[] parseQuery(String text){
-		String[] tokens = lexer.tokenize(text);
-		String[] output = parser.parse(tokens);
+	private Token[] parseQuery(String text){
+		Token[] tokens = lexer.tokenize(text);
+		Token[] output = parser.parse(tokens);
 		
 		return output;
 	}
-	private boolean queryMatch(Record record, String fieldTag, String[] token){
+	private void buildRegex(Token[] token, boolean caseSensitive){
+		for (int i = 0; i < token.length; ++i){
+			token[i].compilePattern(caseSensitive);
+		}
+	}
+	
+	private boolean queryMatch(Record record, String fieldTag, Token[] token){
 		rpnStack.clear();
 		boolean a, b, q;
+		Pattern regex = null;
 		for (int i = 0; i < token.length; ++i){
-			if (QueryParser.isOperator(token[i])){
+			if (token[i].getType() == Type.Operator){
 				b = rpnStack.pop();
 				a = rpnStack.pop();
-				switch (token[i]){
+				switch (token[i].getValue()){
 				case "OR":
 					q = a | b;
 					break;
@@ -111,7 +105,8 @@ public class SearchParser {
 				}
 				rpnStack.push(q);
 			} else {
-				rpnStack.push(record.contains(token[i], fieldTag, isCaseSensitive));
+				regex = token[i].getPattern();
+				rpnStack.push(record.contains(regex, fieldTag));
 			}
 		}
 		boolean match = rpnStack.isEmpty() ? false : rpnStack.pop();

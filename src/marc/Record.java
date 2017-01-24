@@ -3,9 +3,9 @@ package marc;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import marc.field.ControlField;
 import marc.field.DataField;
@@ -349,28 +349,7 @@ public class Record implements Serializable {
 		return data;
 	}
 	
-	public boolean contains(char[] query, int index, String tag){
-		ControlField controlField = null;
-		if (tag == null || tag.isEmpty()){
-			controlField = new ControlField();
-		} else if (tag.equals(MARC.LEADER_TAG)) {
-			controlField = leader;
-		} else if (tag.equals(MARC.RESOURCE_TAG)){
-			controlField = resource;
-		} else {
-			controlField = new ControlField();
-		}
-		
-		char[] data = controlField.getData(index, query.length);
-		boolean match = false;
-		if (data == null || query == null){
-			match = false;
-		} else {
-			match = Arrays.equals(query, data);
-		}
-		return match;
-	}
-	public boolean contains(String query, String tag, final boolean caseSensitive){
+	private ArrayList<DataField> getFieldsForTag(String tag){
 		ArrayList<DataField> f = null;
 		ArrayList<Integer> indices = null;
 		int index = -1;
@@ -384,11 +363,25 @@ public class Record implements Serializable {
 				f.add(dataField.get(index));
 			}
 		}
-		
+		return f;
+	}
+	public boolean contains(String query, String tag, final boolean caseSensitive){
+		ArrayList<DataField> f = getFieldsForTag(tag);
 		boolean match = false;
 		for (int i = 0; i < f.size(); ++i){
 			if (f.get(i).contains(query, caseSensitive)){
 				match = true;
+			}
+		}
+		return match;
+	}
+	public boolean contains(Pattern query, String tag){
+		ArrayList<DataField> fields = getFieldsForTag(tag);
+		boolean match = false;
+		for (int i = 0; i < fields.size(); ++i){
+			if (fields.get(i).contains(query)){
+				match = true;
+				break;
 			}
 		}
 		return match;
@@ -400,6 +393,13 @@ public class Record implements Serializable {
 		match |= contains(language, "041", false);
 		return match;
 	}
+	public boolean containsPlace(String place){
+		boolean match = false;
+		String resourcePlace = String.valueOf(resource.getData(Resource.PLACE, 3));
+		match |= resourcePlace.equals(place);
+		match |= contains(place, "260", false);
+		return match;
+	}
 	
 	public void sortFields(){
 		Collections.sort(dataField);
@@ -407,7 +407,6 @@ public class Record implements Serializable {
 	
 	public Record copy(){
 		Record copy = new Record();
-		// TODO
 		copy.length = this.length;
 		copy.leader = this.leader.copy();
 		copy.format = this.leader.getFormat();

@@ -1,5 +1,7 @@
 package marc.field;
 
+import java.util.regex.Pattern;
+
 import marc.MARC;
 
 public class Field implements Comparable<Field> {	
@@ -69,6 +71,9 @@ public class Field implements Comparable<Field> {
 	}
 	
 	public boolean contains(String query, final boolean caseSensitive){
+		return false;
+	}
+	public boolean contains(Pattern query){
 		return false;
 	}
 	
