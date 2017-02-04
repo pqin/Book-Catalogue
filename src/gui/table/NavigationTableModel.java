@@ -14,6 +14,7 @@ public class NavigationTableModel extends MarcTableModel {
 	private static final long serialVersionUID = 1L;
 	protected static final int MAIN_ENTRY = 0;
 	protected static final int TITLE = 1;
+		
 
 	public NavigationTableModel(){
 		super();
@@ -63,7 +64,7 @@ public class NavigationTableModel extends MarcTableModel {
 			default:
 				if (columnIndex >= 0 && columnIndex < header.length){
 					tag = header[columnIndex];
-					field = record.getDataField(tag);
+					field = (DataField) record.getFirstMatchingField(tag);
 					if (field != null){
 						value = field.getSubfield();
 					}

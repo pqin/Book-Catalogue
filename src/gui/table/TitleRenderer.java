@@ -9,6 +9,8 @@ import marc.Record;
 
 public class TitleRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;
+	
+	
 	private Record record;
 	
 	public TitleRenderer(){
@@ -26,12 +28,14 @@ public class TitleRenderer extends DefaultTableCellRenderer {
 		NavigationTableModel model = (NavigationTableModel) table.getModel();
 		int rowIndex = table.convertRowIndexToModel(row);
 		int columnIndex = table.convertColumnIndexToModel(column);
+		String cellValue = null;
 		if (columnIndex == NavigationTableModel.TITLE){
 			record = model.getRecordAt(rowIndex);
-			comp = super.getTableCellRendererComponent(table, record.getTitle(), isSelected, hasFocus, row, column);
+			cellValue = record.getTitle();
 		} else {
-			comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			cellValue = String.valueOf(value);
 		}
+		comp = super.getTableCellRendererComponent(table, cellValue, isSelected, hasFocus, row, column);
 		
 		return comp;
 	}

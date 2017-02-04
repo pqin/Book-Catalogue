@@ -16,6 +16,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import gui.StringList;
+import marc.MARC;
+import marc.field.DataField;
+import marc.field.Subfield;
 
 /**
  * @author Peter
@@ -38,7 +41,7 @@ public class CatalogCardPanel extends RecordPanel {
 				"Main Entry",
 				"Title",
 				"Imprint",
-				"Collation",
+				"Physical Description",
 				"Edition",
 				"Series",
 				"Book Number",
@@ -163,19 +166,133 @@ public class CatalogCardPanel extends RecordPanel {
 	protected void updateView(){
 		field[0].setText(record.getMainEntry());
 		field[1].setText(record.getTitle());
-		field[2].setText(record.getCollation());
-		field[3].setText(record.getEdition());
-		field[4].setText(record.getSeries());
-		field[5].setText(record.getStandardBookNumber());
-		field[6].setText(record.getDCC());
-		field[7].setText(record.getLCCN());
+		field[2].setText(getPhysicalDescription());
+		field[3].setText(getEdition());
+		field[4].setText(getSeries());
+		field[5].setText(getISBN());
+		field[6].setText(getDCC());
+		field[7].setText(getLCCN());
 		
-		summaryLabel.setText(record.getSummaryLabel());
-		area[0].setText(record.getSummary());
-		area[1].setText(record.getNotes());
+		String[] summary = getSummary();
+		summaryLabel.setText(summary[0]);
+		area[0].setText(summary[1]);
+		area[1].setText(getNotes());
 		
-		list[0].setListData(record.getImprint());
-		list[1].setListData(record.getTopics());
-		list[2].setListData(record.getTracings());
+		list[0].setListData(getImprint());
+		list[1].setListData(getTopics());
+		list[2].setListData(getTracings());
+	}
+	private String getFormattedData(String tag, char[] code, String delimiter){
+		String[] list = record.getFormattedData(tag, code, delimiter);
+		if (list.length == 0){
+			return "";
+		} else {
+			return list[0];
+		}
+	}
+	private String getPhysicalDescription(){
+		char[] code = {'a', 'b', 'c', 'e'};
+		String description = getFormattedData("300", code, " ");
+		return description;
+	}
+	String getEdition(){
+		return record.getData("250", 'a');
+	}
+	String getSeries(){
+		char[] code = {'a', 'v'};
+		String series = getFormattedData("190", code, " ");
+		if (series != null && series.length() > 0){
+			series = "(" + series + ")";
+		}
+		return series;
+	}
+	String getISBN(){
+		char[] code = {'a', 'q'};
+		String isbn = getFormattedData("020", code, " ");
+		return isbn;
+	}
+	String getDCC(){
+		return record.getData("082", 'a');
+	}
+	String getLCCN(){
+		return record.getData("010", 'a');
+	}
+	
+	String[] getSummary(){
+		String[] summary = new String[2];
+		String tag = "520";
+		char code = 'a';
+		DataField f = (DataField) record.getFirstMatchingField(tag);
+		Subfield sub = null;
+		char indicator = MARC.BLANK_CHAR;
+		if (f == null){
+			summary[0] = "Summary";
+		} else {
+			indicator = f.getIndicator1();
+			switch (indicator){
+			case MARC.BLANK_CHAR:
+				summary[0] = "Summary";
+				break;
+			case '0':
+				summary[0] = "Subject";
+				break;
+			case '1':
+				summary[0] = "Review";
+				break;
+			case '2':
+				summary[0] = "Scope and content";
+				break;
+			case '3':
+				summary[0] = "Abstract";
+				break;
+			case '4':
+				summary[0] = "Content advice";
+				break;
+			case '8':
+				summary[0] = "";	// No display constant generated.
+				break;
+			default:
+				summary[0] = "Summary";
+				break;
+			}
+			for (int i = 0; i < f.getDataCount(); ++i){
+				sub = f.getSubfield(i);
+				if (sub.getCode() == code){
+					summary[1] = sub.getData();
+					break;
+				}
+			}
+		}
+		return summary;
+	}
+	String getNotes(){
+		return record.getData("500", 'a');
+	}
+	public String[] getImprint(){
+		char[] code = {'a', 'b', 'c'};
+		String[] imprint = record.getFormattedData("260", code, " ");
+		return imprint;
+	}
+	
+	public String[] getTopics(){
+		char[] code = {'a', 'x', 'z', 'y', 'v'};
+		String[] topic = record.getFormattedData("650", code, " -- ");
+		return topic;
+	}
+	public String[] getTracings(){
+		char[] code = {'a', 'b'};
+		String[] f = record.getFormattedData("700", code, " ");
+		
+		String[] tracing = new String[f.length + 1];
+		tracing[0] = "Title";
+		for (int i = 0; i < f.length; ++i){
+			tracing[i+1] = f[i];
+		}
+		
+		String tracingFormat = "%d. %s";
+		for (int i = 0; i < tracing.length; ++i){
+			tracing[i] = String.format(tracingFormat, i+1, tracing[i]);
+		}
+		return tracing;
 	}
 }
