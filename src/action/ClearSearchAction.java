@@ -4,8 +4,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import controller.SearchManager;
 import gui.RecordSelector;
+import gui.search.SearchManager;
 import gui.table.RecordSearchFilter;
 
 public class ClearSearchAction extends AbstractAction {
