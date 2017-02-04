@@ -34,11 +34,11 @@ public class Record implements Serializable {
 		dataField = new ArrayList<DataField>();
 	}
 	
-	public void setLength(int recordLength){
+	public final void setLength(int recordLength){
 		length = recordLength;
 		leader.setLength(recordLength);
 	}
-	public int getLength(){
+	public final int getLength(){
 		return length;
 	}
 	
@@ -46,38 +46,14 @@ public class Record implements Serializable {
 		resource.setEntryDate(date);		
 	}
 	
-	private String getFormattedData(DataField f, char[] code, String delimiter){
-		int subLength = f.getDataCount();
-		String[] subData = new String[subLength];
-		Subfield s = null;
-		char subfieldCode = '?';
-		String subfieldData = null;
-		for (int i = 0; i < subLength; ++i){
-			subData[i] = null;
-			s = f.getSubfield(i);
-			subfieldCode = s.getCode();
-			subfieldData = s.getData();
-			for (int c = 0; c < code.length; ++c){
-				if (code[c] == subfieldCode && subfieldData != null){
-					subData[i] = subfieldData;
-				}
-			}
+	public final String getControlNumber(){
+		String ctrlNum = null;
+		ArrayList<ControlField> field = getControlField("001");
+		if (field.size() > 0){
+			ctrlNum = String.valueOf(field.get(0).getFieldData());
 		}
-		
-		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < subData.length; ++i){
-			if (subData[i] != null){
-				if (i > 0){
-					b.append(delimiter);
-				}
-				b.append(subData[i]);
-			}
-		}
-		
-		String data = b.toString(); //String.join(delimiter, subData);
-		return data;
+		return ctrlNum;
 	}
-	
 	public String getMainEntry(){
 		String[] tags = {"100", "110", "111", "130"};
 		int t = 0;
@@ -87,174 +63,6 @@ public class Record implements Serializable {
 			++t;
 		}
 		return m;
-	}
-	public String getTitle(){
-		DataField f = getDataField("245");
-		if (f == null){
-			f = new DataField();
-		}
-		char[] code = {'a', 'h', 'b', 'c'};
-		String title = getFormattedData(f, code, " ");
-		return title;
-	}
-	public int getNonFilingCharacters(DataField f){
-		final int radix = 10;
-		int nonFiling = 0;
-		if (f != null){
-			nonFiling = Character.digit(f.getIndicator2(), radix);
-		}
-		if (nonFiling < 0){
-			nonFiling = 0;
-		}
-		return nonFiling;
-	}
-	public String getFilingTitle(){
-		DataField f = getDataField("245");
-		if (f == null){
-			f = new DataField();
-		}
-		char[] code = {'a', 'h', 'b', 'c'};
-		String title = getFormattedData(f, code, " ");
-		int nonFiling = getNonFilingCharacters(f);
-		if (title == null){
-			title = "";
-		}
-		else if (nonFiling < 0){
-			nonFiling = 0;
-		}
-		String filingTitle = null;
-		try {
-			filingTitle = title.substring(nonFiling);
-		} catch (IndexOutOfBoundsException e){
-			filingTitle = title;
-		}
-		return filingTitle;
-	}
-	public String[] getImprint(){
-		DataField f = null;
-		char[] code = {'a', 'b', 'c'};
-		ArrayList<Integer> indices = getDataFieldIndices("260");
-		int index = 0;
-		String[] imprint = new String[indices.size()];
-		for (int i = 0; i < indices.size(); ++i){
-			index = indices.get(i);
-			f = dataField.get(index);
-			imprint[i] = getFormattedData(f, code, " ");
-		}
-		return imprint;
-	}
-	public String getCollation(){
-		DataField f = getDataField("300");
-		if (f == null){
-			f = new DataField();
-		}
-		char[] code = {'a', 'b', 'c', 'e'};
-		String collation = getFormattedData(f, code, " ");
-		return collation;
-	}
-	public String getEdition(){
-		String edition = getData("250", 'a');
-		return edition;
-	}
-	public String getSeries(){
-		DataField f = getDataField("190");
-		if (f == null){
-			f = new DataField();
-		}
-		char[] code = {'a', 'v'};
-		String series = getFormattedData(f, code, " ");
-		if (series != null && series.length() > 0){
-			series = "(" + series + ")";
-		}
-		return series;
-	}
-	public String getStandardBookNumber(){
-		String tag = "020";
-		char[] code = {'b', 'a', 'c'};
-		int i = 0;
-		String bookNumber = null;
-		while (bookNumber == null && i < code.length){
-			bookNumber = getData(tag, code[i]);
-			++i;
-		}
-		return bookNumber;
-	}
-	public String getDCC(){
-		String dcc = getData("082", 'a');
-		return dcc;
-	}
-	public String getLCCN(){
-		String lccn = getData("010", 'a');
-		return lccn;
-	}
-	public String getSummary(){
-		String text = getData("520", 'a');
-		return text;
-	}
-	public String getSummaryLabel(){
-		DataField f = getDataField("520");
-		char type = (f == null) ? MARC.BLANK_CHAR : f.getIndicator1();
-		String label = null;
-		switch (type){
-		case MARC.BLANK_CHAR:
-			label = "Summary";
-			break;
-		case '0':
-			label = "Subject";
-			break;
-		case '1':
-			label = "Review";
-			break;
-		case '2':
-			label = "Scope and content";
-			break;
-		case '3':
-			label = "Abstract";
-			break;
-		case '4':
-			label = "Content advice";
-			break;
-		case '8':
-			label = "";	// No display constant generated.
-			break;
-		default:
-			label = "Summary";
-			break;
-		}
-		return label;
-	}
-	public String getNotes(){
-		String notes = getData("500", 'a');
-		return notes;
-	}
-	public String[] getTopics(){
-		DataField f = null;
-		char[] code = {'a', 'x', 'z', 'y', 'v'};
-		ArrayList<Integer> indices = getDataFieldIndices("650");
-		int index = 0;
-		String[] topic = new String[indices.size()];
-		for (int i = 0; i < indices.size(); ++i){
-			index = indices.get(i);
-			f = dataField.get(index);
-			topic[i] = getFormattedData(f, code, " -- ");
-		}
-		return topic;
-	}
-	public String[] getTracings(){		
-		DataField f = null;
-		char[] code = {'a', 'b'};
-		ArrayList<Integer> indices = getDataFieldIndices("700");
-		int index = 0;
-		String data = null;
-		String[] tracing = new String[indices.size()+1];
-		tracing[0] = "1. Title";
-		for (int i = 0; i < indices.size(); ++i){
-			index = indices.get(i);
-			f = dataField.get(index);
-			data = getFormattedData(f, code, " ");
-			tracing[i+1] = String.format("%d. %s", (i+2), data);
-		}
-		return tracing;
 	}
 	
 	// get MARC data
@@ -273,6 +81,10 @@ public class Record implements Serializable {
 	public void setResource(Resource value){
 		resource.setAllSubfields(value.getSubfield());
 	}
+	public int getFieldCount(){
+		final int count = controlField.size() + dataField.size() + 2;
+		return count;
+	}
 	public ArrayList<Field> getFields(){
 		ArrayList<Field> tmp = new ArrayList<Field>();
 		tmp.add(leader);
@@ -282,32 +94,166 @@ public class Record implements Serializable {
 		Collections.sort(tmp);
 		return tmp;
 	}
-	public int getFieldCount(){
-		int count = controlField.size() + dataField.size() + 2;
-		return count;
-	}
-	public ArrayList<Integer> getDataFieldIndices(String tag){
-		ArrayList<Integer> indices = new ArrayList<Integer>();
-		Field f = null;
-		for (int i = 0; i < dataField.size(); ++i){
-			f = dataField.get(i);
-			if (f.getTag().equals(tag)){
-				indices.add(i);
+	public ArrayList<Field> getField(String tag){
+		ArrayList<Field> f = new ArrayList<Field>();
+		Field tmp = null;
+		Iterator<? extends Field> it = null;
+		if (tag != null){
+			if (tag.equals(MARC.LEADER_TAG)){
+				f.add(leader);
+			} else if (tag.equals(MARC.RESOURCE_TAG)){
+				f.add(resource);
+			} else if (tag.startsWith("00")){
+				it = controlField.iterator();
+			} else {
+				it = dataField.iterator();
+			}
+			if (it != null){
+				while (it.hasNext()){
+					tmp = it.next();
+					if (tmp.getTag().equals(tag)){
+						f.add(tmp);
+					}
+				}
 			}
 		}
-		return indices;
+		return f;
 	}
-	public DataField getDataField(String tag){
-		DataField f = null;
-		ArrayList<Integer> indices = getDataFieldIndices(tag);
-		int index = -1;
-		if (indices.size() > 0){
-			index = indices.get(0);
-			f = dataField.get(index);
+	public Field getFirstMatchingField(String tag){
+		Field f = null;
+		Field tmp = null;
+		Iterator<? extends Field> it = null;
+		if (tag != null){
+			if (tag.equals(MARC.LEADER_TAG)){
+				return leader;
+			} else if (tag.equals(MARC.RESOURCE_TAG)){
+				return resource;
+			} else if (tag.startsWith("00")){
+				it = controlField.iterator();
+			} else {
+				it = dataField.iterator();
+			}
+			if (it != null){
+				while (it.hasNext()){
+					tmp = it.next();
+					if (tmp.getTag().equals(tag)){
+						f = tmp;
+						break;
+					}
+				}
+			}
 		}
 		return f;
 	}
 	
+	public ArrayList<ControlField> getControlField(String tag){
+		ArrayList<ControlField> f = new ArrayList<ControlField>();
+		Iterator<ControlField> it = controlField.iterator();
+		ControlField tmp = null;
+		while (it.hasNext()){
+			tmp = it.next();
+			if (tmp.getTag().equals(tag)){
+				f.add(tmp);
+			}
+		}
+		return f;
+	}
+	
+	public ArrayList<DataField> getDataField(String tag){
+		ArrayList<DataField> f = new ArrayList<DataField>();
+		Iterator<DataField> it = dataField.iterator();
+		DataField tmp = null;
+		while (it.hasNext()){
+			tmp = it.next();
+			if (tmp.getTag().equals(tag)){
+				f.add(tmp);
+			}
+		}
+		return f;
+	}
+	
+	public final String[] getFormattedData(String tag, char[] code, String delimiter){
+		ArrayList<DataField> f = getDataField(tag);
+		String[] formattedData = new String[f.size()];
+		for (int i = 0; i < formattedData.length; ++i){
+			formattedData[i] = getFormattedData(f.get(i), code, delimiter);
+		}
+		return formattedData;
+	}
+	protected String getFormattedData(DataField f, char[] code, String delimiter){
+		int subLength = f.getDataCount();
+		String[] subData = new String[subLength];
+		Subfield s = null;
+		char subfieldCode = '?';
+		String subfieldData = null;
+		for (int i = 0; i < subLength; ++i){
+			subData[i] = null;
+			s = f.getSubfield(i);
+			subfieldCode = s.getCode();
+			subfieldData = s.getData();
+			for (int c = 0; c < code.length; ++c){
+				if (code[c] == subfieldCode && subfieldData != null){
+					subData[i] = subfieldData;
+				}
+			}
+		}
+		/* Join subfield data together, separated by delimiter
+		 * Not using String.join(delimiter, data) because null elements printed literally, i.e. "null".
+		 */
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < subData.length; ++i){
+			if (subData[i] != null){
+				if (i > 0){
+					b.append(delimiter);
+				}
+				b.append(subData[i]);
+			}
+		}
+		return b.toString();
+	}
+	public String getTitle(){
+		char[] code = {'a', 'h', 'b', 'c'};
+		String[] title = getFormattedData("245", code, " ");
+		if (title.length == 0){
+			return "";
+		} else {
+			return title[0];
+		}
+	}
+	public int getNonFilingCharacters(DataField f){
+		final int radix = 10;
+		int nonFiling = 0;
+		if (f != null){
+			nonFiling = Character.digit(f.getIndicator2(), radix);
+		}
+		if (nonFiling < 0){
+			nonFiling = 0;
+		}
+		return nonFiling;
+	}
+	public String getFilingTitle(){
+		ArrayList<DataField> list = getDataField("245");
+		if (list.isEmpty()){
+			return "";
+		}
+		char[] code = {'a', 'h', 'b', 'c'};
+		DataField f = list.get(0);
+		String title = getFormattedData(f, code, " ");
+		int nonFiling = getNonFilingCharacters(f);
+		if (title == null){
+			title = "";
+		} else if (nonFiling < 0){
+			nonFiling = 0;
+		}
+		String filingTitle = null;
+		try {
+			filingTitle = title.substring(nonFiling);
+		} catch (IndexOutOfBoundsException e){
+			filingTitle = title;
+		}
+		return filingTitle;
+	}
+
 	public void addField(ControlField f){
 		controlField.add(f);
 	}
@@ -328,58 +274,54 @@ public class Record implements Serializable {
 		dataField.remove(f);
 	}
 	
-	private String getData(String tag, char code){
-		ArrayList<Integer> indices = getDataFieldIndices(tag);
-		int index = -1;
+	public final String getData(String tag, char code){
+		ArrayList<DataField> list = getDataField(tag);
 		DataField f = null;
 		Subfield s = null;
 		String data = null;
 		boolean found = false;
-		for (int i = 0; i < indices.size() && !found; ++i){
-			index = indices.get(i);
-			f = dataField.get(index);
+		for (int i = 0; i < list.size() && !found; ++i){
+			f = list.get(i);
 			for (int j = 0; j < f.getDataCount() && !found; ++j){
 				s = f.getSubfield(j);
 				if (s.getCode() == code){
 					found = true;
 					data = s.getData();
+					break;
 				}
 			}
 		}
 		return data;
 	}
 	
-	private ArrayList<DataField> getFieldsForTag(String tag){
-		ArrayList<DataField> f = null;
-		ArrayList<Integer> indices = null;
-		int index = -1;
-		if (tag == null || tag.isEmpty()){
-			f = dataField;
-		} else {
-			indices = getDataFieldIndices(tag);
-			f = new ArrayList<DataField>(indices.size());
-			for (int i = 0; i < indices.size(); ++i){
-				index = indices.get(i);
-				f.add(dataField.get(index));
-			}
-		}
-		return f;
-	}
 	public boolean contains(String query, String tag, final boolean caseSensitive){
-		ArrayList<DataField> f = getFieldsForTag(tag);
+		ArrayList<DataField> field = null;
+		if (tag == null || tag.isEmpty()){
+			field = dataField;
+		} else {
+			field = getDataField(tag);
+		}
 		boolean match = false;
-		for (int i = 0; i < f.size(); ++i){
-			if (f.get(i).contains(query, caseSensitive)){
+		Iterator<DataField> it = field.iterator();
+		while (it.hasNext()){
+			if (it.next().contains(query, caseSensitive)){
 				match = true;
+				break;
 			}
 		}
 		return match;
 	}
 	public boolean contains(Pattern query, String tag){
-		ArrayList<DataField> fields = getFieldsForTag(tag);
+		ArrayList<DataField> field = null;
+		if (tag == null || tag.isEmpty()){
+			field = dataField;
+		} else {
+			field = getDataField(tag);
+		}
 		boolean match = false;
-		for (int i = 0; i < fields.size(); ++i){
-			if (fields.get(i).contains(query)){
+		Iterator<DataField> it = field.iterator();
+		while (it.hasNext()){
+			if (it.next().contains(query)){
 				match = true;
 				break;
 			}
@@ -396,8 +338,7 @@ public class Record implements Serializable {
 	public boolean containsPlace(String place){
 		boolean match = false;
 		String resourcePlace = String.valueOf(resource.getData(Resource.PLACE, 3));
-		match |= resourcePlace.equals(place);
-		match |= contains(place, "260", false);
+		match = resourcePlace.equals(place);
 		return match;
 	}
 	
@@ -405,7 +346,7 @@ public class Record implements Serializable {
 		Collections.sort(dataField);
 	}
 	
-	public Record copy(){
+	public final Record copy(){
 		Record copy = new Record();
 		copy.length = this.length;
 		copy.leader = this.leader.copy();
@@ -424,6 +365,6 @@ public class Record implements Serializable {
 	
 	@Override
 	public String toString(){
-		return String.format("%s[%s][%s]", getClass().getName(), getMainEntry(), getTitle());
+		return String.format("%s[%s][%s]", getClass().getName(), getControlNumber(), getMainEntry());
 	}
 }

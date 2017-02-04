@@ -38,14 +38,14 @@ public class QueryLexer {
 			group1 = m.group(1);
 			group2 = m.group(2);
 			if (group1 != null && !group1.isEmpty()){
-				buffer.add(new Token(Type.Keyword, group1));
+				buffer.add(new Token(Type.KEYWORD, group1));
 			} else if (group2 != null){
 				m2 = PAREN_REGEX.matcher(group2);
 				start = 0;
 				while (m2.find()){
 					end = m2.start();
 					if (start < end){
-						buffer.add(new Token(Type.Unknown, group2.substring(start, end)));
+						buffer.add(new Token(Type.UNKNOWN, group2.substring(start, end)));
 					}
 					if (Token.OPEN_PAREN.getValue().equals(m2.group())){
 						buffer.add(Token.OPEN_PAREN);
@@ -55,7 +55,7 @@ public class QueryLexer {
 					start = m2.end();
 				}
 				end = group2.length();
-				buffer.add(new Token(Type.Unknown, group2.substring(start, end)));
+				buffer.add(new Token(Type.UNKNOWN, group2.substring(start, end)));
 			}
 		}
 		// remove empty Tokens from buffer
@@ -67,7 +67,7 @@ public class QueryLexer {
 			if (t.getValue().isEmpty()){
 				buffer.remove(bufferIndex);
 			} else {
-				if (t.getType() == Type.Unknown){
+				if (t.getType() == Type.UNKNOWN){
 					op = null;
 					switch (t.getValue()){
 					case "OR":
@@ -83,7 +83,7 @@ public class QueryLexer {
 						break;
 					}
 					if (op == null){
-						t.defineType(Type.Keyword);
+						t.defineType(Type.KEYWORD);
 					} else {
 						buffer.set(bufferIndex, op);
 					}

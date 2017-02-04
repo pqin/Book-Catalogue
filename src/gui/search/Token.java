@@ -3,14 +3,14 @@ package gui.search;
 import java.util.regex.Pattern;
 
 public final class Token {
-	public enum Type {Unknown, Keyword, Operator, Parenthesis}
-	public enum Associativity {None, Left, Right}
+	public enum Type {UNKNOWN, KEYWORD, OPERATOR, PARENTHESIS}
+	public enum Associativity {NONE, LEFT, RIGHT}
 	
-	public static final Token OR = new Token(Type.Operator, "OR", 2, 1, Associativity.Left);
-	public static final Token AND = new Token(Type.Operator, "AND", 2, 2, Associativity.Left);
-	public static final Token NOT = new Token(Type.Operator, "NOT", 2, 2, Associativity.Right);
-	public static final Token OPEN_PAREN = new Token(Type.Parenthesis, "(");
-	public static final Token CLOSE_PAREN = new Token(Type.Parenthesis, ")");
+	public static final Token OR = new Token(Type.OPERATOR, "OR", 2, 1, Associativity.LEFT);
+	public static final Token AND = new Token(Type.OPERATOR, "AND", 2, 2, Associativity.LEFT);
+	public static final Token NOT = new Token(Type.OPERATOR, "NOT", 2, 2, Associativity.RIGHT);
+	public static final Token OPEN_PAREN = new Token(Type.PARENTHESIS, "(");
+	public static final Token CLOSE_PAREN = new Token(Type.PARENTHESIS, ")");
 	
 	private Type type;
 	private String value;
@@ -26,7 +26,7 @@ public final class Token {
 		this.regex = toRegex(value);
 		this.argCount = 0;
 		this.precedence = 0;
-		this.associativity = Associativity.None;
+		this.associativity = Associativity.NONE;
 		this.pattern = null;
 	}
 	private Token(Type type, String value, int argCount, int precedence, Associativity associativity){
@@ -43,7 +43,7 @@ public final class Token {
 		return type;
 	}
 	public void defineType(Type type){
-		if (this.type == Type.Unknown){
+		if (this.type == Type.UNKNOWN){
 			this.type = type;
 		}
 	}
@@ -98,17 +98,57 @@ public final class Token {
 		return buffer.toString();
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
-	public boolean equals(Object o){
-		Token b = (Token) o;
-		boolean match = true;
-		match &= this.value.equals(b.value);
-		match &= this.type == b.type;
-		match &= this.argCount == b.argCount;
-		match &= this.precedence == b.precedence;
-		match &= this.associativity == b.associativity;
-		return match;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + argCount;
+		result = (prime * result) + ((associativity == null) ? 0 : associativity.hashCode());
+		result = (prime * result) + precedence;
+		result = (prime * result) + ((type == null) ? 0 : type.hashCode());
+		result = (prime * result) + ((value == null) ? 0 : value.hashCode());
+		return result;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj){
+			return true;
+		}
+		if (obj == null){
+			return false;
+		}
+		if (!(obj instanceof Token)){
+			return false;
+		}
+		Token other = (Token) obj;
+		if (argCount != other.argCount){
+			return false;
+		}
+		if (associativity != other.associativity){
+			return false;
+		}
+		if (precedence != other.precedence){
+			return false;
+		}
+		if (type != other.type){
+			return false;
+		}
+		if (value == null) {
+			if (other.value != null){
+				return false;
+			}
+		} else if (!value.equals(other.value)){
+			return false;
+		}
+		return true;
+	}
+	
 	@Override
 	public String toString(){
 		String s = String.format("%s[%s]",

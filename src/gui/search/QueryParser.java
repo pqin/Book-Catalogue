@@ -27,7 +27,7 @@ public class QueryParser {
 		Token k = null;
 		for (int i = 0; i < input.length; ++i){
 			k = input[i];
-			if (k.getType() == Type.Operator){
+			if (k.getType() == Type.OPERATOR){
 				operatorStack.push(k);
 			} else if (k.equals(Token.OPEN_PAREN)){
 				operatorStack.push(k);
@@ -44,7 +44,7 @@ public class QueryParser {
 		}
 		while (!operatorStack.isEmpty()){
 			k = operatorStack.pop();
-			if (k.getType() == Type.Operator){
+			if (k.getType() == Type.OPERATOR){
 				outputQueue.add(k);
 			}
 		}

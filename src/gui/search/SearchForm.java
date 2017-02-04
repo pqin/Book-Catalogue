@@ -151,14 +151,23 @@ public class SearchForm extends JPanel {
 			return t;
 		}
 	}
+	private String parseFixedText(JTextField field, int length){
+		String text = field.getText();
+		String format = String.format("%%1$-%ds", length);
+		if (text == null || text.isEmpty()){
+			return "";
+		} else if (text.length() > length){
+			return text.substring(0, length);
+		} else {
+			return String.format(format, text);
+		}
+	}
 	public String getLanguage(){
-		String text = langField.getText();
-		String lang = (text == null) ? "" : text.trim();
+		String lang = parseFixedText(langField, 3);
 		return lang;
 	}
 	public String getPlace(){
-		String text = placeField.getText();
-		String place = (text == null) ? "" : text.trim();
+		String place = parseFixedText(placeField, 3);
 		return place;
 	}
 }

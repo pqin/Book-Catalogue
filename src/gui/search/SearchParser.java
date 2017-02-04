@@ -86,7 +86,7 @@ public class SearchParser {
 		boolean a, b, q;
 		Pattern regex = null;
 		for (int i = 0; i < token.length; ++i){
-			if (token[i].getType() == Type.Operator){
+			if (token[i].getType() == Type.OPERATOR){
 				b = rpnStack.pop();
 				a = rpnStack.pop();
 				switch (token[i].getValue()){
