@@ -6,28 +6,25 @@ public class LanguageEncoding {
 	public static final char UNKNOWN_CHAR = '\uFFFD';
 	private static final int TABLE_LENGTH = 256;
 	
-	protected byte F;
+	private byte F;
 	protected int bytesPerChar;
 	protected char[] table;
+	protected char[] index;
 	protected boolean[] diacritic;
 	
 	public LanguageEncoding(){
 		F = 0x00;
 		bytesPerChar = 0;
-		table = buildTable();
-		diacritic = buildDiacriticsTable();
 	}
 	protected LanguageEncoding(byte arg0, int arg1){
 		F = arg0;
 		bytesPerChar = arg1;
-		table = buildTable();
-		diacritic = buildDiacriticsTable();
 	}
 	
 	protected final char[] buildBlankTable(){
 		final int length = TABLE_LENGTH;
 		char[] t = new char[length];
-		char c = '\u0000';
+		char c = '\0';
 		for (int i = 0; i < length; ++i){
 			if (i >= 0x00 && i <= 0x20){
 				t[i] = c;
@@ -45,7 +42,7 @@ public class LanguageEncoding {
 	protected final char[] buildBasicLatinTable(){
 		final int length = TABLE_LENGTH;
 		char[] t = new char[length];
-		char c = '\u0000';
+		char c = '\0';
 		for (int i = 0x00; i < 0x80; ++i){
 			t[i] = c;
 			t[i+0x80] = c;
@@ -53,12 +50,17 @@ public class LanguageEncoding {
 		}
 		return t;
 	}
-	
-	protected char[] copyToG1(char[] t){
+	protected final char[] copyToG1(char[] t){
 		for (int i = 0x21; i < 0x7F; ++i){
 			t[i+0x80] = t[i];
 		}
 		return t;
+	}
+	public void build(){
+		table = buildTable();
+		diacritic = buildDiacriticsTable();
+		index = Arrays.copyOf(table, TABLE_LENGTH);
+		Arrays.sort(index);
 	}
 	protected char[] buildTable(){
 		return buildBlankTable();
@@ -76,5 +78,11 @@ public class LanguageEncoding {
 	}
 	public final int getBytesPerChar(){
 		return bytesPerChar;
+	}
+	/**
+	 * @return the f
+	 */
+	public byte getFinal() {
+		return F;
 	}
 }

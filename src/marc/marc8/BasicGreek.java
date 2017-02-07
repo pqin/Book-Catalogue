@@ -7,7 +7,7 @@ public class BasicGreek extends LanguageEncoding {
 	
 	protected final char[] buildTable(){
 		char[] t = buildBasicLatinTable();
-		char c = '\u0000';
+		char c = '\0';
 		t[0x21] = '\u0300';
 		t[0x22] = '\u0301';
 		t[0x23] = '\u0308';

@@ -7,7 +7,7 @@ public class ExtendedArabic extends LanguageEncoding {
 	
 	protected final char[] buildTable(){
 		char[] t = buildBlankTable();
-		char c = '\u0000';
+		char c = '\0';
 		t[0x21] = '\u06FD';
 		t[0x22] = '\u0672';
 		t[0x23] = '\u0673';

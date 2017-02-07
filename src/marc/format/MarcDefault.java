@@ -21,15 +21,20 @@ import marc.field.DataField;
 import marc.field.Field;
 import marc.field.Leader;
 import marc.field.Subfield;
-import marc.marc8.Marc8;
 import marc.resource.Resource;
 
 public class MarcDefault extends AbstractMarc {
+	// encodings
 	private static final Charset ASCII = StandardCharsets.US_ASCII;
 	private static final Charset UTF8 = StandardCharsets.UTF_8;
+	private static final Charset MARC8 = new marc.encoding.Marc8();
 	
 	private static final int DIRECTORY_ENTRY_LENGTH = 12;
 	private static final int RADIX = 10;
+	
+	public static final byte RECORD_TERMINATOR = 0x1D;
+	public static final byte FIELD_TERMINATOR = 0x1E;
+	public static final byte SUBFIELD_DELIMITER = 0x1F;
 	
 	@Override
 	public FileNameExtensionFilter getExtensionFilter() {
@@ -91,24 +96,27 @@ public class MarcDefault extends AbstractMarc {
 		int fieldLength = 0;
 		String fieldData = null;
 		char ind1, ind2;
-		Charset utf8 = UTF8;
-		Marc8 marc8 = new Marc8();
 		String[] subData = null;
 		int index0, index1;
+
 		for (int r = 0; r < entryCount; ++r){
 			fieldOffset = baseAddress + map[r][0];
 			fieldLength = map[r][1];
 			bytes = Arrays.copyOfRange(data, fieldOffset, fieldOffset + fieldLength);
 			if (leader.getCharacterCodingScheme() == 'a'){
-				fieldData = new String(bytes, utf8);
+				fieldData = new String(bytes, UTF8);
 			} else {
-				fieldData = marc8.decode(bytes);
+				fieldData = new String(bytes, MARC8);
 			}
 			if (tag[r].startsWith("00")){
 				ind1 = MARC.BLANK_CHAR;
 				ind2 = MARC.BLANK_CHAR;
 				index0 = 0;
-				index1 = fieldData.indexOf(Marc8.FIELD_TERMINATOR);
+				index1 = fieldData.indexOf(FIELD_TERMINATOR);
+				// TODO fix
+				if (index1 == -1){
+					index1 = index0;
+				}
 				fieldData = fieldData.substring(index0, index1);
 				subData = new String[1];
 				if (tag[r].equals(MARC.RESOURCE_TAG)){
@@ -119,10 +127,14 @@ public class MarcDefault extends AbstractMarc {
 			} else {
 				ind1 = fieldData.charAt(0);
 				ind2 = fieldData.charAt(1);
-				index0 = fieldData.indexOf(Marc8.SUBFIELD_DELIMITER)+1;
-				index1 = fieldData.indexOf(Marc8.FIELD_TERMINATOR);
+				index0 = fieldData.indexOf(SUBFIELD_DELIMITER)+1;
+				index1 = fieldData.indexOf(FIELD_TERMINATOR);
+				// TODO fix
+				if (index1 == -1){
+					index1 = index0;
+				}
 				fieldData = fieldData.substring(index0, index1);
-				subData = fieldData.split(String.format("%c", Marc8.SUBFIELD_DELIMITER));
+				subData = fieldData.split(String.valueOf((char) SUBFIELD_DELIMITER));
 			}
 			ind1 = (ind1 == ' ')? MARC.BLANK_CHAR: ind1;
 			ind2 = (ind2 == ' ')? MARC.BLANK_CHAR: ind2;
@@ -139,7 +151,9 @@ public class MarcDefault extends AbstractMarc {
 			} else {
 				dField = new DataField(tag[r], ind1, ind2);
 				for (int i = 0; i < subData.length; ++i){
-					dField.addSubfield(subData[i].charAt(0), subData[i].substring(1));
+					if (subData[i].length() > 0){
+						dField.addSubfield(subData[i].charAt(0), subData[i].substring(1));
+					}
 				}
 				record.addField(dField);
 			}
@@ -154,7 +168,7 @@ public class MarcDefault extends AbstractMarc {
 		byte[] fieldData = null;
 		byte[] recordData = null;
 		
-		ArrayList<Record> catalogue = new ArrayList<Record>();
+		ArrayList<Record> list = new ArrayList<Record>();
 		Record record = null;
 		Leader ldr = null;
 		int recordLength = 0;
@@ -180,11 +194,11 @@ public class MarcDefault extends AbstractMarc {
 			System.arraycopy(fieldData, 0, recordData, destPos, fieldData.length);
 			
 			record = parseRecord(recordData);
-			catalogue.add(record);
+			list.add(record);
 		}
 		in.close();
 		
-		return catalogue;
+		return list;
 	}
 
 	@Override
@@ -209,7 +223,7 @@ public class MarcDefault extends AbstractMarc {
 		while (it.hasNext()){
 			record = it.next();
 			// get all data
-			leader = getBytes(record.getLeader().getData(0, MARC.LEADER_FIELD_LENGTH), ASCII);
+			leader = getBytes(record.getLeader().getFieldData(), ASCII);
 			field = record.getFields();
 			directory = new byte[field.size() - 1][DIRECTORY_ENTRY_LENGTH];
 			fieldData = new byte[field.size() - 1][];
@@ -242,19 +256,20 @@ public class MarcDefault extends AbstractMarc {
 			l.setLength(recordLength);
 			l.setBaseAddress(baseAddress);
 			l.setCharacterCodingScheme(charCodingScheme);
-			leader = getBytes(l.getData(0, MARC.LEADER_FIELD_LENGTH), ASCII);
+			leader = getBytes(l.getFieldData(), ASCII);
 			out.write(leader);
 			// write directory
 			for (int i = 0; i < directory.length; ++i){
 				out.write(directory[i]);
 			}
-			out.write(Marc8.FIELD_TERMINATOR);
+			out.write(FIELD_TERMINATOR);
 			// write Field data
 			for (int i = 0; i < fieldData.length; ++i){
 				out.write(fieldData[i]);
 			}
-			out.write(Marc8.RECORD_TERMINATOR);
+			out.write(RECORD_TERMINATOR);
 		}
+		out.flush();
 		out.close();
 	}
 	
@@ -281,7 +296,7 @@ public class MarcDefault extends AbstractMarc {
 				s = f.getSubfield(i);
 				k = (i * 2) + 1;
 				tmp[k+0] = new byte[2];
-				tmp[k+0][0] = Marc8.SUBFIELD_DELIMITER;
+				tmp[k+0][0] = SUBFIELD_DELIMITER;
 				tmp[k+0][1] = getBytes(s.getCode(), charset)[0];
 				tmp[k+1] = getBytes(s.getData(), charset);
 			}
@@ -289,7 +304,7 @@ public class MarcDefault extends AbstractMarc {
 		
 		byte[] t = concatenateBytes(tmp);
 		byte[] b = Arrays.copyOf(t, t.length + 1);
-		b[t.length] = Marc8.FIELD_TERMINATOR;
+		b[t.length] = FIELD_TERMINATOR;
 		return b;
 	}
 	

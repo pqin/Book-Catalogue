@@ -41,7 +41,7 @@ public class EastAsian extends LanguageEncoding {
 		final int length = 3;	// bytes per character
 		int[] index = new int[length];
 		int u;
-		char[] c = { '\u0000' };
+		char[] c = { '\0' };
 		final int radix = 16;	// File is in hexadecimal
         try {
         	in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
@@ -82,7 +82,7 @@ public class EastAsian extends LanguageEncoding {
 	}
 	
 	public char decode(int b){
-		char c = '\u0000';
+		char c = '\0';
 		buffer[counter] = (byte)b;
 		if (counter == bytesPerChar - 1){
 			c = map[buffer[0]][buffer[1]][buffer[2]];

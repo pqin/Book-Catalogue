@@ -7,7 +7,7 @@ public class BasicCyrillic extends LanguageEncoding {
 	
 	protected final char[] buildTable(){
 		char[] t = buildBasicLatinTable();
-		char c = '\u0000';
+		char c = '\0';
 		t[0x40] = '\u044E';
 		t[0x41] = '\u0430';
 		t[0x42] = '\u0431';

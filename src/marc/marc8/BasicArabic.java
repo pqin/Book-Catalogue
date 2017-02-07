@@ -7,7 +7,7 @@ public class BasicArabic extends LanguageEncoding {
 	
 	protected final char[] buildTable(){
 		char[] t = buildBasicLatinTable();
-		char c = '\u0000';
+		char c = '\0';
 		t[0x25] = '\u066A';
 		t[0x2A] = '\u066D';
 		t[0x2C] = '\u060C';
