@@ -5,8 +5,9 @@ public class BasicCyrillic extends LanguageEncoding {
 		super((byte) 0x4E, 1);
 	}
 	
+	@Override
 	protected final char[] buildTable(){
-		char[] t = buildBasicLatinTable();
+		char[] t = buildASCIITable();
 		char c = '\0';
 		t[0x40] = '\u044E';
 		t[0x41] = '\u0430';
@@ -63,7 +64,6 @@ public class BasicCyrillic extends LanguageEncoding {
 		t[0x7C] = '\u042D';
 		t[0x7D] = '\u0429';
 		t[0x7E] = '\u0427';
-		t = copyToG1(t);
 		return t;
 	}
 }

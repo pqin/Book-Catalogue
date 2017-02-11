@@ -2,85 +2,92 @@ package marc.marc8;
 
 import java.util.Arrays;
 
-public class LanguageEncoding {
+public abstract class LanguageEncoding {
 	public static final char UNKNOWN_CHAR = '\uFFFD';
-	private static final int TABLE_LENGTH = 256;
+	protected static final int START_INDEX = 0x21;
+	protected static final int END_INDEX = 0x7E;
+	protected static final byte MASK = 0x7F;
+	protected static final int TABLE_LENGTH = (END_INDEX - START_INDEX) + 1;
 	
 	private byte F;
-	protected int bytesPerChar;
-	protected char[] table;
-	protected char[] index;
-	protected boolean[] diacritic;
+	protected byte bytesPerChar;
+	protected int counter;
+	protected int[] buffer;
+	protected int[] base;
+	protected char[] lookup;
 	
-	public LanguageEncoding(){
+	private LanguageEncoding(){
 		F = 0x00;
-		bytesPerChar = 0;
+		bytesPerChar = 0x00;
+		lookup = null;
+		base = null;
+		buffer = null;
+		counter = -1;
 	}
-	protected LanguageEncoding(byte arg0, int arg1){
-		F = arg0;
-		bytesPerChar = arg1;
+	protected LanguageEncoding(final byte finalByte, final int charByteCount){
+		F = finalByte;
+		bytesPerChar = (byte) charByteCount > 0 && charByteCount <= 10
+								? (byte) charByteCount
+								: 0x01;
+		
+		counter = 0;
+		buffer = new int[bytesPerChar];
+		base = new int[bytesPerChar];
+		int length = 1;
+		for (int i = 0; i < bytesPerChar; ++i){
+			base[i] = length;
+			length *= TABLE_LENGTH;
+		}
+		lookup = new char[length];
+		Arrays.fill(lookup, UNKNOWN_CHAR);
 	}
 	
-	protected final char[] buildBlankTable(){
-		final int length = TABLE_LENGTH;
-		char[] t = new char[length];
-		char c = '\0';
-		for (int i = 0; i < length; ++i){
-			if (i >= 0x00 && i <= 0x20){
-				t[i] = c;
-				t[i+0x80] = c;
-			} else if (i > 0x20 && i < 0x7F){
-				t[i] = UNKNOWN_CHAR;
-				t[i+0x80] = UNKNOWN_CHAR;
-			} else {
-				t[i] = UNKNOWN_CHAR;
-			}
-			++c;
-		}
+	protected static final char[] buildBlankTable(){
+		char[] t = new char[0x100];
+		Arrays.fill(t, UNKNOWN_CHAR);
 		return t;
 	}
-	protected final char[] buildBasicLatinTable(){
-		final int length = TABLE_LENGTH;
-		char[] t = new char[length];
-		char c = '\0';
-		for (int i = 0x00; i < 0x80; ++i){
+	protected static final char[] buildASCIITable(){
+		char[] t = new char[0x100];
+		Arrays.fill(t, UNKNOWN_CHAR);
+		char c;
+		for (int i = 0x20; i < 0x80; ++i){
+			c = (char) i;
 			t[i] = c;
 			t[i+0x80] = c;
-			++c;
 		}
+		t[0xA0] = UNKNOWN_CHAR;
+		t[0xFF] = UNKNOWN_CHAR;
 		return t;
 	}
-	protected final char[] copyToG1(char[] t){
-		for (int i = 0x21; i < 0x7F; ++i){
-			t[i+0x80] = t[i];
-		}
-		return t;
-	}
+	
+	/**
+	 * Builds table mapping bytes to chars
+	 * @return table
+	 */
+	protected abstract char[] buildTable();
 	public void build(){
-		table = buildTable();
-		diacritic = buildDiacriticsTable();
-		index = Arrays.copyOf(table, TABLE_LENGTH);
-		Arrays.sort(index);
+		lookup = Arrays.copyOfRange(buildTable(), START_INDEX, END_INDEX+1);
 	}
-	protected char[] buildTable(){
-		return buildBlankTable();
-	}
-	protected boolean[] buildDiacriticsTable(){
-		boolean b[] = new boolean[table.length];
-		Arrays.fill(b, false);
-		return b;
-	}
+	
 	public char decode(int b){
-		return table[b];
-	}
-	public final boolean isDiacritic(int b){
-		return diacritic[b];
+		char c = '\0';
+		buffer[counter] = ((b & MASK) - START_INDEX)*base[counter];
+		if (counter == bytesPerChar - 1){
+			int index = 0;
+			for (int i = 0; i < bytesPerChar; ++i){
+				index += buffer[i];
+			}
+			c = lookup[index];
+		}
+		counter = (counter + 1) % bytesPerChar;
+		return c;
 	}
 	public final int getBytesPerChar(){
 		return bytesPerChar;
 	}
 	/**
-	 * @return the f
+	 * @return the final byte identifying this encoding
 	 */
 	public byte getFinal() {
 		return F;

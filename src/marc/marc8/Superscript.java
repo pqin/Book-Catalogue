@@ -5,6 +5,7 @@ public class Superscript extends LanguageEncoding {
 		super((byte) 0x70, 1);
 	}
 	
+	@Override
 	protected final char[] buildTable(){
 		char[] t = buildBlankTable();
 		t[0x28] = '\u207D';

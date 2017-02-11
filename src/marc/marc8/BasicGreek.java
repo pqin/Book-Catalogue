@@ -5,8 +5,9 @@ public class BasicGreek extends LanguageEncoding {
 		super((byte) 0x53, 1);
 	}
 	
+	@Override
 	protected final char[] buildTable(){
-		char[] t = buildBasicLatinTable();
+		char[] t = buildASCIITable();
 		char c = '\0';
 		t[0x21] = '\u0300';
 		t[0x22] = '\u0301';
@@ -74,15 +75,6 @@ public class BasicGreek extends LanguageEncoding {
 		t[0x7C] = '\u03C8';
 		t[0x7D] = '\u03C9';
 		t[0x7E] = '\u03E1';
-		t = copyToG1(t);
 		return t;
-	}
-	protected final boolean[] buildDiacriticsTable(){
-		boolean b[] = super.buildDiacriticsTable();
-		for (int i = 0x21; i <= 0x27; ++i){
-			b[i] = true;
-			b[i+0x80] = true;
-		}
-		return b;
 	}
 }

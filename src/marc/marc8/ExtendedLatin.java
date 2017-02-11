@@ -5,6 +5,7 @@ public class ExtendedLatin extends LanguageEncoding {
 		super((byte) 0x45, 1);
 	}
 	
+	@Override
 	protected final char[] buildTable(){
 		char[] t = buildBlankTable();
 		t[0x21] = '\u0141';
@@ -54,8 +55,8 @@ public class ExtendedLatin extends LanguageEncoding {
 		t[0x68] = '\u0308';
 		t[0x69] = '\u030C';
 		t[0x6A] = '\u030A';
-		t[0x6B] = '\u0361';
-		t[0x6C] = LanguageEncoding.UNKNOWN_CHAR;
+		t[0x6B] = '\uFE20';
+		t[0x6C] = '\uFE21';
 		t[0x6D] = '\u0315';
 		t[0x6E] = '\u030B';
 		t[0x6F] = '\u0310';
@@ -69,26 +70,9 @@ public class ExtendedLatin extends LanguageEncoding {
 		t[0x77] = '\u0326';
 		t[0x78] = '\u031C';
 		t[0x79] = '\u032E';
-		t[0x7A] = '\u0360';
-		t[0x7B] = LanguageEncoding.UNKNOWN_CHAR;
+		t[0x7A] = '\uFE22';
+		t[0x7B] = '\uFE23';
 		t[0x7E] = '\u0313';
-		t = copyToG1(t);
-		t[0x88] = '\u0098';
-		t[0x89] = '\u009C';
-		t[0x8D] = '\u200D';
-		t[0x8E] = '\u200C';
 		return t;
-	}
-	protected final boolean[] buildDiacriticsTable(){
-		boolean b[] = super.buildDiacriticsTable();
-		for (int i = 0x60; i < 0x7F; ++i){
-			if (i == 0x7C || i == 0x7D){
-				// skipped
-			} else {
-				b[i] = true;
-				b[i+0x80] = true;
-			}
-		}
-		return b;
 	}
 }

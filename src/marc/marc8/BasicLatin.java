@@ -5,7 +5,8 @@ public final class BasicLatin extends LanguageEncoding {
 		super((byte) 0x42, 1);
 	}
 	
+	@Override
 	protected final char[] buildTable(){
-		return buildBasicLatinTable();
+		return buildASCIITable();
 	}
 }

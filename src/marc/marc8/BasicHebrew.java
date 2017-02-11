@@ -5,8 +5,9 @@ public class BasicHebrew extends LanguageEncoding {
 		super((byte) 0x32, 1);
 	}
 	
+	@Override
 	protected final char[] buildTable(){
-		char[] t = buildBasicLatinTable();
+		char[] t = buildASCIITable();
 		t[0x22] = '\u05F4';
 		t[0x27] = '\u05F3';
 		t[0x2D] = '\u05BE';
@@ -33,15 +34,6 @@ public class BasicHebrew extends LanguageEncoding {
 		for (int i = 0; i < 3; ++i){
 			t[i+0x7B] = c++;
 		}
-		t = copyToG1(t);
 		return t;
-	}
-	protected final boolean[] buildDiacriticsTable(){
-		boolean b[] = super.buildDiacriticsTable();
-		for (int i = 0x40; i <= 0x4E; ++i){
-			b[i] = true;
-			b[i+0x80] = true;
-		}
-		return b;
 	}
 }

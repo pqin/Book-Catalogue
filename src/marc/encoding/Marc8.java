@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import marc.marc8.Ascii;
 import marc.marc8.BasicArabic;
 import marc.marc8.BasicCyrillic;
 import marc.marc8.BasicGreek;
@@ -25,27 +24,39 @@ import marc.marc8.Superscript;
 public final class Marc8 extends Charset {
 	protected static final HashMap<Byte, LanguageEncoding> map = new HashMap<Byte, LanguageEncoding>();
 	static {
-		ArrayList<LanguageEncoding> list = new ArrayList<LanguageEncoding>();
-		list.add(new EastAsian());
-		list.add(new BasicHebrew());
-		list.add(new BasicArabic());
-		list.add(new ExtendedArabic());
-		list.add(new BasicLatin());
-		list.add(new ExtendedLatin());
-		list.add(new BasicCyrillic());
-		list.add(new ExtendedCyrillic());
-		list.add(new BasicGreek());
-		list.add(new Subscript());
-		list.add(new GreekSymbol());
-		list.add(new Superscript());
-		list.add(new Ascii());
+		LanguageEncoding ASCII = new BasicLatin();
+		LanguageEncoding ANSEL = new ExtendedLatin();
+		ASCII.build();
+		ANSEL.build();
+		map.put(ASCII.getFinal(), ASCII);
+		map.put(ANSEL.getFinal(), ANSEL);
 		
-		Iterator<LanguageEncoding> it = list.iterator();
-		LanguageEncoding l = null;
+		ArrayList<LanguageEncoding> list0 = new ArrayList<LanguageEncoding>();
+		list0.add(new GreekSymbol());
+		list0.add(new Subscript());
+		list0.add(new Superscript());
+		Iterator<LanguageEncoding> it = list0.iterator();
+		LanguageEncoding lang = null;
 		while (it.hasNext()){
-			l = it.next();
-			l.build();
-			map.put(l.getFinal(), l);
+			lang = it.next();
+			lang.build();
+			map.put(lang.getFinal(), lang);
+		}
+		map.put((byte) 0x73, ASCII);
+		
+		ArrayList<LanguageEncoding> list1 = new ArrayList<LanguageEncoding>();
+		list1.add(new BasicArabic());
+		list1.add(new BasicCyrillic());
+		list1.add(new BasicGreek());
+		list1.add(new BasicHebrew());
+		list1.add(new EastAsian());
+		list1.add(new ExtendedArabic());
+		list1.add(new ExtendedCyrillic());
+		it = list1.iterator();
+		while (it.hasNext()){
+			lang = it.next();
+			lang.build();
+			map.put(lang.getFinal(), lang);
 		}
 	}
 	protected static final byte ESC = 0x1B;

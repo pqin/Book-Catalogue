@@ -5,6 +5,7 @@ public class GreekSymbol extends LanguageEncoding {
 		super((byte) 0x67, 1);
 	}
 	
+	@Override
 	protected final char[] buildTable(){
 		char[] t = buildBlankTable();
 		char c = '\u03B1';

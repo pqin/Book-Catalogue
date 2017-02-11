@@ -6,53 +6,49 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class EastAsian extends LanguageEncoding {
-	private static char[][][] map = buildMap();
-	private int counter;
-	private byte[] buffer;
 	public EastAsian(){
 		super((byte) 0x31, 3);
-		counter = 0;
-		buffer = new byte[bytesPerChar];
-		Arrays.fill(buffer, (byte)0x00);
 	}
 	
-	private static char[][][] buildMap(){
-		int length = 256;
-		char[][][] m = new char[length][length][length];
-		for (int i = 0; i < length; ++i){
-			for (int j = 0; j < length; ++j){
-				for (int k = 0; k < length; ++k){
-					m[i][j][k] = '?';
-				}
-			}
-		}
-		loadFile(m, "resource/hanzi.dat");
-		loadFile(m, "resource/japanese.dat");
-		return m;
+	@Override
+	public final void build(){
+		loadFile("resource/eacc2uni.txt");
 	}
-	private static void loadFile(char[][][] m, String filename){
+	private void loadFile(String filename){
 		File file = new File(filename);
 		BufferedReader in = null;
 		String line = null;
 		String[] token = null;
-		final int length = 3;	// bytes per character
-		int[] index = new int[length];
-		int u;
-		char[] c = { '\0' };
+		String b;
+		int[] tmp = new int[bytesPerChar + 1];
+		char[] c;
+		int index;
+		int lineNum = 0;
 		final int radix = 16;	// File is in hexadecimal
         try {
         	in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 			while ((line = in.readLine()) != null){
-				token = line.split("\t");
-				for (int i = 0; i < length; ++i){
-					index[i] = Integer.parseUnsignedInt(token[i], radix);
+				++lineNum;
+				token = line.split(String.valueOf(','), 3);
+				if (token.length > 2 && token[0].length() == (2*bytesPerChar)){
+					// get bytes in first token
+					for (int i = 0; i < bytesPerChar; ++i){
+						b = token[0].substring(2*i, 2*(i+1));
+						index = Integer.parseUnsignedInt(b, radix);
+						tmp[i] = ((index & MASK) - START_INDEX)*base[i];
+					}
 				}
-				u = Integer.parseUnsignedInt(token[length], radix);
-				c = Character.toChars(u);
-				m[index[0]][index[1]][index[2]] = c[0];
+				tmp[bytesPerChar] = Integer.parseUnsignedInt(token[1], radix);
+				c = Character.toChars(tmp[bytesPerChar]);
+				index = 0;
+				for (int i = 0; i < bytesPerChar; ++i){
+					index += tmp[i];
+				}
+				if (index >= 0 && index < lookup.length){
+					lookup[index] = c[0];
+				}
 			}
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -69,25 +65,8 @@ public class EastAsian extends LanguageEncoding {
 		}
 	}
 	
+	@Override
 	protected final char[] buildTable(){
-		char replacement = '?';
-		char[] t = buildBlankTable();
-		for (int i = 0x20; i < 0x7F; ++i){
-			if (t[i] == UNKNOWN_CHAR){
-				t[i] = replacement;
-				t[i+0x80] = replacement;
-			}
-		}
-		return t;
-	}
-	
-	public char decode(int b){
-		char c = '\0';
-		buffer[counter] = (byte)b;
-		if (counter == bytesPerChar - 1){
-			c = map[buffer[0]][buffer[1]][buffer[2]];
-		}
-		counter = (counter + 1) % bytesPerChar;
-		return c;
+		return null;
 	}
 }

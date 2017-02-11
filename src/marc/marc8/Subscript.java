@@ -5,6 +5,7 @@ public class Subscript extends LanguageEncoding {
 		super((byte) 0x62, 1);
 	}
 	
+	@Override
 	protected final char[] buildTable(){
 		char[] t = buildBlankTable();
 		t[0x28] = '\u208D';
