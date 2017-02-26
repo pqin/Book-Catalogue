@@ -11,25 +11,29 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import gui.table.RecordTable;
 import gui.table.RecordTableModel;
+import marc.Factory;
 import marc.MARC;
 import marc.Record;
 import marc.field.DataField;
 import marc.field.Field;
+import marc.type.AbstractRecordType;
 
-public class RecordForm extends RecordPanel implements ActionListener, ListSelectionListener {
+public final class RecordForm extends RecordPanel implements ActionListener, ListSelectionListener {
 	private RecordTableModel model;
 	private RecordTable table;
-	private FixedFieldForm resourceForm;
+	private FixedFieldForm leaderForm, resourceForm;
 	private FieldForm fieldForm;
 	private JButton addButton, removeButton, editButton;
 	
 	private Record record;
+	private AbstractRecordType type;
 
 	public RecordForm(){
 		super();
@@ -37,11 +41,13 @@ public class RecordForm extends RecordPanel implements ActionListener, ListSelec
 	
 	protected void initialize(){
 		record = new Record();
+		type = Factory.getMaterialConfig(record.getLeader());
 		
 		model = new RecordTableModel();
 		table = new RecordTable(model);
 		table.getSelectionModel().addListSelectionListener(this);
-		resourceForm = new FixedFieldForm(false, true, false);
+		leaderForm = new FixedFieldForm(type.getTypeMap(), type.getTypeLength(), true);
+		resourceForm = new FixedFieldForm(type.getConfigMap(), type.getConfigLength(), true);
 		fieldForm = new FieldForm();
 		
 		addButton = new JButton("Add");
@@ -54,7 +60,7 @@ public class RecordForm extends RecordPanel implements ActionListener, ListSelec
 		removeButton.setHorizontalAlignment(SwingConstants.LEFT);
 		editButton.setHorizontalAlignment(SwingConstants.LEFT);
 	}
-	protected void layoutComponents(){
+	protected final void layoutComponents(){
 		JPanel controlPanel = new JPanel();
 		controlPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cons = new GridBagConstraints();
@@ -73,7 +79,10 @@ public class RecordForm extends RecordPanel implements ActionListener, ListSelec
 		controlPanel.add(removeButton, cons);
 		
 		panel.setLayout(new BorderLayout());
-		panel.add(new JScrollPane(table), BorderLayout.CENTER);
+		JScrollPane sc = new JScrollPane(table);
+		sc.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		sc.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		panel.add(sc, BorderLayout.CENTER);
 		panel.add(controlPanel, BorderLayout.EAST);
 		
 		setRecord(record);
@@ -81,17 +90,18 @@ public class RecordForm extends RecordPanel implements ActionListener, ListSelec
 
 	public void setRecord(Record r){
 		record = r;
+		type = Factory.getMaterialConfig(record.getLeader());
 		updateView();
 	}
 
 	public void clearForm(){
 		record = new Record();
+		type = Factory.getMaterialConfig(record.getLeader());
 		updateView();
 	}
 	
 	protected void updateView(){
 		model.setRecord(record);
-		resourceForm.setFixedField(record.getLeader(), record.getResource());
 		fieldForm.clearForm();
 		
 		boolean recordSelected = (table.getSelectedRow() != -1);
@@ -99,9 +109,9 @@ public class RecordForm extends RecordPanel implements ActionListener, ListSelec
 		editButton.setEnabled(recordSelected);
 	}
 	
-	private int showForm(JPanel form){
-		int option = JOptionPane.showConfirmDialog(panel,
-				form, "Edit Field",
+	private int showEditForm(JPanel form){
+		int option = JOptionPane.showConfirmDialog(
+				panel, form, "Edit Field",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		return option;
 	}
@@ -152,19 +162,22 @@ public class RecordForm extends RecordPanel implements ActionListener, ListSelec
 			Field data = null;
 			int option = JOptionPane.CANCEL_OPTION;
 			if (tag.equals(MARC.LEADER_TAG)){
-				option = showForm(resourceForm);
-				data = (Field) resourceForm.getLeader();
+				leaderForm.setMask(type.getTypeMap());
+				leaderForm.setFixedField(record.getLeader());
+				option = showEditForm(leaderForm);
+				data = leaderForm.getFixedField();
 			} else if (tag.equals(MARC.RESOURCE_TAG)){
-				option = showForm(resourceForm);
-				data = (Field) resourceForm.getResource();
+				resourceForm.setMask(type.getConfigMap());
+				resourceForm.setFixedField(record.getResource());
+				option = showEditForm(resourceForm);
+				data = resourceForm.getFixedField();
 			} else {
 				fieldForm.setData(f);
-				option = showForm(fieldForm);
+				option = showEditForm(fieldForm);
 				data = fieldForm.getData();
 			}
 			if (option == JOptionPane.OK_OPTION){
 				field.set(i, data);
-				// TODO re-sort by tag?
 				model.fireTableRowsUpdated(row, row);
 			}
 		}

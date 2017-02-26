@@ -43,6 +43,11 @@ public class ControlField extends Field {
 		return value;
 	}
 	@Override
+	public String getFieldString(){
+		String value = String.valueOf(data);
+		return value;
+	}
+	@Override
 	public void setFieldData(char[] value){
 		if (value == null){
 			data = new char[0];

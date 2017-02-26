@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import marc.MARC;
 
-public class DataField extends Field {
+public final class DataField extends Field {
 	private ArrayList<Subfield> subfield;
 	
 	public DataField(){
@@ -20,54 +20,6 @@ public class DataField extends Field {
 	public DataField(String tag, char ind1, char ind2){
 		super(tag, ind1, ind2);
 		subfield = new ArrayList<Subfield>();
-	}
-	
-	@Override
-	public String toString(){
-		String s = null;
-		StringBuffer buf = new StringBuffer();
-		
-		buf.append(super.toString());
-		for (int i = 0; i < subfield.size(); ++i){
-			buf.append(subfield.get(i).toString());
-		}
-		s = buf.toString();
-		return s;
-	}
-	@Override
-	public boolean contains(String query, final boolean caseSensitive){
-		// TODO match whole words only
-		// regex to the rescue?
-		boolean match = false;
-		String reference = null;
-		for (int i = 0; i < subfield.size(); ++i){
-			reference = subfield.get(i).getData();
-			if (!caseSensitive){
-				reference = reference.toLowerCase(MARC.LANGUAGE_LOCALE);
-				query = query.toLowerCase(MARC.LANGUAGE_LOCALE);
-			}
-			if (reference.indexOf(query) != -1){
-				match = true;
-				break;
-			}
-		}
-		
-		return match;
-	}
-	@Override
-	public boolean contains(Pattern query){
-		Matcher m = null;
-		String reference = null;
-		boolean match = false;
-		for (int i = 0; i < subfield.size(); ++i){
-			reference = subfield.get(i).getData();
-			m = query.matcher(reference);
-			if (m.find()){
-				match = true;
-				break;
-			}
-		}
-		return match;
 	}
 	
 	public DataField copy(){
@@ -167,5 +119,58 @@ public class DataField extends Field {
 			}
 		}
 		return indices;
+	}
+	
+	@Override
+	public void clear(){
+		subfield.clear();
+	}
+	
+	@Override
+	public boolean contains(String query, final boolean caseSensitive){
+		// TODO match whole words only
+		// regex to the rescue?
+		boolean match = false;
+		String reference = null;
+		for (int i = 0; i < subfield.size(); ++i){
+			reference = subfield.get(i).getData();
+			if (!caseSensitive){
+				reference = reference.toLowerCase(MARC.LANGUAGE_LOCALE);
+				query = query.toLowerCase(MARC.LANGUAGE_LOCALE);
+			}
+			if (reference.indexOf(query) != -1){
+				match = true;
+				break;
+			}
+		}
+		
+		return match;
+	}
+	@Override
+	public boolean contains(Pattern query){
+		Matcher m = null;
+		String reference = null;
+		boolean match = false;
+		for (int i = 0; i < subfield.size(); ++i){
+			reference = subfield.get(i).getData();
+			m = query.matcher(reference);
+			if (m.find()){
+				match = true;
+				break;
+			}
+		}
+		return match;
+	}
+	@Override
+	public String toString(){
+		String s = null;
+		StringBuffer buf = new StringBuffer();
+		
+		buf.append(super.toString());
+		for (int i = 0; i < subfield.size(); ++i){
+			buf.append(subfield.get(i).toString());
+		}
+		s = buf.toString();
+		return s;
 	}
 }

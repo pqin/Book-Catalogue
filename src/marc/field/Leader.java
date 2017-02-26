@@ -1,9 +1,8 @@
 package marc.field;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 import marc.MARC;
-import marc.resource.ResourceType;
 
 
 public final class Leader extends FixedField {
@@ -45,60 +44,6 @@ public final class Leader extends FixedField {
 		data[23] = '0';				// undefined
 	}
 	
-	@Override
-	public int[] getIndexArray(){
-		int[] array = {
-				LENGTH,
-				STATUS,
-				TYPE,
-				BIBLIO_LEVEL,
-				CONTROL_TYPE,
-				CHARACTER_CODING_SCHEME,
-				ENCODING_LEVEL,
-				DESCRIPTIVE_CATALOGUING_FORM,
-				MULTIPART_LEVEL
-		};
-		return array;
-	}
-	@Override
-	public int getIndexLength(int index){
-		int indexLength = 1;
-		switch (index){
-		case LENGTH:
-			indexLength = 5;
-			break;
-		case BASE_ADDRESS:
-			indexLength = 5;
-			break;
-		case DIRECTORY_STRUCTURE:
-			indexLength = 3;
-			break;
-		default:
-			indexLength = 1;
-			break;
-		}
-		return indexLength;
-	}
-	
-	@Override
-	protected FixedDatum[] buildMap(){
-		ArrayList<FixedDatum> tmp = new ArrayList<FixedDatum>();
-		tmp.add(new FixedDatum(6, 1, "Type"));
-		tmp.add(new FixedDatum(7, 1, "BLvl"));
-		tmp.add(new FixedDatum(8, 1, "Ctrl"));
-		tmp.add(new FixedDatum(17, 1, "ELvl"));
-		tmp.add(new FixedDatum(18, 1, "Desc"));
-		FixedDatum[] m = new FixedDatum[tmp.size()];
-		m = tmp.toArray(m);
-		return m;
-	}
-	
-	public ResourceType getFormat(){
-		final char type = data[TYPE];
-		final char level = data[BIBLIO_LEVEL];
-		return MARC.getFormat(type, level);
-	}
-	
 	// record length in bytes
 	public int getLength(){
 		length = getValueFromData(LENGTH, 5);
@@ -131,10 +76,17 @@ public final class Leader extends FixedField {
 		}
 	}
 	
+	@Override
+	public void clear(){
+		Arrays.fill(data, MARC.BLANK_CHAR);
+		length = 0;
+		baseAddress = FIXED_FIELD_LENGTH;
+		initialize();
+	}
+	
 	public Leader copy(){
 		Leader copy = new Leader();
 		copy.setFieldData(this.data);
-		copy.map = this.getFixedData();
 		copy.length = this.length;
 		copy.baseAddress = this.baseAddress;
 		return copy;

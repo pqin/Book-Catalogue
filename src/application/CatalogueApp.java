@@ -43,7 +43,6 @@ import controller.TabManager;
 import gui.RecordSelectionListener;
 import gui.RecordSelector;
 import gui.form.CatalogCardPanel;
-import gui.form.FixedFieldForm;
 import gui.search.SearchManager;
 import gui.table.RecordSearchFilter;
 import gui.table.RecordTable;
@@ -186,12 +185,9 @@ public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 		
 		RecordTable recordTable = new RecordTable(new RecordTableModel(), 3, 40);
 		CatalogCardPanel recordCard = new CatalogCardPanel();
-		FixedFieldForm recordResourcePanel = new FixedFieldForm(true, false, true);
 		recordDataPanel = new TabManager();
 		recordDataPanel.addTab(recordCard, "Catalog Card", "Catalog Card");
 		recordDataPanel.addTab(new JScrollPane(recordTable), "MARC", "MARC21");
-		recordDataPanel.addTab(recordResourcePanel, "Control", "Fixed Fields");
-		
 		
 		newFileAction = new NewFileAction(data, fileManager);
 		openFileAction = new OpenFileAction(data, fileManager);
@@ -225,7 +221,6 @@ public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 		data.addCatalogueView(searchManager);
 		data.addRecordView(recordTable);
 		data.addRecordView(recordCard);
-		data.addRecordView(recordResourcePanel);
 	}
 	@Override
 	public void destroy(){

@@ -13,14 +13,12 @@ import marc.field.Field;
 import marc.field.Leader;
 import marc.field.Subfield;
 import marc.resource.Resource;
-import marc.resource.ResourceType;
 
-public class Record implements Serializable {
+public final class Record implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private int length;
 	private Leader leader;
-	private ResourceType format;
 	private Resource resource;
 	private ArrayList<ControlField> controlField;
 	private ArrayList<DataField> dataField;
@@ -28,17 +26,16 @@ public class Record implements Serializable {
 	public Record(){
 		length = 0;
 		leader = new Leader();
-		format = leader.getFormat();
 		resource = new Resource();
 		controlField = new ArrayList<ControlField>();
 		dataField = new ArrayList<DataField>();
 	}
 	
-	public final void setLength(int recordLength){
+	public void setLength(int recordLength){
 		length = recordLength;
 		leader.setLength(recordLength);
 	}
-	public final int getLength(){
+	public int getLength(){
 		return length;
 	}
 	
@@ -46,7 +43,7 @@ public class Record implements Serializable {
 		resource.setEntryDate(date);		
 	}
 	
-	public final String getControlNumber(){
+	public String getControlNumber(){
 		String ctrlNum = null;
 		ArrayList<ControlField> field = getControlField("001");
 		if (field.size() > 0){
@@ -72,9 +69,6 @@ public class Record implements Serializable {
 	public void setLeader(Leader value){
 		leader.setAllSubfields(value.getSubfield());
 	}
-	public ResourceType getFormat(){
-		return format;
-	}
 	public Resource getResource(){
 		return resource;
 	}
@@ -82,7 +76,7 @@ public class Record implements Serializable {
 		resource.setAllSubfields(value.getSubfield());
 	}
 	public int getFieldCount(){
-		final int count = controlField.size() + dataField.size() + 2;
+		int count = controlField.size() + dataField.size() + 2;
 		return count;
 	}
 	public ArrayList<Field> getFields(){
@@ -146,7 +140,7 @@ public class Record implements Serializable {
 		return f;
 	}
 	
-	public ArrayList<ControlField> getControlField(String tag){
+	private ArrayList<ControlField> getControlField(String tag){
 		ArrayList<ControlField> f = new ArrayList<ControlField>();
 		Iterator<ControlField> it = controlField.iterator();
 		ControlField tmp = null;
@@ -159,7 +153,7 @@ public class Record implements Serializable {
 		return f;
 	}
 	
-	public ArrayList<DataField> getDataField(String tag){
+	private ArrayList<DataField> getDataField(String tag){
 		ArrayList<DataField> f = new ArrayList<DataField>();
 		Iterator<DataField> it = dataField.iterator();
 		DataField tmp = null;
@@ -172,7 +166,7 @@ public class Record implements Serializable {
 		return f;
 	}
 	
-	public final String[] getFormattedData(String tag, char[] code, String delimiter){
+	public String[] getFormattedData(String tag, char[] code, String delimiter){
 		ArrayList<DataField> f = getDataField(tag);
 		String[] formattedData = new String[f.size()];
 		for (int i = 0; i < formattedData.length; ++i){
@@ -274,7 +268,7 @@ public class Record implements Serializable {
 		dataField.remove(f);
 	}
 	
-	public final String getData(String tag, char code){
+	public String getData(String tag, char code){
 		ArrayList<DataField> list = getDataField(tag);
 		DataField f = null;
 		Subfield s = null;
@@ -346,11 +340,10 @@ public class Record implements Serializable {
 		Collections.sort(dataField);
 	}
 	
-	public final Record copy(){
+	public Record copy(){
 		Record copy = new Record();
 		copy.length = this.length;
 		copy.leader = this.leader.copy();
-		copy.format = this.leader.getFormat();
 		copy.resource = this.resource.copy();
 		Iterator<ControlField> c = controlField.iterator();
 		while (c.hasNext()){

@@ -6,7 +6,6 @@ import marc.MARC;
 
 public class FixedField extends ControlField {
 	protected int FIXED_FIELD_LENGTH;
-	protected FixedDatum[] map = buildMap();
 	
 	public FixedField(){
 		super();
@@ -27,38 +26,18 @@ public class FixedField extends ControlField {
 		data = new char[FIXED_FIELD_LENGTH];
 		Arrays.fill(data, MARC.FILL_CHAR);
 	}
-	/**
-	 * Returns array of all valid index positions for the fixed field.
-	 * @return indices index array
-	 */
-	public int[] getIndexArray(){
-		int[] array = new int[0];
-		return array;
-	}
-	/**
-	 * Returns length in characters of value at specified index for the fixed field.
-	 * @return length length in characters of value
-	 */
-	public int getIndexLength(int index){
-		return 0;
-	}
-	/**
-	 * Returns whether data at index has multiple values.
-	 * @param index the index to query
-	 * @return data is multi-valued or not
-	 */
-	public boolean isMultivalue(int index){
-		return false;
+	
+	@Override
+	public void clear(){
+		Arrays.fill(data, MARC.BLANK_CHAR);
 	}
 	
-	protected FixedDatum[] buildMap(){
-		FixedDatum[] m = new FixedDatum[0];
-		return m;
-	}
-	public FixedDatum[] getFixedData(){
-		FixedDatum[] value = new FixedDatum[map.length];
-		for (int i = 0; i < map.length; ++i){
-			value[i] = map[i].copy();
+	public char[] getData(FixedDatum mask){
+		char[] value = new char[0];
+		int start = mask.getIndex();
+		int end = start + mask.getLength();
+		if (start >= 0 && end <= data.length){
+			value = Arrays.copyOfRange(data, start, end);
 		}
 		return value;
 	}
@@ -66,7 +45,6 @@ public class FixedField extends ControlField {
 	public FixedField copy(){
 		FixedField copy = new FixedField(this.tag, data.length);
 		copy.setFieldData(this.data);
-		copy.map = this.getFixedData();
 		return copy;
 	}
 }

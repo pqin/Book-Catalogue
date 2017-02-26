@@ -48,6 +48,10 @@ public class Field implements Comparable<Field> {
 		// implementation defined
 		return null;
 	}
+	public String getFieldString(){
+		// implementation defined
+		return null;
+	}
 	public void setFieldData(char[] value){
 		// implementation defined
 	}
@@ -58,6 +62,9 @@ public class Field implements Comparable<Field> {
 		return null;
 	}
 	public void setAllSubfields(Subfield[] value){
+		// implementation defined
+	}
+	public void clear(){
 		// implementation defined
 	}
 	

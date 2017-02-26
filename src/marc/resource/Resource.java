@@ -3,6 +3,7 @@ package marc.resource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
 
@@ -44,42 +45,6 @@ public final class Resource extends FixedField {
 	}
 	
 	@Override
-	public int[] getIndexArray(){
-		int[] array = {
-				ENTRY_DATE,
-				DATE_TYPE,
-				DATE_1,
-				DATE_2,
-				PLACE,
-				LANGUAGE,
-				MODIFIED_RECORD,
-				CATALOGUING_SOURCE
-		};
-		return array;
-	}
-	@Override
-	public int getIndexLength(int index){
-		int indexLength = 1;
-		switch (index){
-		case ENTRY_DATE:
-			indexLength = 6;
-			break;
-		case DATE_1:
-		case DATE_2:
-			indexLength = DATE_LENGTH;
-			break;
-		case PLACE:
-		case LANGUAGE:
-			indexLength = 3;
-			break;
-		default:
-			indexLength = 1;
-			break;
-		}
-		return indexLength;
-	}
-	
-	@Override
 	public void setData(char[] value, int index, int length){
 		switch (index){
 		case DATE_1:
@@ -96,12 +61,6 @@ public final class Resource extends FixedField {
 		}
 	}
 	
-	@Override
-	final public void setAllSubfields(String value){
-		super.setAllSubfields(value);
-	}
-	
-	
 	final public void setEntryDate(int year, int month, int day){		
 		setDataToValue(year % 100, 0, 2);
 		setDataToValue(month, 2, 2);
@@ -113,7 +72,12 @@ public final class Resource extends FixedField {
 	}
 	final public LocalDate getEntryDate(){
 		String text = String.copyValueOf(data, ENTRY_DATE, DATE_TYPE - ENTRY_DATE);
-		LocalDate entryDate = LocalDate.parse(text, formatter);
+		LocalDate entryDate = MARC.EPOCH_START;
+		try {
+			entryDate = LocalDate.parse(text, formatter);
+		} catch (DateTimeParseException e){
+			//TODO entry date error exception handling
+		}
 		return entryDate;
 	}
 
@@ -145,10 +109,16 @@ public final class Resource extends FixedField {
 		return d;
 	}
 	
+	@Override
+	public final void clear(){
+		LocalDate tmp = getEntryDate();
+		super.clear();
+		setEntryDate(tmp);
+	}
+	
 	public Resource copy(){
 		Resource copy = new Resource();
 		copy.setFieldData(this.data);
-		copy.map = this.getFixedData();
 		return copy;
 	}
 }
