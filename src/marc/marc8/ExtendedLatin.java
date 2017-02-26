@@ -1,6 +1,6 @@
 package marc.marc8;
 
-public class ExtendedLatin extends LanguageEncoding {
+public class ExtendedLatin extends CharacterSet {
 	public ExtendedLatin(){
 		super((byte) 0x45, 1);
 	}

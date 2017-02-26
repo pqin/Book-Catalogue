@@ -2,29 +2,21 @@ package marc.marc8;
 
 import java.util.Arrays;
 
-public abstract class LanguageEncoding {
+public abstract class CharacterSet {
 	public static final char UNKNOWN_CHAR = '\uFFFD';
+	public static final char UNDERFLOW = '\0';
 	protected static final int START_INDEX = 0x21;
 	protected static final int END_INDEX = 0x7E;
-	protected static final byte MASK = 0x7F;
 	protected static final int TABLE_LENGTH = (END_INDEX - START_INDEX) + 1;
 	
-	private byte F;
-	protected byte bytesPerChar;
+	private final byte F;
+	protected final byte bytesPerChar;
 	protected int counter;
 	protected int[] buffer;
 	protected int[] base;
-	protected char[] lookup;
+	protected char[] table;
 	
-	private LanguageEncoding(){
-		F = 0x00;
-		bytesPerChar = 0x00;
-		lookup = null;
-		base = null;
-		buffer = null;
-		counter = -1;
-	}
-	protected LanguageEncoding(final byte finalByte, final int charByteCount){
+	protected CharacterSet(final byte finalByte, final int charByteCount){
 		F = finalByte;
 		bytesPerChar = (byte) charByteCount > 0 && charByteCount <= 10
 								? (byte) charByteCount
@@ -38,13 +30,29 @@ public abstract class LanguageEncoding {
 			base[i] = length;
 			length *= TABLE_LENGTH;
 		}
-		lookup = new char[length];
-		Arrays.fill(lookup, UNKNOWN_CHAR);
 	}
 	
+	public final int getBytesPerChar(){
+		int i = bytesPerChar;
+		return i;
+	}
+	/**
+	 * @return the final byte identifying this encoding
+	 */
+	public final byte getFinal() {
+		byte f = F;
+		return f;
+	}
+	
+	public final void reset(){
+		counter = 0;
+		Arrays.fill(buffer, 0);
+	}
 	protected static final char[] buildBlankTable(){
 		char[] t = new char[0x100];
 		Arrays.fill(t, UNKNOWN_CHAR);
+		t[0x20] = (char) 0x20;
+		t[0x7F] = (char) 0x7F;
 		return t;
 	}
 	protected static final char[] buildASCIITable(){
@@ -61,35 +69,36 @@ public abstract class LanguageEncoding {
 		return t;
 	}
 	
+	protected final void allocateTable(){
+		int length = 1;
+		for (int i = 0; i < bytesPerChar; ++i){
+			length *= TABLE_LENGTH;
+		}
+		table = new char[length];
+	}
 	/**
-	 * Builds table mapping bytes to chars
+	 * Build table that maps bytes to chars.
 	 * @return table
 	 */
 	protected abstract char[] buildTable();
 	public void build(){
-		lookup = Arrays.copyOfRange(buildTable(), START_INDEX, END_INDEX+1);
+		if (table == null){
+			allocateTable();
+			table = Arrays.copyOfRange(buildTable(), START_INDEX, END_INDEX+1);
+		}
 	}
 	
 	public char decode(int b){
-		char c = '\0';
-		buffer[counter] = ((b & MASK) - START_INDEX)*base[counter];
+		char c = UNDERFLOW;
+		buffer[counter] = (b - START_INDEX)*base[counter];
 		if (counter == bytesPerChar - 1){
 			int index = 0;
 			for (int i = 0; i < bytesPerChar; ++i){
 				index += buffer[i];
 			}
-			c = lookup[index];
+			c = table[index];
 		}
 		counter = (counter + 1) % bytesPerChar;
 		return c;
-	}
-	public final int getBytesPerChar(){
-		return bytesPerChar;
-	}
-	/**
-	 * @return the final byte identifying this encoding
-	 */
-	public byte getFinal() {
-		return F;
 	}
 }

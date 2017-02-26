@@ -1,6 +1,6 @@
 package marc.marc8;
 
-public class GreekSymbol extends LanguageEncoding {
+public class GreekSymbol extends CharacterSet {
 	public GreekSymbol(){
 		super((byte) 0x67, 1);
 	}

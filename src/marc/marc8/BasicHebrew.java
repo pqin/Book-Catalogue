@@ -1,6 +1,6 @@
 package marc.marc8;
 
-public class BasicHebrew extends LanguageEncoding {
+public class BasicHebrew extends CharacterSet {
 	public BasicHebrew(){
 		super((byte) 0x32, 1);
 	}

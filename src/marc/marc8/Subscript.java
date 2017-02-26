@@ -1,6 +1,6 @@
 package marc.marc8;
 
-public class Subscript extends LanguageEncoding {
+public class Subscript extends CharacterSet {
 	public Subscript(){
 		super((byte) 0x62, 1);
 	}

@@ -1,6 +1,6 @@
 package marc.marc8;
 
-public class ExtendedArabic extends LanguageEncoding {
+public class ExtendedArabic extends CharacterSet {
 	public ExtendedArabic(){
 		super((byte) 0x34, 1);
 	}

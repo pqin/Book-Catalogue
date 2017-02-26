@@ -1,6 +1,6 @@
 package marc.marc8;
 
-public class BasicGreek extends LanguageEncoding {
+public class BasicGreek extends CharacterSet {
 	public BasicGreek(){
 		super((byte) 0x53, 1);
 	}

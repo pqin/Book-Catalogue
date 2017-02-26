@@ -12,39 +12,41 @@ import marc.marc8.BasicCyrillic;
 import marc.marc8.BasicGreek;
 import marc.marc8.BasicHebrew;
 import marc.marc8.BasicLatin;
+import marc.marc8.CharacterSet;
 import marc.marc8.EastAsian;
 import marc.marc8.ExtendedArabic;
 import marc.marc8.ExtendedCyrillic;
 import marc.marc8.ExtendedLatin;
 import marc.marc8.GreekSymbol;
-import marc.marc8.LanguageEncoding;
 import marc.marc8.Subscript;
 import marc.marc8.Superscript;
 
 public final class Marc8 extends Charset {
-	protected static final HashMap<Byte, LanguageEncoding> map = new HashMap<Byte, LanguageEncoding>();
+	protected static final HashMap<Byte, CharacterSet> map = new HashMap<Byte, CharacterSet>();
+	protected static final byte ESC = 0x1B;
+	protected static final byte BASIC_LATIN;
+	protected static final byte EXTENDED_LATIN;
 	static {
-		LanguageEncoding ASCII = new BasicLatin();
-		LanguageEncoding ANSEL = new ExtendedLatin();
-		ASCII.build();
-		ANSEL.build();
-		map.put(ASCII.getFinal(), ASCII);
-		map.put(ANSEL.getFinal(), ANSEL);
+		CharacterSet ASCII = new BasicLatin();
+		CharacterSet ANSEL = new ExtendedLatin();
+		BASIC_LATIN = ASCII.getFinal();
+		EXTENDED_LATIN = ANSEL.getFinal();
+		map.put(BASIC_LATIN, ASCII);
+		map.put(EXTENDED_LATIN, ANSEL);
 		
-		ArrayList<LanguageEncoding> list0 = new ArrayList<LanguageEncoding>();
+		ArrayList<CharacterSet> list0 = new ArrayList<CharacterSet>();
 		list0.add(new GreekSymbol());
 		list0.add(new Subscript());
 		list0.add(new Superscript());
-		Iterator<LanguageEncoding> it = list0.iterator();
-		LanguageEncoding lang = null;
+		Iterator<CharacterSet> it = list0.iterator();
+		CharacterSet lang = null;
 		while (it.hasNext()){
 			lang = it.next();
-			lang.build();
 			map.put(lang.getFinal(), lang);
 		}
 		map.put((byte) 0x73, ASCII);
 		
-		ArrayList<LanguageEncoding> list1 = new ArrayList<LanguageEncoding>();
+		ArrayList<CharacterSet> list1 = new ArrayList<CharacterSet>();
 		list1.add(new BasicArabic());
 		list1.add(new BasicCyrillic());
 		list1.add(new BasicGreek());
@@ -55,18 +57,9 @@ public final class Marc8 extends Charset {
 		it = list1.iterator();
 		while (it.hasNext()){
 			lang = it.next();
-			lang.build();
 			map.put(lang.getFinal(), lang);
 		}
 	}
-	protected static final byte ESC = 0x1B;
-	// final character in escape sequence
-	protected static final byte BASIC_LATIN = 0x42;     // ASCII
-	protected static final byte EXTENDED_LATIN = 0x45;  // ANSEL
-	protected static final byte SUBSCRIPT = 0x62;       // subscript
-	protected static final byte GREEK_SYMBOL = 0x67;    // Greek symbol set
-	protected static final byte SUPERSCRIPT = 0x70;     // superscript
-	protected static final byte ASCII = 0x73;           // ASCII
 	
 	public Marc8() {
 		super("Marc-8", null);
@@ -74,7 +67,6 @@ public final class Marc8 extends Charset {
 	
 	@Override
 	public boolean contains(Charset cs) {
-		// TODO Auto-generated method stub
 		if (cs == null){
 			return false;
 		} else if (cs.equals(this)){
@@ -86,8 +78,9 @@ public final class Marc8 extends Charset {
 
 	@Override
 	public CharsetDecoder newDecoder() {
-		// TODO Auto-generated method stub
-		return new Marc8Decoder(this);
+		// TODO Customize decoder behaviour on malformed and unmappable input?
+		CharsetDecoder decoder = new Marc8Decoder(this);
+		return decoder;
 	}
 
 	@Override
@@ -97,5 +90,14 @@ public final class Marc8 extends Charset {
 	@Override
 	public boolean canEncode(){
 		return false;
+	}
+	
+	public static final boolean hasCharset(final byte F){
+		return map.containsKey(F);
+	}
+	public static final CharacterSet getCharset(final byte F){
+		CharacterSet value = map.get(F);
+		value.build();
+		return value;
 	}
 }

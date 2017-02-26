@@ -1,6 +1,6 @@
 package marc.marc8;
 
-public class BasicCyrillic extends LanguageEncoding {
+public class BasicCyrillic extends CharacterSet {
 	public BasicCyrillic(){
 		super((byte) 0x4E, 1);
 	}

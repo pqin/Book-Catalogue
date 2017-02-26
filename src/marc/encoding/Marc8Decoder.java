@@ -8,7 +8,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
 import java.util.Arrays;
 
-import marc.marc8.LanguageEncoding;
+import marc.marc8.CharacterSet;
 
 public class Marc8Decoder extends CharsetDecoder {
 	// read state
@@ -20,8 +20,8 @@ public class Marc8Decoder extends CharsetDecoder {
 	private static final char[][] control;
 	static {
 		control = new char[2][16];
-		Arrays.fill(control[0], LanguageEncoding.UNKNOWN_CHAR);
-		Arrays.fill(control[1], LanguageEncoding.UNKNOWN_CHAR);
+		Arrays.fill(control[0], CharacterSet.UNKNOWN_CHAR);
+		Arrays.fill(control[1], CharacterSet.UNKNOWN_CHAR);
 		control[0][0x0B] = '\u001B';
 		control[0][0x0D] = '\u001D';
 		control[0][0x0E] = '\u001E';
@@ -33,7 +33,7 @@ public class Marc8Decoder extends CharsetDecoder {
 		control[1][0x0E] = '\u200C';
 	}
 	// state
-	private LanguageEncoding[] graphic;
+	private CharacterSet[] graphic;
 	private ReadState state;
 	private int g;
 	private boolean SBCS;
@@ -43,15 +43,15 @@ public class Marc8Decoder extends CharsetDecoder {
 	public Marc8Decoder(Charset cs){
 		super(cs, 0.5f, 1.f);
 		
-		graphic = new LanguageEncoding[2];
+		graphic = new CharacterSet[2];
 		diacritic = CharBuffer.allocate(10);
 		
 		implReset();
 	}
 	@Override
 	protected final void implReset(){
-		graphic[0] = Marc8.map.get(Marc8.BASIC_LATIN);
-		graphic[1] = Marc8.map.get(Marc8.EXTENDED_LATIN);
+		graphic[0] = Marc8.getCharset(Marc8.BASIC_LATIN);
+		graphic[1] = Marc8.getCharset(Marc8.EXTENDED_LATIN);
 		state = ReadState.NONE;
 		g = 0;
 		SBCS = (graphic[g].getBytesPerChar() == 1);
@@ -60,9 +60,6 @@ public class Marc8Decoder extends CharsetDecoder {
 	}
 	@Override
 	protected CoderResult implFlush(CharBuffer out){
-		if (diacritic.position() == 0){
-			return CoderResult.UNDERFLOW;
-		}
 		CoderResult result = CoderResult.UNDERFLOW;
 		if (diacritic.position() > 0){
 			diacritic.flip();
@@ -75,25 +72,6 @@ public class Marc8Decoder extends CharsetDecoder {
 			}
 		}
 		return result;
-	}
-
-	private boolean isControl(int value){
-		if (value >= 0x00 && value <= 0x20){
-			return true;
-		} else if (value >= 0x80 && value <= 0xA0){
-			return true;
-		} else {
-			return false;
-		}
-	}
-	private int getGraphic(int value){
-		if (value > 0x20 && value < 0x7F){
-			return 0;
-		} else if (value > 0xA0 && value < 0xFF){
-			return 1;
-		} else {
-			return -1;
-		}
 	}
 	
 	private CoderResult appendChar(CharBuffer out, char c){
@@ -115,44 +93,48 @@ public class Marc8Decoder extends CharsetDecoder {
 	protected CoderResult decodeLoop(ByteBuffer in, CharBuffer out) {
 		byte b = 0x00;
 		int value = 0;
+		int hi = 0;
+		int lo = 0;
 		char c = '\0';
 		int gTmp;
 		CoderResult result = CoderResult.UNDERFLOW;
-		while (in.hasRemaining() && out.hasRemaining()){
+		while (in.hasRemaining() && out.hasRemaining() && result.isUnderflow()){
 			b = in.get();
 			value = ((int)b) & 0x0FF;	// convert byte to unsigned int
+			hi = value & 0x80;
+			lo = value & 0x7F;
 			switch (state){
 			case NONE:
-				if (b == Marc8.ESC){
+				if (b == 0x1B){
 					state = ReadState.ESCAPE;
 					malformedLength = 1;
 					SBCS = true;
 				} else {
-					if (isControl(value)){
+					gTmp = (hi == 0) ? 0 : 1;
+					if (lo >= 0x00 && lo <= 0x20){
+						// control set character
 						if (value >= 0xB0 && value < 0xC0){
-							c = control[0][value - 0xB0];
+							c = control[gTmp][value - 0xB0];
 						} else if (value >= 0x80 && value < 0x90){
-							c = control[1][value - 0x80];
+							c = control[gTmp][value - 0x80];
 						} else {
 							c = (char) value;
 						}
 						result = appendChar(out, c);
 					} else {
-						gTmp = getGraphic(value);
-						if (gTmp >= 0){
-							c = graphic[gTmp].decode(value);
-							if (c == '\0'){
-								// multibyte encoding, not all bytes read in yet for valid char
-								if (graphic[gTmp].getBytesPerChar() > 1){
-									result = CoderResult.UNDERFLOW;
-								} else {
-									result = appendChar(out, c);
-								}
-							} else if (Character.getType(c) == Character.NON_SPACING_MARK){
-								diacritic.put(c);
+						// graphic set character
+						c = graphic[gTmp].decode(lo);
+						if (c == CharacterSet.UNDERFLOW){
+							// multibyte encoding, not all bytes read in yet for valid char
+							if (graphic[gTmp].getBytesPerChar() > 1){
+								result = CoderResult.UNDERFLOW;
 							} else {
 								result = appendChar(out, c);
 							}
+						} else if (Character.getType(c) == Character.NON_SPACING_MARK){
+							diacritic.put(c);
+						} else {
+							result = appendChar(out, c);
 						}
 					}
 				}
@@ -175,9 +157,9 @@ public class Marc8Decoder extends CharsetDecoder {
 						return result;
 					}
 				} else if (value >= 0x60 && value <= 0x7E){
-					if (Marc8.map.containsKey(b)){
+					if (Marc8.hasCharset(b)){
 						g = 0;
-						graphic[g] = Marc8.map.get(b);
+						graphic[g] = Marc8.getCharset(b);
 						SBCS = (graphic[g].getBytesPerChar() == 1);
 						state = ReadState.NONE;
 					} else {
@@ -215,8 +197,8 @@ public class Marc8Decoder extends CharsetDecoder {
 							return result;
 						}
 					}
-				} else if (Marc8.map.containsKey(b)){
-					graphic[g] = Marc8.map.get(b);
+				} else if (Marc8.hasCharset(b)){
+					graphic[g] = Marc8.getCharset(b);
 					state = ReadState.NONE;
 				} else {
 					++malformedLength;
