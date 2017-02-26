@@ -62,7 +62,7 @@ public class MarcXML extends AbstractMarc {
 		Leader leader = null;
 		Resource resource = null;
 		DataField dField = null;
-		char code = '\u0000';
+		char code = '\0';
         
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		FileInputStream in = new FileInputStream(file);
@@ -126,7 +126,7 @@ public class MarcXML extends AbstractMarc {
 						dField.setIndicators(ind1, ind2);
 						break;
 					case SUBFIELD:
-						code = '\u0000';
+						code = '\0';
 						for (int i = 0; i < reader.getAttributeCount(); ++i){
 							switch (reader.getAttributeLocalName(i)){
 							case CODE:
@@ -168,7 +168,7 @@ public class MarcXML extends AbstractMarc {
 						record.addField(dField);
 						break;
 					case SUBFIELD:
-						if (code != '\u0000'){
+						if (code != '\0'){
 							dField.addSubfield(code, content);
 						}
 						break;
@@ -283,7 +283,6 @@ public class MarcXML extends AbstractMarc {
 			writer.flush();
 			writer.close();
 		} catch (XMLStreamException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {

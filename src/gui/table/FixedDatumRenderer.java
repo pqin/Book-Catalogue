@@ -5,17 +5,14 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import marc.Record;
+import gui.form.FixedFieldTableModel;
 
-public class TitleRenderer extends DefaultTableCellRenderer {
+public class FixedDatumRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;
-	
-	private Record record;
-	
-	public TitleRenderer(){
+
+	public FixedDatumRenderer(){
 		super();
 		setOpaque(true);
-		record = null;
 	}
 	
 	@Override
@@ -24,19 +21,19 @@ public class TitleRenderer extends DefaultTableCellRenderer {
 			boolean isSelected, boolean hasFocus,
 			int row, int column) {
 		Component comp = null;
-		NavigationTableModel model = (NavigationTableModel) table.getModel();
+		FixedFieldTableModel model = (FixedFieldTableModel) table.getModel();
 		int rowIndex = table.convertRowIndexToModel(row);
 		int columnIndex = table.convertColumnIndexToModel(column);
-		String cellValue = null;
-		if (columnIndex == NavigationTableModel.TITLE){
-			record = model.getRecordAt(rowIndex);
-			cellValue = record.getTitle();
+		/*
+		String text = null;
+		if (i >= model.length){
+			text = null;
+		} else if (i % 2 == 0){
+			text = label;
 		} else {
-			cellValue = String.valueOf(value);
+			text = value;
 		}
-		comp = super.getTableCellRendererComponent(table, cellValue, isSelected, hasFocus, row, column);
-		
+		*/
 		return comp;
 	}
-
 }

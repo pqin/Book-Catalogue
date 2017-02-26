@@ -58,13 +58,13 @@ public class Catalogue implements MarcComponent {
 	}
 	
 	public Record get(int index) {
-		Record r = null;
+		Record record = null;
 		try {
-			r = data.get(index);
+			record = data.get(index);
 		} catch (IndexOutOfBoundsException ignored){
 			
 		}
-		return r;
+		return record;
 	}
 	public List<Record> toList(){
 		return data;
@@ -103,12 +103,10 @@ public class Catalogue implements MarcComponent {
 	}
 	
 	public Record remove(int index){
-		Record recordRemoved = data.remove(index);
-		return recordRemoved;
+		return data.remove(index);
 	}
 	public boolean remove(Record record){
-		boolean recordRemoved = data.remove(record);
-		return recordRemoved;
+		return data.remove(record);
 	}
 	public void clear(){
 		data.clear();

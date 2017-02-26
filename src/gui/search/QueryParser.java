@@ -25,6 +25,7 @@ public class QueryParser {
 		operatorStack.clear();
 		outputQueue.clear();
 		Token k = null;
+		Type previousTokenType = Type.UNKNOWN;
 		for (int i = 0; i < input.length; ++i){
 			k = input[i];
 			if (k.getType() == Type.OPERATOR){
@@ -39,8 +40,13 @@ public class QueryParser {
 					}
 				}
 			} else {
+				if (previousTokenType == Type.KEYWORD && k.getType() == Type.KEYWORD){
+					// add implicit AND for lists of keywords
+					operatorStack.push(Token.AND);
+				}
 				outputQueue.add(k);
 			}
+			previousTokenType = k.getType();
 		}
 		while (!operatorStack.isEmpty()){
 			k = operatorStack.pop();

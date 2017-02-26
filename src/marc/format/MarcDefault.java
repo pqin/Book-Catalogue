@@ -113,9 +113,8 @@ public class MarcDefault extends AbstractMarc {
 				ind2 = MARC.BLANK_CHAR;
 				index0 = 0;
 				index1 = fieldData.indexOf(FIELD_TERMINATOR);
-				// TODO fix
 				if (index1 == -1){
-					index1 = index0;
+					index1 = fieldData.length();
 				}
 				fieldData = fieldData.substring(index0, index1);
 				subData = new String[1];
@@ -129,9 +128,8 @@ public class MarcDefault extends AbstractMarc {
 				ind2 = fieldData.charAt(1);
 				index0 = fieldData.indexOf(SUBFIELD_DELIMITER)+1;
 				index1 = fieldData.indexOf(FIELD_TERMINATOR);
-				// TODO fix
 				if (index1 == -1){
-					index1 = index0;
+					index1 = fieldData.length();
 				}
 				fieldData = fieldData.substring(index0, index1);
 				subData = fieldData.split(String.valueOf((char) SUBFIELD_DELIMITER));

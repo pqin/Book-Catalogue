@@ -20,8 +20,8 @@ public class OpenFileAction extends FileAction {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		ArrayList<Record> input = manager.openFile();
-		catalogue.setFile(manager.getSelectedFile());
 		if (input != null){
+			catalogue.setFile(manager.getSelectedFile());
 			catalogue.setData(input);
 			catalogue.updateCatalogueView();
 		}

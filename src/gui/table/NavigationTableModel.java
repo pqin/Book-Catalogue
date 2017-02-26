@@ -71,6 +71,9 @@ public class NavigationTableModel extends MarcTableModel {
 				}
 				break;
 			}
+			if (value == null){
+				value = "";
+			}
 		}
 		return value;
 	}
