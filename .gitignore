@@ -5,3 +5,6 @@ resource/settings.properties
 .classpath
 .project
 .settings/
+
+# test files
+test_files/
