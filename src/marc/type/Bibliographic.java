@@ -3,15 +3,14 @@ package marc.type;
 import java.util.ArrayList;
 import java.util.List;
 
-import marc.MARC;
 import marc.field.FixedDatum;
 
 public class Bibliographic extends AbstractRecordType {
 	public Bibliographic(){
-		super("Bibliographic", MARC.LEADER_FIELD_LENGTH, 40);
+		super("Bibliographic", 40);
 	}
 	protected Bibliographic(String name1){
-		super("Bibliographic", MARC.LEADER_FIELD_LENGTH, name1, 40);
+		super("Bibliographic", name1, 40);
 	}
 
 	@Override

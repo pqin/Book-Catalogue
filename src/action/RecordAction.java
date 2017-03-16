@@ -2,10 +2,12 @@ package action;
 
 import javax.swing.AbstractAction;
 
+import application.RecordView;
 import controller.DialogManager;
 import marc.Catalogue;
+import marc.record.Record;
 
-public abstract class RecordAction extends AbstractAction {
+public abstract class RecordAction extends AbstractAction implements RecordView {
 	private static final long serialVersionUID = 1L;
 	protected Catalogue catalogue;
 	protected DialogManager manager;
@@ -30,12 +32,9 @@ public abstract class RecordAction extends AbstractAction {
 		recordIndex = -1;
 	}
 	
-	public void setRecordIndex(int i){
-		recordIndex = i;
-		if (i >= 0 && i < catalogue.size()){
-			setEnabled(true);
-		} else {
-			setEnabled(false);
-		}
+	@Override
+	public void updateView(Record record, int index){
+		recordIndex = index;
+		setEnabled(index >= 0 && index < catalogue.size());
 	}
 }

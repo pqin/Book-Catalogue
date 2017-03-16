@@ -7,7 +7,8 @@ import java.time.temporal.ChronoField;
 
 import marc.MARC;
 
-public final class FixedLengthDataElement extends FixedField {
+public final class FixedDataElement extends FixedField {
+	public static final String TAG = "008";
 	private static final int ENTRYDATE_INDEX = 0;
 	private static final int ENTRYDATE_LENGTH = 6;
 	private static final DateTimeFormatter formatter;
@@ -21,8 +22,13 @@ public final class FixedLengthDataElement extends FixedField {
 		formatter = builder.toFormatter(MARC.LANGUAGE_LOCALE);
 	}
 	
-	public FixedLengthDataElement(final int length){
-		super("008", length);
+	public FixedDataElement(){
+		super(TAG, ENTRYDATE_LENGTH);
+		setEntryDate(MARC.EPOCH_START);
+	}
+	public FixedDataElement(final int length){
+		super(TAG, length);
+		setEntryDate(MARC.EPOCH_START);
 	}
 	
 	final public void setEntryDate(LocalDate entryDate){
@@ -33,5 +39,18 @@ public final class FixedLengthDataElement extends FixedField {
 		String text = String.copyValueOf(data, ENTRYDATE_INDEX, ENTRYDATE_LENGTH);
 		LocalDate entryDate = LocalDate.parse(text, formatter);
 		return entryDate;
+	}
+	
+	@Override
+	public final void clear(){
+		LocalDate tmp = getEntryDate();
+		super.clear();
+		setEntryDate(tmp);
+	}
+	
+	public FixedDataElement copy(){
+		FixedDataElement copy = new FixedDataElement(this.data.length);
+		copy.setFieldData(this.data);
+		return copy;
 	}
 }

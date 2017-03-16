@@ -82,7 +82,7 @@ public class SearchManager implements MarcComponent, CatalogueView {
 	}
 	
 	@Override
-	public void updateView(Catalogue catalogue) {
+	public void updateView(Catalogue catalogue, int index) {
 		data = catalogue;
 	}
 }

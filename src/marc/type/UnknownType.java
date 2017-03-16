@@ -3,12 +3,11 @@ package marc.type;
 import java.util.ArrayList;
 import java.util.List;
 
-import marc.MARC;
 import marc.field.FixedDatum;
 
 public final class UnknownType extends AbstractRecordType {
 	public UnknownType(){
-		super("Unknown", MARC.LEADER_FIELD_LENGTH, 6);
+		super("Unknown", 6);
 	}
 	
 	@Override

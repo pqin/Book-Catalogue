@@ -3,7 +3,6 @@ package application;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -16,17 +15,16 @@ public class WindowBuilder {
 	private String title;
 	private JMenuBar menubar;
 	private JToolBar toolbar;
-	private Component itemSelector, itemEditor;
-	private WindowListener listener;
+	private Component selector, recordDisplay, search;
 	
 	public WindowBuilder(){
 		frame = null;
 		title = null;
 		menubar = null;
 		toolbar = null;
-		itemSelector = null;
-		itemEditor = null;
-		listener = null;
+		selector = new JPanel();
+		recordDisplay = new JPanel();
+		search = new JPanel();
 	}
 	
 	public JFrame buildFrame(){
@@ -35,31 +33,21 @@ public class WindowBuilder {
 		frame.setTitle((title == null)? "Default JFrame" : title);
 		
 		// get main component
-		Component mainComponent = null;
-		int w = 960;
-		int h = 600;
-		if (itemSelector == null && itemEditor == null){
-			mainComponent = new JPanel();
-		} else {
-			if (itemSelector != null){
-				mainComponent = itemSelector;
-			}
-			if (itemEditor != null){
-				mainComponent = itemEditor;
-			}
-			if (itemSelector != null && itemEditor != null){
-				mainComponent = new JSplitPane(
-						JSplitPane.HORIZONTAL_SPLIT,
-						itemSelector, itemEditor);
-				double g = 0.4;	// gamma, weight of left/top Component
-				int w0 = (int) (w * g);
-				int w1 = (int) (w * (1.0 - g));
-				Dimension sizeLeft = new Dimension(w0, h);
-				Dimension sizeRight = new Dimension(w1, h);
-				itemSelector.setPreferredSize(sizeLeft);
-				itemEditor.setPreferredSize(sizeRight);
-			}
-		}
+		Component panel = null;
+		final int w = 960;
+		final int h = 600;
+		Component mainComponent = new JSplitPane(
+				JSplitPane.HORIZONTAL_SPLIT, selector, recordDisplay);
+		panel = new JSplitPane(
+				JSplitPane.VERTICAL_SPLIT, mainComponent, search);
+		double g = 0.4;	// gamma, weight of left/top Component
+		int w0 = (int) (w * g);
+		int w1 = (int) (w * (1.0 - g));
+		int h0 = (int) (h * g);
+		int h1 = (int) (h * (1.0 - g));
+		selector.setPreferredSize(new Dimension(w0, h1));
+		recordDisplay.setPreferredSize(new Dimension(w1, h1));
+		search.setPreferredSize(new Dimension(w, h0));
 		frame.setLayout(new BorderLayout());
 		if (menubar != null){
 			frame.setJMenuBar(menubar);
@@ -67,15 +55,9 @@ public class WindowBuilder {
 		if (toolbar != null){
 			frame.add(toolbar, BorderLayout.NORTH);
 		}
-		frame.add(mainComponent, BorderLayout.CENTER);
+		frame.add(panel, BorderLayout.CENTER);
 		frame.pack();
-		
 		frame.setLocationRelativeTo(null);
-		
-		if (listener != null){
-			frame.addWindowListener(listener);
-		}
-		
 		return frame;
 	}
 	
@@ -88,13 +70,13 @@ public class WindowBuilder {
 	public void setToolBar(JToolBar component){
 		toolbar = component;
 	}
-	public void setItemSelector(Component component){
-		itemSelector = component;
+	public void setSelector(Component component){
+		selector = component;
 	}
-	public void setItemEditor(Component component){
-		itemEditor = component;
+	public void setRecordDisplay(Component component){
+		recordDisplay = component;
 	}
-	public void setWindowListener(WindowListener component){
-		listener = component;
+	public void setSearchDisplay(Component component){
+		search = component;
 	}
 }

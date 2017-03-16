@@ -4,7 +4,7 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 
 import gui.search.Token.Type;
-import marc.Record;
+import marc.record.Record;
 
 public class SearchParser {
 	private String[] tag;
@@ -19,8 +19,6 @@ public class SearchParser {
 	private int fixedIndex;
 	private String fixedValue;
 	private char[] fixedData;
-	private String language;
-	private String place;
 	
 	private boolean controlSearch;
 	private boolean controlMatch;
@@ -61,12 +59,9 @@ public class SearchParser {
 		fixedIndex = form.getFixedIndex();
 		fixedValue = form.getFixedValue();
 		
-		language = form.getLanguage();
-		place = form.getPlace();
-		
 		controlMatch = false;
 		dataMatch = false;
-		controlSearch = !( language.isEmpty() && place.isEmpty() && fixedValue.isEmpty());
+		controlSearch = !fixedValue.isEmpty();
 	}
 	
 	private Token[] parseQuery(String text){
@@ -120,14 +115,8 @@ public class SearchParser {
 		controlMatch = true;
 		if (controlSearch){
 			if (!fixedValue.isEmpty()){
-				fixedData = record.getResource().getData(fixedIndex, fixedValue.length());
+				fixedData = record.getFixedDataElement().getData(fixedIndex, fixedValue.length());
 				controlMatch &= String.valueOf(fixedData).equals(fixedValue);
-			}
-			if (!language.isEmpty()){
-				controlMatch &= record.containsLanguage(language);
-			}
-			if (!place.isEmpty()){
-				controlMatch &= record.containsPlace(place);
 			}
 		}
 		// find keywords

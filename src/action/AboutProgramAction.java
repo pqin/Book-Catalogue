@@ -4,28 +4,31 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import application.MarcWindow;
 import controller.DialogManager;
+import controller.MetadataListener;
+import controller.ProgramMetaData;
 
-public class AboutProgramAction extends AbstractAction {
+public class AboutProgramAction extends AbstractAction implements MetadataListener {
 	private static final long serialVersionUID = 1L;
 	private static final String format = "%s %s";
-	private DialogManager manager;
-	private String aboutMessage;
-
-	public AboutProgramAction(DialogManager manager){
-		super("About");
-		this.manager = manager;
-		this.aboutMessage = null;
-	}
 	
-	public void setWindow(MarcWindow app){
-		this.aboutMessage = String.format(format, app.getApplicationTitle(), app.getVersion());
+	private DialogManager manager;
+	private String message;
+
+	public AboutProgramAction(DialogManager mgr){
+		super("About Application");
+		manager = mgr;
+		message = null;
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		manager.showMessage(aboutMessage, "About", false);
+	public void actionPerformed(ActionEvent ignored) {
+		manager.showMessage(message, "About", false);
+	}
+
+	@Override
+	public void updateMetadata(ProgramMetaData data) {
+		message = String.format(format, data.getName(), data.getVersion());
 	}
 
 }

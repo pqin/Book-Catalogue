@@ -41,7 +41,7 @@ public class WindowAction extends AbstractAction {
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent ignored) {
 		if (window == null || !isValidEvent(eventID)){
 			// do nothing
 		} else {

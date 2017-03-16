@@ -6,27 +6,22 @@ import javax.swing.AbstractAction;
 
 import gui.RecordSelector;
 import gui.search.SearchManager;
-import gui.table.RecordSearchFilter;
 
 public class ClearSearchAction extends AbstractAction {
 	private static final long serialVersionUID = 1L;
 	private SearchManager manager;
-	private RecordSearchFilter filter;
 	private RecordSelector selector;
 
 	public ClearSearchAction(SearchManager manager, RecordSelector selector){
 		super("Clear");
 		this.manager = manager;
 		this.selector = selector;
-		this.filter = selector.getSearchFilter();
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent ignored) {
 		manager.clearResults();
-		filter.clearSearch();
-		selector.updateView();
-		selector.fireDataUpdated();
+		selector.clearSearch();
 	}
 
 }

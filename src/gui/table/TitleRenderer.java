@@ -5,7 +5,7 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import marc.Record;
+import marc.record.Record;
 
 public class TitleRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;

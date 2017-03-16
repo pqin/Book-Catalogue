@@ -13,7 +13,7 @@ public class Field implements Comparable<Field> {
 		indicator1 = MARC.BLANK_CHAR;
 		indicator2 = MARC.BLANK_CHAR;
 	}
-	public Field(String tag, char ind1, char ind2){
+	protected Field(String tag, char ind1, char ind2){
 		this.tag = tag;
 		indicator1 = ind1;
 		indicator2 = ind2;
@@ -68,7 +68,10 @@ public class Field implements Comparable<Field> {
 		// implementation defined
 	}
 	
-	public boolean isControlField(){
+	public final boolean hasTag(String value){
+		return tag.equals(value);
+	}
+	public final boolean isControlField(){
 		return tag.startsWith("00");
 	}
 	
@@ -77,9 +80,6 @@ public class Field implements Comparable<Field> {
 		return s;
 	}
 	
-	public boolean contains(String query, final boolean caseSensitive){
-		return false;
-	}
 	public boolean contains(Pattern query){
 		return false;
 	}
@@ -89,9 +89,9 @@ public class Field implements Comparable<Field> {
 		String tag0 = this.tag;
 		String tag1 = o.tag;
 		int result = tag0.compareTo(tag1);
-		if (MARC.LEADER_TAG.equals(tag0)){
+		if (Leader.TAG.equals(tag0)){
 			result = -1 * Math.abs(result);
-		} else if (MARC.LEADER_TAG.equals(tag1)){
+		} else if (Leader.TAG.equals(tag1)){
 			result = Math.abs(result);
 		}
 		return result;

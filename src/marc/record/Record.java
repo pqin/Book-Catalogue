@@ -1,4 +1,4 @@
-package marc;
+package marc.record;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -10,23 +10,23 @@ import java.util.regex.Pattern;
 import marc.field.ControlField;
 import marc.field.DataField;
 import marc.field.Field;
+import marc.field.FixedDataElement;
 import marc.field.Leader;
 import marc.field.Subfield;
-import marc.resource.Resource;
 
 public final class Record implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private int length;
 	private Leader leader;
-	private Resource resource;
+	private FixedDataElement dataElement;
 	private ArrayList<ControlField> controlField;
 	private ArrayList<DataField> dataField;
 	
 	public Record(){
 		length = 0;
 		leader = new Leader();
-		resource = new Resource();
+		dataElement = new FixedDataElement();
 		controlField = new ArrayList<ControlField>();
 		dataField = new ArrayList<DataField>();
 	}
@@ -40,7 +40,7 @@ public final class Record implements Serializable {
 	}
 	
 	public void setEntryDate(LocalDate date){
-		resource.setEntryDate(date);		
+		dataElement.setEntryDate(date);
 	}
 	
 	public String getControlNumber(){
@@ -62,18 +62,63 @@ public final class Record implements Serializable {
 		return m;
 	}
 	
+	public String getTitle(){
+		char[] code = {'a', 'h', 'b', 'c'};
+		String[] title = getFormattedData("245", code, " ");
+		if (title.length == 0){
+			return "";
+		} else {
+			return title[0];
+		}
+	}
+
+	private int getNonFilingCharacters(DataField f){
+		final int radix = 10;
+		int nonFiling = 0;
+		if (f != null){
+			nonFiling = Character.digit(f.getIndicator2(), radix);
+		}
+		if (nonFiling < 0){
+			nonFiling = 0;
+		}
+		return nonFiling;
+	}
+
+	public String getFilingTitle(){
+		ArrayList<DataField> list = getDataField("245");
+		if (list.isEmpty()){
+			return "";
+		}
+		char[] code = {'a', 'h', 'b', 'c'};
+		DataField f = list.get(0);
+		String title = getFormattedData(f, code, " ");
+		int nonFiling = getNonFilingCharacters(f);
+		if (title == null){
+			title = "";
+		} else if (nonFiling < 0){
+			nonFiling = 0;
+		}
+		String filingTitle = null;
+		try {
+			filingTitle = title.substring(nonFiling);
+		} catch (IndexOutOfBoundsException e){
+			filingTitle = title;
+		}
+		return filingTitle;
+	}
+
 	// get MARC data
 	public Leader getLeader(){
 		return leader;
 	}
 	public void setLeader(Leader value){
-		leader.setAllSubfields(value.getSubfield());
+		leader.setFieldData(value.getFieldData());
 	}
-	public Resource getResource(){
-		return resource;
+	public FixedDataElement getFixedDataElement(){
+		return dataElement;
 	}
-	public void setResource(Resource value){
-		resource.setAllSubfields(value.getSubfield());
+	public void setFixedDataElement(FixedDataElement value){
+		dataElement.setFieldData(value.getFieldData());
 	}
 	public int getFieldCount(){
 		int count = controlField.size() + dataField.size() + 2;
@@ -82,7 +127,7 @@ public final class Record implements Serializable {
 	public ArrayList<Field> getFields(){
 		ArrayList<Field> tmp = new ArrayList<Field>();
 		tmp.add(leader);
-		tmp.add(resource);
+		tmp.add(dataElement);
 		tmp.addAll(controlField);
 		tmp.addAll(dataField);
 		Collections.sort(tmp);
@@ -93,10 +138,10 @@ public final class Record implements Serializable {
 		Field tmp = null;
 		Iterator<? extends Field> it = null;
 		if (tag != null){
-			if (tag.equals(MARC.LEADER_TAG)){
+			if (tag.equals(Leader.TAG)){
 				f.add(leader);
-			} else if (tag.equals(MARC.RESOURCE_TAG)){
-				f.add(resource);
+			} else if (tag.equals(FixedDataElement.TAG)){
+				f.add(dataElement);
 			} else if (tag.startsWith("00")){
 				it = controlField.iterator();
 			} else {
@@ -118,10 +163,10 @@ public final class Record implements Serializable {
 		Field tmp = null;
 		Iterator<? extends Field> it = null;
 		if (tag != null){
-			if (tag.equals(MARC.LEADER_TAG)){
+			if (tag.equals(Leader.TAG)){
 				return leader;
-			} else if (tag.equals(MARC.RESOURCE_TAG)){
-				return resource;
+			} else if (tag.equals(FixedDataElement.TAG)){
+				return dataElement;
 			} else if (tag.startsWith("00")){
 				it = controlField.iterator();
 			} else {
@@ -205,49 +250,6 @@ public final class Record implements Serializable {
 		}
 		return b.toString();
 	}
-	public String getTitle(){
-		char[] code = {'a', 'h', 'b', 'c'};
-		String[] title = getFormattedData("245", code, " ");
-		if (title.length == 0){
-			return "";
-		} else {
-			return title[0];
-		}
-	}
-	public int getNonFilingCharacters(DataField f){
-		final int radix = 10;
-		int nonFiling = 0;
-		if (f != null){
-			nonFiling = Character.digit(f.getIndicator2(), radix);
-		}
-		if (nonFiling < 0){
-			nonFiling = 0;
-		}
-		return nonFiling;
-	}
-	public String getFilingTitle(){
-		ArrayList<DataField> list = getDataField("245");
-		if (list.isEmpty()){
-			return "";
-		}
-		char[] code = {'a', 'h', 'b', 'c'};
-		DataField f = list.get(0);
-		String title = getFormattedData(f, code, " ");
-		int nonFiling = getNonFilingCharacters(f);
-		if (title == null){
-			title = "";
-		} else if (nonFiling < 0){
-			nonFiling = 0;
-		}
-		String filingTitle = null;
-		try {
-			filingTitle = title.substring(nonFiling);
-		} catch (IndexOutOfBoundsException e){
-			filingTitle = title;
-		}
-		return filingTitle;
-	}
-
 	public void addField(ControlField f){
 		controlField.add(f);
 	}
@@ -288,23 +290,6 @@ public final class Record implements Serializable {
 		return data;
 	}
 	
-	public boolean contains(String query, String tag, final boolean caseSensitive){
-		ArrayList<DataField> field = null;
-		if (tag == null || tag.isEmpty()){
-			field = dataField;
-		} else {
-			field = getDataField(tag);
-		}
-		boolean match = false;
-		Iterator<DataField> it = field.iterator();
-		while (it.hasNext()){
-			if (it.next().contains(query, caseSensitive)){
-				match = true;
-				break;
-			}
-		}
-		return match;
-	}
 	public boolean contains(Pattern query, String tag){
 		ArrayList<DataField> field = null;
 		if (tag == null || tag.isEmpty()){
@@ -322,19 +307,6 @@ public final class Record implements Serializable {
 		}
 		return match;
 	}
-	public boolean containsLanguage(String language){
-		boolean match = false;
-		String resourceLanguage = String.valueOf(resource.getData(Resource.LANGUAGE, 3));
-		match |= resourceLanguage.equals(language);
-		match |= contains(language, "041", false);
-		return match;
-	}
-	public boolean containsPlace(String place){
-		boolean match = false;
-		String resourcePlace = String.valueOf(resource.getData(Resource.PLACE, 3));
-		match = resourcePlace.equals(place);
-		return match;
-	}
 	
 	public void sortFields(){
 		Collections.sort(dataField);
@@ -344,7 +316,7 @@ public final class Record implements Serializable {
 		Record copy = new Record();
 		copy.length = this.length;
 		copy.leader = this.leader.copy();
-		copy.resource = this.resource.copy();
+		copy.dataElement = this.dataElement.copy();
 		Iterator<ControlField> c = controlField.iterator();
 		while (c.hasNext()){
 			copy.addField(c.next().copy());

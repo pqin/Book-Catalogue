@@ -20,9 +20,11 @@ import gui.table.RecordTable;
 import gui.table.RecordTableModel;
 import marc.Factory;
 import marc.MARC;
-import marc.Record;
 import marc.field.DataField;
 import marc.field.Field;
+import marc.field.FixedDataElement;
+import marc.field.Leader;
+import marc.record.Record;
 import marc.type.AbstractRecordType;
 
 public final class RecordForm extends RecordPanel implements ActionListener, ListSelectionListener {
@@ -161,14 +163,16 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 			String tag = f.getTag();
 			Field data = null;
 			int option = JOptionPane.CANCEL_OPTION;
-			if (tag.equals(MARC.LEADER_TAG)){
+			if (tag.equals(Leader.TAG)){
+				type = Factory.getMaterialConfig(record.getLeader());
 				leaderForm.setMask(type.getTypeMap());
 				leaderForm.setFixedField(record.getLeader());
 				option = showEditForm(leaderForm);
 				data = leaderForm.getFixedField();
-			} else if (tag.equals(MARC.RESOURCE_TAG)){
+			} else if (tag.equals(FixedDataElement.TAG)){
+				type = Factory.getMaterialConfig(record.getLeader());
 				resourceForm.setMask(type.getConfigMap());
-				resourceForm.setFixedField(record.getResource());
+				resourceForm.setFixedField(record.getFixedDataElement());
 				option = showEditForm(resourceForm);
 				data = resourceForm.getFixedField();
 			} else {
@@ -201,9 +205,9 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 				} else {
 					tag = "";
 				}
-				if (tag.equals(MARC.LEADER_TAG)){
+				if (tag.equals(Leader.TAG)){
 					removeButton.setEnabled(false);
-				} else if (tag.equals(MARC.RESOURCE_TAG)){
+				} else if (tag.equals(FixedDataElement.TAG)){
 					removeButton.setEnabled(false);
 				} else {
 					removeButton.setEnabled(ready);

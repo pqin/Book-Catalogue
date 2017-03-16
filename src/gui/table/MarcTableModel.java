@@ -17,20 +17,10 @@ public class MarcTableModel extends AbstractTableModel {
 	protected String[] header;
 	protected Catalogue data;
 	
-	public MarcTableModel(){
-		super();
-		data = null;
-		header = new String[0];
-	}
 	public MarcTableModel(Catalogue catalogue){
 		super();
 		data = catalogue;
 		header = new String[0];
-	}
-	public MarcTableModel(String[] columnNames, Catalogue catalogue){
-		super();
-		data = catalogue;
-		header = columnNames;
 	}
 	
 	public void setHeader(String[] columnNames){

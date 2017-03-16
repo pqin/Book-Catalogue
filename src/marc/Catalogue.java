@@ -1,8 +1,6 @@
 package marc;
 
 import java.awt.Component;
-import java.io.File;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -11,9 +9,9 @@ import java.util.List;
 import application.CatalogueView;
 import application.MarcComponent;
 import application.RecordView;
+import marc.record.Record;
 
-public class Catalogue implements MarcComponent {
-	private File file;
+public final class Catalogue implements MarcComponent {
 	private ArrayList<Record> data;
 	private ArrayList<CatalogueView> catalogueView;
 	private ArrayList<RecordView> recordView;
@@ -22,20 +20,11 @@ public class Catalogue implements MarcComponent {
 		data = new ArrayList<Record>();
 		create();
 	}
-	public Catalogue(List<Record> list){
-		data = new ArrayList<Record>(list);
-		create();
-	}
-	public Catalogue(Record[] list){
-		data = new ArrayList<Record>(Arrays.asList(list));
-		create();
-	}
 	
 	@Override
 	public void create() {
 		catalogueView = new ArrayList<CatalogueView>();
 		recordView = new ArrayList<RecordView>();
-		file = new File("");
 	}
 	@Override
 	public void destroy() {
@@ -75,52 +64,42 @@ public class Catalogue implements MarcComponent {
 		return array;
 	}
 	
-	/**
-	 * @return the file
-	 */
-	public final File getFile() {
-		return file;
-	}
-	/**
-	 * @param file the file to set
-	 */
-	public final void setFile(File file) {
-		this.file = file;
-	}
 	public void add(Record record){
+		int index = data.size();
 		data.add(record);
+		updateCatalogueView(index);
 	}
 	public void add(Record[] records){
-		ArrayList<Record> list = new ArrayList<Record>(Arrays.asList(records));
-		data.addAll(list);
+		addData(Arrays.asList(records));
 	}
-	public void setData(ArrayList<Record> records) {
+	public void loadData(List<Record> list) {
 		data.clear();
-		data.addAll(records);
+		addData(list);
+	}
+	private void addData(List<Record> list){
+		int size = data.size();
+		int index = list.size() > 0 ? size : size - 1;
+		data.addAll(list);
+		updateCatalogueView(index);
 	}
 	public void set(int index, Record record){
 		data.set(index, record);
 	}
 	
-	public Record remove(int index){
-		return data.remove(index);
+	public void remove(int index){
+		data.remove(index);
+		if (index >= data.size()){
+			index = data.size() - 1;
+		}
+		updateCatalogueView(index);
 	}
-	public boolean remove(Record record){
-		return data.remove(record);
-	}
+	
 	public void clear(){
 		data.clear();
 	}
 	public List<Record> extract(int index, int length){
 		List<Record> sublist = data.subList(index, index + length);
 		return sublist;
-	}
-	
-	public Record generateRecord(){
-		Record record = new Record();
-		LocalDate currentDate = LocalDate.now(MARC.TIME_ZONE);
-		record.setEntryDate(currentDate);
-		return record;
 	}
 	
 	public void addCatalogueView(CatalogueView view){
@@ -136,21 +115,23 @@ public class Catalogue implements MarcComponent {
 		recordView.remove(view);
 	}
 
-	public void updateCatalogueView(){
+	public void updateCatalogueView(int index){
 		Iterator<CatalogueView> iterator = catalogueView.iterator();
 		while (iterator.hasNext()){
-			iterator.next().updateView(this);
+			iterator.next().updateView(this, index);
 		}
 	}
 	public void updateRecordView(int index){
 		Record record = null;
-		Iterator<RecordView> iterator = null;
 		if (index >= 0 && index < data.size()){
 			record = data.get(index);
-			iterator = recordView.iterator();
-			while (iterator.hasNext()){
-				iterator.next().updateView(record);
-			}
+		} else {
+			record = null;
+			index = -1;
+		}
+		Iterator<RecordView> iterator = recordView.iterator();
+		while (iterator.hasNext()){
+			iterator.next().updateView(record, index);
 		}
 	}
 	

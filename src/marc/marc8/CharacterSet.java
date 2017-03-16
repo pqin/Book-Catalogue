@@ -101,4 +101,11 @@ public abstract class CharacterSet {
 		counter = (counter + 1) % bytesPerChar;
 		return c;
 	}
+	
+	public boolean contains(char c){
+		return false;
+	}
+	public byte encode(char c){
+		return 0x00;
+	}
 }

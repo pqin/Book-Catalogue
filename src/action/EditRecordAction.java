@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import controller.DialogManager;
 import gui.form.RecordForm;
 import marc.Catalogue;
-import marc.Record;
+import marc.record.Record;
 
 public class EditRecordAction extends RecordAction {
 	private static final long serialVersionUID = 1L;
@@ -16,17 +16,8 @@ public class EditRecordAction extends RecordAction {
 		form = new RecordForm();
 	}
 	
-	public void setRecordIndex(int i){
-		recordIndex = i;
-		if (i >= 0 && i < catalogue.size()){
-			setEnabled(true);
-		} else {
-			setEnabled(false);
-		}
-	}
-	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent ignored) {
 		Record record = null;
 		if (recordIndex == -1){
 			manager.showMessage("No Record selected.", "Edit Record", true);

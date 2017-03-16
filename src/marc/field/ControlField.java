@@ -19,13 +19,12 @@ public class ControlField extends Field {
 	public ControlField(int length){
 		super();
 		data = new char[length];
-		Arrays.fill(data, MARC.FILL_CHAR);
+		Arrays.fill(data, MARC.BLANK_CHAR);
 	}
 	public ControlField(String tag, int length){
-		super();
-		setTag(tag);
+		super(tag, MARC.BLANK_CHAR, MARC.BLANK_CHAR);
 		data = new char[length];
-		Arrays.fill(data, MARC.FILL_CHAR);
+		Arrays.fill(data, MARC.BLANK_CHAR);
 	}
 	
 	@Override
@@ -78,7 +77,7 @@ public class ControlField extends Field {
 		data = Arrays.copyOf(value, data.length);
 		for (int i = 0; i < data.length; ++i){
 			if (data[i] == '\u0000'){
-				data[i] = MARC.FILL_CHAR;
+				data[i] = MARC.BLANK_CHAR;
 			}
 		}
 	}
@@ -115,7 +114,7 @@ public class ControlField extends Field {
 		if (index >= 0 && index+length <= data.length){
 			value = Arrays.copyOfRange(data, index, index+length);
 		} else {
-			Arrays.fill(value, MARC.FILL_CHAR);
+			Arrays.fill(value, MARC.BLANK_CHAR);
 		}
 		return value;
 	}
@@ -146,7 +145,7 @@ public class ControlField extends Field {
 		setDataToValue(value, index);
 	}
 	public void setData(char[] value, int index, int length){
-		setDataToValue(value, MARC.FILL_CHAR, index, length);
+		setDataToValue(value, MARC.BLANK_CHAR, index, length);
 	}
 	
 	protected void setDataToValue(int value, int offset, int length){
@@ -176,15 +175,7 @@ public class ControlField extends Field {
 			}
 		}
 	}
-	@Override
-	public boolean contains(String query, final boolean caseSensitive){
-		String reference = String.copyValueOf(data);
-		if (!caseSensitive){
-			reference = reference.toLowerCase(MARC.LANGUAGE_LOCALE);
-			query = query.toLowerCase(MARC.LANGUAGE_LOCALE);
-		}
-		return (reference.indexOf(query) != -1);
-	}
+	
 	@Override
 	public boolean contains(Pattern query){
 		String reference = String.copyValueOf(data);

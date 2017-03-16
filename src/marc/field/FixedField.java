@@ -5,26 +5,16 @@ import java.util.Arrays;
 import marc.MARC;
 
 public class FixedField extends ControlField {
-	protected int FIXED_FIELD_LENGTH;
-	
 	public FixedField(){
 		super();
-		FIXED_FIELD_LENGTH = 0;
-		data = new char[FIXED_FIELD_LENGTH];
-		Arrays.fill(data, MARC.FILL_CHAR);
+		data = new char[0];
+		Arrays.fill(data, MARC.BLANK_CHAR);
 	}
-	public FixedField(int length){
-		super();
-		FIXED_FIELD_LENGTH = length;
-		data = new char[FIXED_FIELD_LENGTH];
-		Arrays.fill(data, MARC.FILL_CHAR);
-	}
-	public FixedField(String tag, int length){
+	public FixedField(String tag, final int length){
 		super();
 		setTag(tag);
-		FIXED_FIELD_LENGTH = length;
-		data = new char[FIXED_FIELD_LENGTH];
-		Arrays.fill(data, MARC.FILL_CHAR);
+		data = new char[length];
+		Arrays.fill(data, MARC.BLANK_CHAR);
 	}
 	
 	@Override
@@ -40,6 +30,9 @@ public class FixedField extends ControlField {
 			value = Arrays.copyOfRange(data, start, end);
 		}
 		return value;
+	}
+	public void setData(char[] value, FixedDatum mask){
+		setData(value, mask.getIndex(), mask.getLength());
 	}
 	
 	public FixedField copy(){

@@ -1,7 +1,12 @@
 package application;
 
-import marc.Record;
+import marc.record.Record;
 
 public interface RecordView {
-	public void updateView(Record record);
+	/**
+	 * Updates view of record at index.
+	 * @param record
+	 * @param index
+	 */
+	abstract void updateView(Record record, int index);
 }

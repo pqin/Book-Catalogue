@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import controller.DialogManager;
 import marc.Catalogue;
-import marc.Record;
+import marc.record.Record;
 
 public class DeleteRecordAction extends RecordAction {
 	private static final long serialVersionUID = 1L;
@@ -18,35 +18,26 @@ public class DeleteRecordAction extends RecordAction {
 		super("Delete Record", data, manager);
 	}
 	
-	public void setRecordIndex(int i){
-		recordIndex = i;
-		if (i >= 0 && i < catalogue.size()){
-			setEnabled(true);
-		} else {
-			setEnabled(false);
-		}
-	}
-	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent ignored) {
 		Record record = null;
-		String title = null;
+		String identifier = null;
+		String title = "Delete Record";
 		String message = null;
 		if (recordIndex == -1){
-			manager.showMessage("No Record selected.", "Delete Record", true);
+			manager.showMessage("No Record selected.", title, true);
 		} else {
 			record = catalogue.get(recordIndex);
 			// generate message: split into multiple lines along ISBD punctuation if needed
-			title = record.getTitle();
-			if (title.length() > MAX_TITLE_LENGTH){
-				title = String.join("\n", title.split(TITLE_ISBD_REGEX));
+			identifier = record.getTitle();
+			if (identifier.length() > MAX_TITLE_LENGTH){
+				identifier = String.join("\n", identifier.split(TITLE_ISBD_REGEX));
 			}
-			message = String.format("Delete Record:%n%s", title);
+			message = String.format("Delete Record:%n%s", identifier);
 			
-			boolean option = manager.showDialog(message, "Delete Record", true);
+			boolean option = manager.showDialog(message, title, true);
 			if (option){
-				record = catalogue.remove(recordIndex);
-				catalogue.updateCatalogueView();
+				catalogue.remove(recordIndex);
 			}
 		}
 	}

@@ -3,8 +3,9 @@
  */
 package gui.table;
 
-import marc.Record;
+import marc.Catalogue;
 import marc.field.DataField;
+import marc.record.Record;
 
 /**
  * @author Peter
@@ -16,8 +17,8 @@ public class NavigationTableModel extends MarcTableModel {
 	protected static final int TITLE = 1;
 		
 
-	public NavigationTableModel(){
-		super();
+	public NavigationTableModel(Catalogue catalogue){
+		super(catalogue);
 		
 		String[] columnNames = {"Main Entry", "Title"};
 		setHeader(columnNames);

@@ -20,13 +20,13 @@ import java.util.regex.Pattern;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import marc.MARC;
-import marc.Record;
 import marc.field.ControlField;
 import marc.field.DataField;
 import marc.field.Field;
+import marc.field.FixedDataElement;
 import marc.field.Leader;
 import marc.field.Subfield;
-import marc.resource.Resource;
+import marc.record.Record;
 
 public class MarcPlain extends AbstractMarc {
 	public static final Pattern FIELD_REGEX = Pattern.compile("(LDR|\\d{3})([#\\d])([#\\d])");
@@ -47,7 +47,7 @@ public class MarcPlain extends AbstractMarc {
     	String data = null;
     	Subfield subfield = null;
     	Leader leader = null;
-    	Resource resource = null;
+    	FixedDataElement dataElementField = null;
     	ControlField cField = null;
     	if (tag.startsWith("00")){
     		subfield = field.getSubfield(0);
@@ -55,7 +55,7 @@ public class MarcPlain extends AbstractMarc {
     		cField.setSubfield(0, subfield);
     	}
     	
-		if (tag.equals(MARC.LEADER_TAG)){
+		if (tag.equals(Leader.TAG)){
     		leader = new Leader();
     		subfield = field.getSubfield(0);
         	if (subfield == null){
@@ -65,16 +65,17 @@ public class MarcPlain extends AbstractMarc {
         	}
     		leader.setAllSubfields(data.replace('#', MARC.BLANK_CHAR));
     		record.setLeader(leader);
-    	} else if (tag.equals(MARC.RESOURCE_TAG)){
-    		resource = new Resource();
+    	} else if (tag.equals(FixedDataElement.TAG)){
+    		dataElementField = new FixedDataElement();
     		subfield = field.getSubfield(0);
         	if (subfield == null){
         		data = "";
         	} else {
         		data = subfield.getData();
+        		data = data.replace('#', MARC.BLANK_CHAR);
         	}
-    		resource.setAllSubfields(data.replace('#', MARC.BLANK_CHAR));
-    		record.setResource(resource);
+    		dataElementField.setFieldData(data.toCharArray());
+    		record.setFixedDataElement(dataElementField);
     	} else {
     		ind1 = field.getIndicator1();
     		ind2 = field.getIndicator2();
@@ -115,13 +116,13 @@ public class MarcPlain extends AbstractMarc {
                 // add data from before previous loop
                 if (record != null){
                 	build(record, field);
-                    if (tag.equals(MARC.LEADER_TAG)){
+                    if (tag.equals(Leader.TAG)){
                     	record.sortFields();
                         list.add(record);
                     }
                 }
                 // start new loop
-                if (tag.equals(MARC.LEADER_TAG)){
+                if (tag.equals(Leader.TAG)){
                     record = new Record();
                 }
                 field = new DataField(tag, ind1, ind2);
@@ -173,9 +174,9 @@ public class MarcPlain extends AbstractMarc {
 					out.write('$');
 					out.write(subfield.getCode());
 					subdata = subfield.getData();
-					if (tag.equals(MARC.LEADER_TAG)){
+					if (tag.equals(Leader.TAG)){
 						subdata = subdata.replace(MARC.BLANK_CHAR, '#');
-					} else if (tag.equals(MARC.RESOURCE_TAG)){
+					} else if (tag.equals(FixedDataElement.TAG)){
 						subdata = subdata.replace(MARC.BLANK_CHAR, '#');
 					}
 					out.write(subdata);

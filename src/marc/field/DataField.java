@@ -127,26 +127,6 @@ public final class DataField extends Field {
 	}
 	
 	@Override
-	public boolean contains(String query, final boolean caseSensitive){
-		// TODO match whole words only
-		// regex to the rescue?
-		boolean match = false;
-		String reference = null;
-		for (int i = 0; i < subfield.size(); ++i){
-			reference = subfield.get(i).getData();
-			if (!caseSensitive){
-				reference = reference.toLowerCase(MARC.LANGUAGE_LOCALE);
-				query = query.toLowerCase(MARC.LANGUAGE_LOCALE);
-			}
-			if (reference.indexOf(query) != -1){
-				match = true;
-				break;
-			}
-		}
-		
-		return match;
-	}
-	@Override
 	public boolean contains(Pattern query){
 		Matcher m = null;
 		String reference = null;

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -13,9 +14,9 @@ import javax.swing.filechooser.FileFilter;
 
 import application.MarcComponent;
 import marc.Catalogue;
-import marc.Record;
 import marc.format.AbstractMarc;
 import marc.format.FormatManager;
+import marc.record.Record;
 
 public class FileManager implements MarcComponent {
 	private static final int RECORD_CAP = 1024;
@@ -24,6 +25,7 @@ public class FileManager implements MarcComponent {
 	private JFileChooser fileChooser;
 	private AbstractMarc[] format;
 	private FormatManager formatManager;
+	private ArrayList<FileListener> listener;
 	
 	public FileManager(){
 		parent = null;
@@ -36,6 +38,10 @@ public class FileManager implements MarcComponent {
 	@Override
 	public void create() {
 		fileChooser = new JFileChooser();
+		File file = fileChooser.getSelectedFile();
+		if (file == null){
+			fileChooser.setSelectedFile(new File(""));
+		}
 		
 		formatManager = new FormatManager();
 		format = formatManager.getAvailableFormats();
@@ -44,21 +50,35 @@ public class FileManager implements MarcComponent {
 			fileChooser.addChoosableFileFilter(format[i].getExtensionFilter());
 		}
 		fileChooser.setAcceptAllFileFilterUsed(true);
+		
+		listener = new ArrayList<FileListener>();
 	}
 
 	@Override
 	public void destroy() {
 		parent = null;
 		fileChooser = null;
+		listener.clear();
 	}
 	@Override
 	public Component getComponent(){
 		return fileChooser;
 	}
-	
 	public void setParent(Component owner){
 		parent = owner;
 	}
+	
+	public void addFileListener(FileListener l){
+		listener.add(l);
+	}
+	private void updateListeners(File file){
+		fileChooser.setSelectedFile(file);
+		Iterator<FileListener> it = listener.iterator();
+		while (it.hasNext()){
+			it.next().fileChanged(file);
+		}
+	}
+	
 	
 	public ArrayList<Record> openFile(){
 		ArrayList<Record> data = null;
@@ -78,8 +98,7 @@ public class FileManager implements MarcComponent {
 		return data;
 	}
 	
-	public boolean saveFile(List<Record> records){
-		boolean status = false;
+	public void saveFile(List<Record> records){
 		File file = null;
 		FileFilter filter = null;
 		AbstractMarc selectedFormat = null;
@@ -90,19 +109,18 @@ public class FileManager implements MarcComponent {
 			selectedFormat = formatManager.getFormatForFileFilter(filter);
 			if (selectedFormat != null){
 				write(file, selectedFormat, records);
-				status = true;
 			}
 		}
-		return status;
 	}
-	public boolean saveFile(Catalogue records){
-		List<Record> data = records.toList();
-		boolean status = saveFile(data);
-		return status;
+	public void saveFile(Catalogue records){
+		saveFile(records.toList());
 	}
-	public File getSelectedFile(){
-		File file = fileChooser.getSelectedFile();
-		return file;
+	
+	public void setFile(File file){
+		fileChooser.setSelectedFile(file);
+	}
+	public File getFile(){
+		return fileChooser.getSelectedFile();
 	}
 	
 	public AbstractMarc getFormatForFile(File file){
@@ -122,6 +140,7 @@ public class FileManager implements MarcComponent {
 		ArrayList<Record> data = null;
 		try {
 			data = format.read(file);
+			updateListeners(file);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(parent,
 					String.format(
@@ -129,7 +148,10 @@ public class FileManager implements MarcComponent {
 							filename, path),
 					"File not Found",
 					JOptionPane.ERROR_MESSAGE);
+			data = new ArrayList<Record>();
+			e.printStackTrace();
         } catch (IOException e) {
+        	data = new ArrayList<Record>();
         	e.printStackTrace();
         }
 		int size = data.size();
@@ -153,6 +175,7 @@ public class FileManager implements MarcComponent {
 		String path = file.getParent();
 		try {
 			format.write(file, data);
+			updateListeners(file);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(parent,
 					String.format(
@@ -160,12 +183,9 @@ public class FileManager implements MarcComponent {
 							filename, path),
 					"File not Found",
 					JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
         } catch (IOException e) {
         	e.printStackTrace();
         }
-	}
-	
-	public void write(File file, AbstractMarc format, Catalogue data){
-		write(file, format, data.toList());
 	}
 }

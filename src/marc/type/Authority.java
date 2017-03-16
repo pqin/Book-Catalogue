@@ -3,22 +3,27 @@ package marc.type;
 import java.util.ArrayList;
 import java.util.List;
 
-import marc.MARC;
 import marc.field.FixedDatum;
 
 public final class Authority extends AbstractRecordType {
 	public Authority() {
-		super("Authority", MARC.LEADER_FIELD_LENGTH, 40);
+		super("Authority", 40);
 	}
-
+	
+	/* FixedDatum.label values / mnemonics referenced from OCLC.
+	 * "Authorities: Format and Indexes" www.oclc.org.
+	 * ©2017 OCLC Online Computer Library Center
+	 * 22 February 2017
+	 * < https://www.oclc.org/support/services/worldcat/documentation/authorities/authformat.en.html >
+	 */
 	@Override
 	protected List<FixedDatum> getTypeList() {
 		ArrayList<FixedDatum> tmp = new ArrayList<FixedDatum>();
 		tmp.add(new FixedDatum(5, 1, "Rec stat"));
 		tmp.add(new FixedDatum(6, 1, "Type"));
 		tmp.add(new FixedDatum(9, 1, "Encoding"));
-		tmp.add(new FixedDatum(17, 1, "Enc Lvl"));
-		tmp.add(new FixedDatum(18, 1, "Punc"));	// TODO
+		tmp.add(new FixedDatum(17, 1, "ELvl"));
+		tmp.add(new FixedDatum(18, 1, "Punc"));
 		return tmp;
 	}
 	

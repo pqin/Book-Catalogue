@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import controller.FileManager;
 import marc.Catalogue;
-import marc.Record;
+import marc.record.Record;
 
 public class NewFileAction extends FileAction {
 	private static final long serialVersionUID = 1L;
@@ -18,10 +18,8 @@ public class NewFileAction extends FileAction {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
-	public void actionPerformed(ActionEvent arg0) {		
-		catalogue.setFile(null);
-		catalogue.setData(new ArrayList<Record>());
-		catalogue.updateCatalogueView();
+	public void actionPerformed(ActionEvent ignored) {
+		catalogue.loadData(new ArrayList<Record>());
 	}
 
 }

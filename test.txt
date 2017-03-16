@@ -84,7 +84,7 @@ LDR##$a00000nam#a2200024ua#4500
 008##$a150615|||||||||xx#||||g#||||#00|#||freou
 020##$b9782070612758
 041##$afre
-1001#$ade Saint-Exupéry, Antoine
+1001#$aSaint-Exupéry, Antoine de
 245#3$aLe petit prince /$cAntoine de Saint-Exupéry
 260#2$aParis, France :$bGallimard,$c2007
 541##$e2015:000009

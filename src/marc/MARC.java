@@ -12,12 +12,6 @@ public class MARC {
 	public static final int TAG_LENGTH = 3;
 	public static final String UNKNOWN_TAG = "???";
 	
-	public static final String LEADER_TAG = "LDR";
-	public static final int LEADER_FIELD_LENGTH = 24;
-	
-	public static final String RESOURCE_TAG = "008";
-	public static final int RESOURCE_FIELD_LENGTH = 40;
-	
 	public static final ZoneId TIME_ZONE = ZoneId.systemDefault();
 	public static final LocalDate EPOCH_START = LocalDate.of(1968, 1, 1);
 	public static final Locale COUNTRY_LOCALE = Locale.US;

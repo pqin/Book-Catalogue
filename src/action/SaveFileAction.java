@@ -15,20 +15,14 @@ public class SaveFileAction extends FileAction {
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		boolean fileSaved = false;
-		File file = catalogue.getFile();
+	public void actionPerformed(ActionEvent ignored) {
+		File file = manager.getFile();
 		AbstractMarc format = null;
 		if (file == null){
-			fileSaved = manager.saveFile(catalogue);
-			file = manager.getSelectedFile();
-			if (fileSaved){
-				catalogue.setFile(file);
-				catalogue.updateCatalogueView();
-			}
+			manager.saveFile(catalogue);
 		} else {
 			format = manager.getFormatForFile(file);
-			manager.write(file, format, catalogue);
+			manager.write(file, format, catalogue.toList());
 		}
 	}
 

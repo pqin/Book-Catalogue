@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,19 +37,8 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 	private RecordSearchFilter filter;
 	private ArrayList<RecordSelectionListener> listener;
 	
-	public RecordSelector(){
-		model = new NavigationTableModel();
-		filter = null;
-		create();
-	}
-	public RecordSelector(Catalogue data){
-		model = new NavigationTableModel();
-		model.setData(data);
-		filter = null;
-		create();
-	}
-	public RecordSelector(RecordSearchFilter f){
-		model = new NavigationTableModel();
+	public RecordSelector(Catalogue data, RecordSearchFilter f){
+		model = new NavigationTableModel(data);
 		filter = f;
 		create();
 	}
@@ -90,8 +80,17 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 	public Component getComponent(){
 		return panel;
 	}
-	public RecordSearchFilter getSearchFilter(){
-		return filter;
+	
+	public void setSearchIndices(List<Integer> searchIndices){
+		filter.showSearch(true);
+		filter.setFilteredIndices(searchIndices);
+		model.fireTableDataChanged();
+		updateStatusBar();
+	}
+	public void clearSearch(){
+		filter.clearSearch();
+		model.fireTableDataChanged();
+		updateStatusBar();
 	}
 	
 	public void addRecordSelectionListener(RecordSelectionListener l){
@@ -107,12 +106,7 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 			it.next().selectionUpdated(this, index, row);
 		}
 	}
-	public void fireDataUpdated(){
-		Iterator<RecordSelectionListener> it = listener.iterator();
-		while (it.hasNext()){
-			it.next().dataUpdated(this);
-		}
-	}
+	
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		int selectedIndex = selectionModel.getLeadSelectionIndex();
@@ -130,23 +124,12 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		statusBar.setText(status);
 	}
 	
-	public void selectRow(int row){
+	private void selectRow(int row){
 		if (isValidRow(row)){
 			table.setRowSelectionInterval(row, row);
 		} else if (row == -1){
 			table.clearSelection();
 		}
-	}
-	public void selectFirstRow(){
-		int row = -1;
-		if (table.getRowCount() > 0){
-			row = 0;
-		}
-		selectRow(row);
-	}
-	public void selectLastRow(){
-		int row = table.getRowCount() - 1;
-		selectRow(row);
 	}
 	
 	public void scrollToRow(final int row){
@@ -160,9 +143,6 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		viewport.scrollRectToVisible(rect);
 	}
 	
-	public int getSelectedRow(){
-		return table.getSelectedRow();
-	}
 	public int getModelIndex(){
 		int modelIndex = -1;
 		int selectedIndex = table.getSelectedRow();
@@ -199,13 +179,16 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		return valid;
 	}
 	@Override
-	public void updateView(Catalogue catalogue) {
+	public void updateView(Catalogue catalogue, int index) {
 		model.setData(catalogue);
 		table.revalidate();
-		updateStatusBar();
-	}
-	public void updateView(){
-		model.fireTableDataChanged();
+		
+		if (isValidModelIndex(index)){
+			selectRow(table.convertRowIndexToView(index));
+		} else if (index == -1){
+			selectRow(index);
+		}
+		
 		updateStatusBar();
 	}
 }

@@ -20,13 +20,13 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import marc.MARC;
-import marc.Record;
 import marc.field.ControlField;
 import marc.field.DataField;
 import marc.field.Field;
+import marc.field.FixedDataElement;
 import marc.field.Leader;
 import marc.field.Subfield;
-import marc.resource.Resource;
+import marc.record.Record;
 
 public class MarcXML extends AbstractMarc {
 	private static final String NAMESPACE = "xmlns";
@@ -60,7 +60,7 @@ public class MarcXML extends AbstractMarc {
 		char ind2 = MARC.BLANK_CHAR;
 		ControlField cField = null;
 		Leader leader = null;
-		Resource resource = null;
+		FixedDataElement dataElementField = null;
 		DataField dField = null;
 		char code = '\0';
         
@@ -155,10 +155,10 @@ public class MarcXML extends AbstractMarc {
 						record.setLeader(leader);
 						break;
 					case CONTROLFIELD:
-						if (cField.getTag().equals(MARC.RESOURCE_TAG)){
-							resource = new Resource();
-							resource.setFieldData(content.toCharArray());
-							record.setResource(resource);
+						if (cField.getTag().equals(FixedDataElement.TAG)){
+							dataElementField = new FixedDataElement();
+							dataElementField.setFieldData(content.toCharArray());
+							record.setFixedDataElement(dataElementField);
 						} else {
 							cField.setFieldData(content.toCharArray());
 							record.addField(cField);
@@ -236,7 +236,7 @@ public class MarcXML extends AbstractMarc {
 					writer.writeCharacters(indent);
 					f = field.get(i);
 					tag = f.getTag();
-					if (MARC.LEADER_TAG.equals(tag)){
+					if (Leader.TAG.equals(tag)){
 						content = String.valueOf(f.getFieldData());
 						writer.writeStartElement(LEADER);
 						writer.writeCharacters(content);

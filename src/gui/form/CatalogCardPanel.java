@@ -3,19 +3,13 @@
  */
 package gui.form;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.ArrayList;
+import java.awt.BorderLayout;
+import java.awt.Font;
 import java.util.Arrays;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
-import gui.StringList;
 import marc.MARC;
 import marc.field.DataField;
 import marc.field.Subfield;
@@ -25,163 +19,112 @@ import marc.field.Subfield;
  *
  */
 public class CatalogCardPanel extends RecordPanel {
-	private JTextField[] field;
-	private JTextArea[] area;
-	private StringList[] list;
-	private JLabel summaryLabel;
+	private JTextArea callNumberField, contentField;
 
 	public CatalogCardPanel(){
 		super();
 	}
 	protected void layoutComponents(){
-		int rows = 3;
-		int columns = 20;
+		Font monospace = new Font("monospaced", Font.PLAIN, 12);
+		callNumberField = new JTextArea();
+		callNumberField.setEditable(false);
+		callNumberField.setLineWrap(false);
+		callNumberField.setFont(monospace);
 		
-		String[] label = {
-				"Main Entry",
-				"Title",
-				"Imprint",
-				"Physical Description",
-				"Edition",
-				"Series",
-				"Book Number",
-				"DCC",
-				"LCCN",
-				"Summary",
-				"Notes",
-				"Subject",
-				"Tracing"
-		};
-		String[] areaLabel = {
-				label[9],	// Summary
-				label[10]	// Notes
-		};
-		Arrays.sort(areaLabel);
-		String[] listLabel = {
-				label[2],	// Imprint
-				label[11],	// Subject
-				label[12]	// Tracing
-		};
-		Arrays.sort(listLabel);
+		contentField = new JTextArea();
+		contentField.setEditable(false);
+		contentField.setLineWrap(true);
+		contentField.setWrapStyleWord(true);
+		contentField.setFont(monospace);
 		
-		JTextField tf_Component = null;
-		JTextArea ta_Component = null;
-		StringList tl_Component = null;
-		
-		ArrayList<JTextField> tf_Array = new ArrayList<JTextField>();
-		ArrayList<JTextArea> ta_Array = new ArrayList<JTextArea>();
-		ArrayList<StringList> tl_Array = new ArrayList<StringList>();
-		
-		panel.setLayout(new GridBagLayout());
-		Insets insets = new Insets(3, 5, 3, 5);
-		JScrollPane sc = null;
-		for (int i = 0; i < label.length; ++i){
-			if (Arrays.binarySearch(listLabel, label[i]) >= 0){
-				tl_Component = new StringList();
-				tl_Component.setVisibleRowCount(rows);
-				tl_Array.add(tl_Component);
-				sc = new JScrollPane(tl_Component);
-				addComponent(sc, label[i], i, insets, (i + 1 == label.length));
-			} else if (Arrays.binarySearch(areaLabel, label[i]) >= 0){
-				ta_Component = new JTextArea(rows, columns);
-				ta_Component.setEditable(false);
-				ta_Component.setLineWrap(true);
-				ta_Component.setWrapStyleWord(true);
-				ta_Array.add(ta_Component);
-				sc = new JScrollPane(ta_Component);
-				if (label[i].equals("Summary")){
-					summaryLabel = new JLabel(label[i]);
-					addComponent(sc, summaryLabel, i, insets, (i + 1 == label.length));
-				} else {
-					addComponent(sc, label[i], i, insets, (i + 1 == label.length));
-				}
-			} else {
-				tf_Component = new JTextField(columns);
-				tf_Array.add(tf_Component);
-				addComponent(tf_Component, label[i], i, insets, (i + 1 == label.length));
-			}
-		}
-		
-		field = new JTextField[tf_Array.size()];
-		area = new JTextArea[ta_Array.size()];
-		list = new StringList[tl_Array.size()];
-		
-		field = tf_Array.toArray(field);
-		area = ta_Array.toArray(area);
-		list = tl_Array.toArray(list);
-	}
-	private void addComponent(JComponent component, String label, int row, Insets insets, boolean isLast){
-		GridBagConstraints cons = new GridBagConstraints();
-		cons.anchor = GridBagConstraints.FIRST_LINE_START;
-		cons.fill = GridBagConstraints.HORIZONTAL;
-		cons.insets = insets;
-		cons.ipadx = 10;
-		cons.gridy = row;
-		
-		cons.weighty = isLast ? 1.0 : 0.0;
-		
-		cons.gridx = 0;
-		cons.weightx = 0.0;
-		panel.add(new JLabel(label), cons);
-		cons.gridx = 1;
-		cons.weightx = 1.0;
-		panel.add(component, cons);
-	}
-	private void addComponent(JComponent component, JLabel label, int row, Insets insets, boolean isLast){
-		GridBagConstraints cons = new GridBagConstraints();
-		cons.anchor = GridBagConstraints.FIRST_LINE_START;
-		cons.fill = GridBagConstraints.HORIZONTAL;
-		cons.insets = insets;
-		cons.ipadx = 10;
-		cons.gridy = row;
-		
-		cons.weighty = isLast ? 1.0 : 0.0;
-		
-		cons.gridx = 0;
-		cons.weightx = 0.0;
-		panel.add(label, cons);
-		cons.gridx = 1;
-		cons.weightx = 1.0;
-		panel.add(component, cons);
+		panel.setLayout(new BorderLayout());
+		panel.add(callNumberField, BorderLayout.WEST);
+		panel.add(new JScrollPane(contentField), BorderLayout.CENTER);
 	}
 	
 	@Override
 	public void clearForm(){
-		for (int i = 0; i < field.length; ++i){
-			field[i].setText(null);
-		}
-		
-		summaryLabel.setText(null);
-		for (int i = 0; i < area.length; ++i){
-			area[i].setText(null);
-		}
-		
-		final String[] emptyArray = new String[0];
-		for (int i = 0; i < list.length; ++i){
-			list[i].setListData(emptyArray);
-		}
+		callNumberField.setText(null);
+		contentField.setText(null);
 	}
 	
 	@Override
 	protected void updateView(){
-		field[0].setText(record.getMainEntry());
-		field[1].setText(record.getTitle());
-		field[2].setText(getPhysicalDescription());
-		field[3].setText(getEdition());
-		field[4].setText(getSeries());
-		field[5].setText(getISBN());
-		field[6].setText(getDCC());
-		field[7].setText(getLCCN());
+		char newline = '\n';
+		
+		String mainEntry = record.getMainEntry();
+		if (mainEntry == null){
+			mainEntry = "";
+		}
+		String[] callNumber = getCallNumber(mainEntry);
+		callNumberField.setText(String.format("%s%n%s", callNumber[0], callNumber[1]));
+		
+		StringBuilder b = new StringBuilder();
+		appendLn(b, mainEntry);
+		append(b, record.getTitle());
+		String edition = getEdition();
+		if (edition != null && !edition.isEmpty()){
+			append(b, ". -- ");
+			append(b, edition);
+		}
+		b.append(newline);
+		appendLn(b, getImprint());
+		appendLn(b, getPhysicalDescription());
+		appendLn(b, getSeries());
+		b.append(newline);
 		
 		String[] summary = getSummary();
-		summaryLabel.setText(summary[0]);
-		area[0].setText(summary[1]);
-		area[1].setText(getNotes());
+		appendLn(b, summary[0], summary[1]);
+		appendLn(b, getNotes());
+		appendLn(b, "ISBN", getISBN());
+		b.append('\n');
 		
-		list[0].setListData(getImprint());
-		list[1].setListData(getTopics());
-		list[2].setListData(getTracings());
+		appendLn(b, getTopics());
+		appendLn(b, getTracings());
+		
+		String lccn = getLCCN();
+		String dcc = getDCC();
+		if (lccn != null && dcc != null){
+			append(b, lccn);
+			append(b, "    ");
+			append(b, dcc);
+		} else if (lccn != null){
+			appendLn(b, lccn);
+		} else if (dcc != null){
+			appendLn(b, dcc);
+		}
+		
+		contentField.setText(b.toString());
 	}
+	
+	private void append(StringBuilder builder, String value){
+		if (value != null && !value.isEmpty()){
+			builder.append(value);
+		}
+	}
+	private void appendLn(StringBuilder builder, String value){
+		if (value != null && !value.isEmpty()){
+			builder.append(value);
+			builder.append('\n');
+		}
+	}
+	private void appendLn(StringBuilder builder, String key, String value){
+		if (value != null && !value.isEmpty()){
+			builder.append(key);
+			builder.append(": ");
+			builder.append(value);
+			builder.append('\n');
+		}
+	}
+	private void appendLn(StringBuilder builder, String[] value){
+		if (value != null){
+			for (int i = 0; i < value.length; ++i){
+				builder.append(value[i]);
+				builder.append('\n');
+			}
+		}
+	}
+	
 	private String getFormattedData(String tag, char[] code, String delimiter){
 		String[] list = record.getFormattedData(tag, code, delimiter);
 		if (list.length == 0){
@@ -190,15 +133,91 @@ public class CatalogCardPanel extends RecordPanel {
 			return list[0];
 		}
 	}
+	private String[] getCallNumber(String mainEntry){
+		final int width = 8;
+		String d = getDeweyNumber(width);
+		String m = getAuthorIndicator(3, mainEntry);
+		
+		String[] callNumber = new String[2];
+		String format = String.format("%%%ds", -1*width);
+		callNumber[0] = String.format(format, d);
+		callNumber[1] = String.format(format, m);
+		return callNumber;
+	}
+	private String getDeweyNumber(final int length){
+		String dewey = getDCC();
+		if (dewey == null){
+			return "???";
+		} else if (dewey.isEmpty()){
+			return "???";
+		} else if (dewey.equalsIgnoreCase("[FIC]")){
+			return "FIC";
+		} else if (dewey.equalsIgnoreCase("[E]")){
+			return "E";
+		}
+		String[] token = dewey.split("/");
+		StringBuilder b = new StringBuilder(token[0]);
+		int numberLength = token[0].length();
+		for (int i = 1; i < token.length; ++i){
+			if (numberLength + token[i].length() <= length){
+				b.append(token[i]);
+				numberLength += token[i].length();
+			} else {
+				break;
+			}
+		}
+		String d = b.toString();
+		return d;
+	}
+	/**
+	 * <p>Get the first <i>length</i> letters from <i>main entry</i>, converted to uppercase.</p>
+	 * @param length the number of characters to get
+	 * @param mainEntry the author's name
+	 * @return
+	 */
+	private String getAuthorIndicator(int length, String mainEntry){
+		int endIndex = mainEntry.indexOf(',');
+		if (endIndex == -1){
+			endIndex = mainEntry.length();
+		}
+		char[] buffer = new char[length];
+		Arrays.fill(buffer, ' ');
+		int i = 0;
+		int k = 0;
+		char c;
+		while (i < endIndex && k < buffer.length){
+			c = mainEntry.charAt(i);
+			++i;
+			if (Character.isLetter(c)){
+				buffer[k] = c;
+				++k;
+			}
+		}
+		String m = String.copyValueOf(buffer);
+		m = m.toUpperCase(MARC.LANGUAGE_LOCALE);
+		return m;
+	}
+	private String getDCC(){
+		String dewey = record.getData("082", 'a');
+		return (dewey == null ? null : dewey.trim());
+	}
+	private String getLCCN(){
+		return record.getData("010", 'a');
+	}
+	private String getISBN(){
+		char[] code = {'a', 'q'};
+		String isbn = getFormattedData("020", code, " ");
+		return isbn;
+	}
 	private String getPhysicalDescription(){
 		char[] code = {'a', 'b', 'c', 'e'};
 		String description = getFormattedData("300", code, " ");
 		return description;
 	}
-	String getEdition(){
+	private String getEdition(){
 		return record.getData("250", 'a');
 	}
-	String getSeries(){
+	private String getSeries(){
 		char[] code = {'a', 'v'};
 		String series = getFormattedData("190", code, " ");
 		if (series != null && series.length() > 0){
@@ -206,19 +225,7 @@ public class CatalogCardPanel extends RecordPanel {
 		}
 		return series;
 	}
-	String getISBN(){
-		char[] code = {'a', 'q'};
-		String isbn = getFormattedData("020", code, " ");
-		return isbn;
-	}
-	String getDCC(){
-		return record.getData("082", 'a');
-	}
-	String getLCCN(){
-		return record.getData("010", 'a');
-	}
-	
-	String[] getSummary(){
+	private String[] getSummary(){
 		String[] summary = new String[2];
 		String tag = "520";
 		char code = 'a';
@@ -265,21 +272,21 @@ public class CatalogCardPanel extends RecordPanel {
 		}
 		return summary;
 	}
-	String getNotes(){
+	private String getNotes(){
 		return record.getData("500", 'a');
 	}
-	public String[] getImprint(){
+	private String[] getImprint(){
 		char[] code = {'a', 'b', 'c'};
 		String[] imprint = record.getFormattedData("260", code, " ");
 		return imprint;
 	}
 	
-	public String[] getTopics(){
+	private String[] getTopics(){
 		char[] code = {'a', 'x', 'z', 'y', 'v'};
 		String[] topic = record.getFormattedData("650", code, " -- ");
 		return topic;
 	}
-	public String[] getTracings(){
+	private String[] getTracings(){
 		char[] code = {'a', 'b'};
 		String[] f = record.getFormattedData("700", code, " ");
 		

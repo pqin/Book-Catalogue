@@ -5,8 +5,8 @@ package gui.table;
 
 import javax.swing.table.AbstractTableModel;
 
-import marc.Record;
 import marc.field.Field;
+import marc.record.Record;
 
 /**
  * @author Peter

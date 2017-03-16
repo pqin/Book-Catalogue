@@ -5,7 +5,9 @@ import java.awt.event.ActionEvent;
 import controller.DialogManager;
 import gui.form.RecordForm;
 import marc.Catalogue;
-import marc.Record;
+import marc.record.Record;
+import marc.record.RecordFactory;
+import marc.type.RecordType;
 
 public class AddRecordAction extends RecordAction {
 	private static final long serialVersionUID = 1L;
@@ -17,13 +19,12 @@ public class AddRecordAction extends RecordAction {
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		Record record = catalogue.generateRecord();
+	public void actionPerformed(ActionEvent ignored) {
+		Record record = RecordFactory.generate(RecordType.BIBLIOGRAPHIC);
 		form.setRecord(record);
 		boolean option = manager.showDialog(form.getComponent(), "Add Record", false);
 		if (option){
 			catalogue.add(record);
-			catalogue.updateCatalogueView();
 		}
 	}
 }

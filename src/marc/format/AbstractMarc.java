@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import marc.Record;
+import marc.record.Record;
 
 public abstract class AbstractMarc {
 	/**

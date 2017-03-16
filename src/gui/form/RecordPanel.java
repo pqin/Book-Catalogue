@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 import application.MarcComponent;
 import application.RecordView;
-import marc.Record;
+import marc.record.Record;
 
 /**
  * @author Peter
@@ -68,7 +68,7 @@ public class RecordPanel implements MarcComponent, RecordView {
 	}
 
 	@Override
-	public final void updateView(Record record) {
+	public final void updateView(Record record, int index) {
 		this.record = record;
 		if (record == null){
 			clearForm();

@@ -38,7 +38,7 @@ public class FixedFieldTableModel extends AbstractTableModel {
 		super();
 		
 		editable = edit;
-		field = new FixedField(length);
+		field = new FixedField(MARC.UNKNOWN_TAG, length);
 		map = new FixedDatum[0];
 		
 		cellLabel = new String[ROW_NUM][COL_NUM];
@@ -149,14 +149,8 @@ public class FixedFieldTableModel extends AbstractTableModel {
 	}
 
 	public FixedField getField(){
-		int index = 0;
-		int length = 0;
-		char[] value = null;
 		for (int i = 0; i < map.length; ++i){
-			index = map[i].getIndex();
-			length = map[i].getLength();
-			value = getValue(i);
-			field.setData(value, index, length);	// TODO FixedField.setData(mask, value)
+			field.setData(getValue(i), map[i]);
 		}
 		return field;
 	}

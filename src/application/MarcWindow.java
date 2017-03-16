@@ -1,39 +1,40 @@
 package application;
 
 import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
-import marc.Catalogue;
+import controller.MetadataListener;
+import controller.ProgramMetaData;
 
-public class MarcWindow implements MarcComponent, CatalogueView {
+public class MarcWindow extends WindowAdapter implements MarcComponent, MetadataListener {
 	private static final String DEFAULT_FILENAME = "Untitled";
 	
 	private JFrame frame;
-	private String title;
-	private int versionMajor, versionMinor;
-	private String filename;
+	private MarcComponent controller;
 	
-	public MarcWindow(){
-		frame = new JFrame();
-		create();
-	}
-	public MarcWindow(JFrame window){
+	public MarcWindow(MarcComponent parent, JFrame window){
 		frame = window;
-		create();
+		controller = parent;
+		frame.addWindowListener(this);
 	}
 	
 	@Override
 	public void create() {
-		title = "Catalogue Application";
-		versionMajor = 0;
-		versionMinor = 0;
-		filename = DEFAULT_FILENAME;
+		
 	}
 	@Override
 	public void destroy(){
+		WindowListener[] listener = frame.getWindowListeners();
+		for (int i = 0; i < listener.length; ++i){
+			frame.removeWindowListener(listener[i]);
+		}
+		
 		frame.setMenuBar(null);
 		frame.setJMenuBar(null);
 		frame.removeAll();
@@ -44,6 +45,11 @@ public class MarcWindow implements MarcComponent, CatalogueView {
 		return frame;
 	}
 	
+	@Override
+	public void windowClosing(WindowEvent e){
+		controller.destroy();
+	}
+	
 	public void show(){
 		frame.setVisible(true);
 	}
@@ -51,49 +57,19 @@ public class MarcWindow implements MarcComponent, CatalogueView {
 		frame.setVisible(false);
 	}
 	
-	public void setFilename(File file){
-		String f = (file == null) ? DEFAULT_FILENAME : file.getAbsolutePath();
-		setFilename(f);
-	}
-	private void setFilename(String f){
-		filename = f;
-		String t = String.format("%s - %s v%d.%d", filename, title, versionMajor, versionMinor);
-		frame.setTitle(t);
-	}
-	public String getApplicationTitle(){
-		return title;
-	}
-	public void setApplicationTitle(String t){
-		title = t;
-		setFilename(filename);
-	}
-	public String getVersion(){
-		return String.format("v%d.%d", versionMajor, versionMinor);
-	}
-	public int getMajorVersion(){
-		return versionMajor;
-	}
-	public int getMinorVersion(){
-		return versionMinor;
-	}
-	public void setVersion(int major, int minor){
-		versionMajor = major;
-		versionMinor = minor;
-		setFilename(filename);
-	}
-	public void setProperties(String t, int major, int minor){
-		title = t;
-		versionMajor = major;
-		versionMinor = minor;
-		setFilename(filename);
-	}
-	
 	public void setMenuBar(JMenuBar menubar){
 		frame.setJMenuBar(menubar);
 	}
+	
 	@Override
-	public void updateView(Catalogue catalogue) {
-		File file = catalogue.getFile();
-		setFilename(file);
+	public void updateMetadata(ProgramMetaData data) {
+		File file = data.getFile();
+		String filename = (file == null) ? DEFAULT_FILENAME : file.getAbsolutePath();
+		String name = data.getName();
+		int v0 = data.getMajorVersion();
+		int v1 = data.getMinorVersion();
+		
+		String title = String.format("%s - %s v%d.%d", filename, name, v0, v1);
+		frame.setTitle(title);
 	}
 }

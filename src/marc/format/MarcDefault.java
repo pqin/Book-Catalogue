@@ -15,13 +15,13 @@ import java.util.List;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import marc.MARC;
-import marc.Record;
 import marc.field.ControlField;
 import marc.field.DataField;
 import marc.field.Field;
+import marc.field.FixedDataElement;
 import marc.field.Leader;
 import marc.field.Subfield;
-import marc.resource.Resource;
+import marc.record.Record;
 
 public class MarcDefault extends AbstractMarc {
 	// encodings
@@ -46,7 +46,7 @@ public class MarcDefault extends AbstractMarc {
 	}
 
 	private Leader parseLeader(final byte[] data){
-		byte[] bytes = Arrays.copyOfRange(data, 0, MARC.LEADER_FIELD_LENGTH);
+		byte[] bytes = Arrays.copyOfRange(data, 0, Leader.FIELD_LENGTH);
 		Leader leader = new Leader();
 		leader.setAllSubfields(bytes, ASCII);
 		return leader;
@@ -59,7 +59,7 @@ public class MarcDefault extends AbstractMarc {
 		record.setLeader(leader);
 		// parse Directory
 		int baseAddress = leader.getBaseAddress();
-		byte[] directory = Arrays.copyOfRange(data, MARC.LEADER_FIELD_LENGTH, baseAddress);
+		byte[] directory = Arrays.copyOfRange(data, Leader.FIELD_LENGTH, baseAddress);
 		int entryCount = 0;
 		if ((directory.length - 1) % DIRECTORY_ENTRY_LENGTH == 0){
 			entryCount = Math.floorDiv(directory.length - 1, DIRECTORY_ENTRY_LENGTH);
@@ -90,7 +90,7 @@ public class MarcDefault extends AbstractMarc {
 		}
 		// build Record
 		ControlField cField = null;
-		Resource rField = null;
+		FixedDataElement dataElementField = null;
 		DataField dField = null;
 		int fieldOffset = 0;
 		int fieldLength = 0;
@@ -118,7 +118,7 @@ public class MarcDefault extends AbstractMarc {
 				}
 				fieldData = fieldData.substring(index0, index1);
 				subData = new String[1];
-				if (tag[r].equals(MARC.RESOURCE_TAG)){
+				if (tag[r].equals(FixedDataElement.TAG)){
 					subData[0] = fieldData.replace(' ', MARC.BLANK_CHAR);
 				} else {
 					subData[0] = fieldData;
@@ -137,10 +137,10 @@ public class MarcDefault extends AbstractMarc {
 			ind1 = (ind1 == ' ')? MARC.BLANK_CHAR: ind1;
 			ind2 = (ind2 == ' ')? MARC.BLANK_CHAR: ind2;
 			if (tag[r].startsWith("00")){
-				if (tag[r].equals(MARC.RESOURCE_TAG)){
-					rField = new Resource();
-					rField.setAllSubfields(subData[0]);
-					record.setResource(rField);
+				if (tag[r].equals(FixedDataElement.TAG)){
+					dataElementField = new FixedDataElement();
+					dataElementField.setFieldData(subData[0].toCharArray());
+					record.setFixedDataElement(dataElementField);
 				} else {
 					cField = new ControlField(tag[r], subData[0].length());
 					cField.setAllSubfields(subData[0]);
@@ -161,7 +161,7 @@ public class MarcDefault extends AbstractMarc {
     
 	@Override
 	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {		
-		byte[] leader = new byte[MARC.LEADER_FIELD_LENGTH];
+		byte[] leader = new byte[Leader.FIELD_LENGTH];
 		byte[] directory = null;
 		byte[] fieldData = null;
 		byte[] recordData = null;
@@ -178,7 +178,7 @@ public class MarcDefault extends AbstractMarc {
 			ldr = parseLeader(leader);
 			recordLength = ldr.getLength();
 			baseAddress = ldr.getBaseAddress();
-			directory = new byte[baseAddress - MARC.LEADER_FIELD_LENGTH];
+			directory = new byte[baseAddress - Leader.FIELD_LENGTH];
 			fieldData = new byte[recordLength - baseAddress];
 			recordData = new byte[recordLength];
 

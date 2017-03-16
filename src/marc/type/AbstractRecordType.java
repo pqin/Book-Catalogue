@@ -4,28 +4,29 @@ import java.util.Arrays;
 import java.util.List;
 
 import marc.field.FixedDatum;
+import marc.field.Leader;
 
 public abstract class AbstractRecordType {
 	private String typeName, configName;
 	private int typeLength, configLength;
 	private FixedDatum[] typeMap, configMap;
 	
-	protected AbstractRecordType(String name0, int length0, int length1){
-		typeName = name0;
-		typeLength = length0;
+	protected AbstractRecordType(String name, int length){
+		typeName = name;
+		typeLength = Leader.FIELD_LENGTH;
 		typeMap = null;
 		
-		configName = name0;
-		configLength = length1;
+		configName = name;
+		configLength = length;
 		configMap = null;
-	}	
-	protected AbstractRecordType(String name0, int length0, String name1, int length1){
+	}
+	protected AbstractRecordType(String name0, String name1, int length){
 		typeName = name0;
-		typeLength = length0;
+		typeLength = Leader.FIELD_LENGTH;
 		typeMap = null;
 		
 		configName = name1;
-		configLength = length1;
+		configLength = length;
 		configMap = null;
 	}
 	

@@ -22,15 +22,14 @@ import javax.swing.SpinnerNumberModel;
 public class SearchForm extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int QUERY_COUNT = 3;
-	private static final int SPINNER_MIN = 18;
-	private static final int SPINNER_MAX = 34;
+	private static final int SPINNER_MIN = 0;
+	private static final int SPINNER_MAX = 40;
 	
 	private JTextField[] tagField, queryField;
 	private JComboBox<?>[] matchType;
 	private JCheckBox caseSensitiveBox;
 	private JSpinner indexField;
 	private JTextField fixedValueField;
-	private JTextField langField, placeField;
 
 	public SearchForm(){
 		super();
@@ -51,8 +50,6 @@ public class SearchForm extends JPanel {
 				)
 		);
 		fixedValueField = new JTextField(10);
-		langField = new JTextField(10);
-		placeField = new JTextField(10);
 		
 		layoutComponents();
 	}
@@ -94,18 +91,6 @@ public class SearchForm extends JPanel {
 		add(indexField, cons);
 		cons.gridx = 2;
 		add(fixedValueField, cons);
-		
-		cons.gridy = row++;
-		cons.gridx = 0;
-		add(new JLabel("Language"), cons);
-		cons.gridx = 1;
-		add(langField, cons);
-		
-		cons.gridy = row++;
-		cons.gridx = 0;
-		add(new JLabel("Place"), cons);
-		cons.gridx = 1;
-		add(placeField, cons);
 	}
 	
 	public void resetForm(){
@@ -118,8 +103,6 @@ public class SearchForm extends JPanel {
 		
 		indexField.setValue(SPINNER_MIN);
 		fixedValueField.setText(null);
-		langField.setText(null);
-		placeField.setText(null);
 	}
 	public int getKeywordRowCount(){
 		return QUERY_COUNT;
@@ -150,24 +133,5 @@ public class SearchForm extends JPanel {
 		} else {
 			return t;
 		}
-	}
-	private String parseFixedText(JTextField field, int length){
-		String text = field.getText();
-		String format = String.format("%%1$-%ds", length);
-		if (text == null || text.isEmpty()){
-			return "";
-		} else if (text.length() > length){
-			return text.substring(0, length);
-		} else {
-			return String.format(format, text);
-		}
-	}
-	public String getLanguage(){
-		String lang = parseFixedText(langField, 3);
-		return lang;
-	}
-	public String getPlace(){
-		String place = parseFixedText(placeField, 3);
-		return place;
 	}
 }

@@ -25,9 +25,9 @@ public class RecordSearchFilter extends RowFilter<NavigationTableModel, Integer>
 		showSearch = false;
 		indices.clear();
 	}
-	public void setFilteredIndices(List<Integer> arg0){
+	public void setFilteredIndices(List<Integer> results){
 		indices.clear();
-		indices.addAll(arg0);
+		indices.addAll(results);
 	}
 	
 	@Override

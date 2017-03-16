@@ -24,8 +24,19 @@ public class Marc8Encoder extends CharsetEncoder {
 	@Override
 	protected CoderResult encodeLoop(CharBuffer in, ByteBuffer out) {
 		// TODO Implement encoding
-		CoderResult result = null;
-		return result;
+		char c = '\0';
+		byte b = 0x00;
+		CoderResult result = CoderResult.UNDERFLOW;
+		while (in.hasRemaining() && out.hasRemaining() && result.isUnderflow()){
+			c = in.get();
+		}
+		if (result.isError()){
+			return result;
+		} else if (in.remaining() <= out.remaining()){
+			return CoderResult.UNDERFLOW;
+		} else {
+			return CoderResult.OVERFLOW;
+		}
 	}
 
 }
