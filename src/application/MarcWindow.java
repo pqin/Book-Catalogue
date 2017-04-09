@@ -1,6 +1,7 @@
 package application;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -18,9 +19,11 @@ public class MarcWindow extends WindowAdapter implements MarcComponent, Metadata
 	private JFrame frame;
 	private MarcComponent controller;
 	
-	public MarcWindow(MarcComponent parent, JFrame window){
-		frame = window;
-		controller = parent;
+	public MarcWindow(MarcComponent c){
+		controller = c;
+		
+		frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addWindowListener(this);
 	}
 	
@@ -60,14 +63,19 @@ public class MarcWindow extends WindowAdapter implements MarcComponent, Metadata
 	public void setMenuBar(JMenuBar menubar){
 		frame.setJMenuBar(menubar);
 	}
+	public void setContentPane(Container contentPane){
+		frame.setContentPane(contentPane);
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+	}
 	
 	@Override
-	public void updateMetadata(ProgramMetaData data) {
-		File file = data.getFile();
+	public void updateMetadata(ProgramMetaData metadata) {
+		File file = metadata.getFile();
 		String filename = (file == null) ? DEFAULT_FILENAME : file.getAbsolutePath();
-		String name = data.getName();
-		int v0 = data.getMajorVersion();
-		int v1 = data.getMinorVersion();
+		String name = metadata.getName();
+		int v0 = metadata.getMajorVersion();
+		int v1 = metadata.getMinorVersion();
 		
 		String title = String.format("%s - %s v%d.%d", filename, name, v0, v1);
 		frame.setTitle(title);

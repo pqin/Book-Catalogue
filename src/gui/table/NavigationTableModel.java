@@ -4,7 +4,7 @@
 package gui.table;
 
 import marc.Catalogue;
-import marc.field.DataField;
+import marc.field.Field;
 import marc.record.Record;
 
 /**
@@ -52,7 +52,7 @@ public class NavigationTableModel extends MarcTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object value = null;
 		Record record = data.get(rowIndex);
-		DataField field = null;
+		Field field = null;
 		String tag = null;
 		if (record != null){
 			switch (columnIndex){
@@ -65,9 +65,9 @@ public class NavigationTableModel extends MarcTableModel {
 			default:
 				if (columnIndex >= 0 && columnIndex < header.length){
 					tag = header[columnIndex];
-					field = (DataField) record.getFirstMatchingField(tag);
+					field = record.getFirstMatchingField(tag);
 					if (field != null){
-						value = field.getSubfield();
+						value = field.getFieldString();
 					}
 				}
 				break;

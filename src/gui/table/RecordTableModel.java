@@ -58,7 +58,7 @@ public class RecordTableModel extends AbstractTableModel {
 				value = field[rowIndex].getIndicator2();
 				break;
 			case 3:
-				value = field[rowIndex].getSubfield();
+				value = field[rowIndex].getFieldString();
 				break;
 			default:
 				break;

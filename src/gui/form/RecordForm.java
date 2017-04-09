@@ -16,10 +16,10 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import application.MarcDialog;
 import gui.table.RecordTable;
 import gui.table.RecordTableModel;
 import marc.Factory;
-import marc.MARC;
 import marc.field.DataField;
 import marc.field.Field;
 import marc.field.FixedDataElement;
@@ -31,7 +31,8 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 	private RecordTableModel model;
 	private RecordTable table;
 	private FixedFieldForm leaderForm, resourceForm;
-	private FieldForm fieldForm;
+	private DataFieldForm fieldForm;
+	private MarcDialog dialog;
 	private JButton addButton, removeButton, editButton;
 	
 	private Record record;
@@ -50,7 +51,13 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		table.getSelectionModel().addListSelectionListener(this);
 		leaderForm = new FixedFieldForm(type.getTypeMap(), type.getTypeLength(), true);
 		resourceForm = new FixedFieldForm(type.getConfigMap(), type.getConfigLength(), true);
-		fieldForm = new FieldForm();
+		fieldForm = new DataFieldForm();
+		
+		dialog = new MarcDialog(this.getComponent());
+		dialog.setTitle("Edit Record");
+		String[] options = {"OK", "Cancel"};
+		dialog.setOptions(options);
+		dialog.create();
 		
 		addButton = new JButton("Add");
 		removeButton = new JButton("Remove");
@@ -112,9 +119,8 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 	}
 	
 	private int showEditForm(JPanel form){
-		int option = JOptionPane.showConfirmDialog(
-				panel, form, "Edit Field",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		dialog.setContent(form);
+		int option = dialog.showDialog();
 		return option;
 	}
 	
@@ -125,13 +131,13 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		ArrayList<Field> field = record.getFields();
 		Field f = null;
 		if (e.getSource() == addButton){
-			fieldForm.setData(new DataField());
+			fieldForm.setDataField(new DataField());
 			int option = JOptionPane.showConfirmDialog(panel,
 					fieldForm, "New Field",
 					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
 			);
 			if (option == JOptionPane.OK_OPTION){
-				i = record.addSortedField((DataField) fieldForm.getData());
+				i = record.addSortedField((DataField) fieldForm.getDataField());
 				model.fireTableRowsInserted(i, i);
 				row = table.convertRowIndexToView(i);
 				table.setRowSelectionInterval(row, row);
@@ -142,7 +148,7 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 			i = table.convertRowIndexToModel(row);
 			f = field.get(i);
 			
-			String message = String.format("Field will be permanently removed.%nProceed?");
+			String message = String.format("Field will be removed from record.%nProceed?");
 			int option = JOptionPane.showConfirmDialog(panel,
 					message, "Remove Field",
 					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
@@ -176,9 +182,9 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 				option = showEditForm(resourceForm);
 				data = resourceForm.getFixedField();
 			} else {
-				fieldForm.setData(f);
+				fieldForm.setDataField((DataField)f);
 				option = showEditForm(fieldForm);
-				data = fieldForm.getData();
+				data = fieldForm.getDataField();
 			}
 			if (option == JOptionPane.OK_OPTION){
 				field.set(i, data);

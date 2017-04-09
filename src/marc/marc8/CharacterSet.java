@@ -88,7 +88,7 @@ public abstract class CharacterSet {
 		}
 	}
 	
-	public char decode(int b){
+	public final char decode(int b){
 		char c = UNDERFLOW;
 		buffer[counter] = (b - START_INDEX)*base[counter];
 		if (counter == bytesPerChar - 1){

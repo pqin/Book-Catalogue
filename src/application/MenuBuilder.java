@@ -2,6 +2,7 @@ package application;
 
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -34,6 +35,33 @@ public class MenuBuilder {
 			menubar.add(menu);
 			menu = null;
 		}
+	}
+	public void addMenu(String label,Action[] actions){
+		menu = new JMenu(label);
+		for (int i = 0; i < actions.length; ++i){
+			menu.add(new JMenuItem(actions[i]));
+		}
+		menubar.add(menu);
+		menu = null;
+	}
+	public void addMenu(String label,String[] actions){
+		menu = new JMenu(label);
+		group = new ButtonGroup();
+		JRadioButtonMenuItem radioButton = null;
+		ButtonModel model = null;
+		final int initialSelection = 0;
+		for (int i = 0; i < actions.length; ++i){
+			radioButton = new JRadioButtonMenuItem(actions[i]);
+			if (i == initialSelection){
+				model = radioButton.getModel();
+			}
+			group.add(radioButton);
+			menu.add(radioButton);
+		}
+		group.setSelected(model, true);
+		group = null;
+		menubar.add(menu);
+		menu = null;
 	}
 	public JMenuBar getMenuBar(){
 		return menubar;

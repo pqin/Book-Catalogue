@@ -2,73 +2,85 @@ package application;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 
 public class WindowBuilder {
-	private JFrame frame;
-	private String title;
-	private JMenuBar menubar;
+	private static final int DEFAULT_WIDTH = 960;
+	private static final int DEFAULT_HEIGHT = 600;
+	private static final double DEFAULT_WEIGHT = 0.4;
+	private static final double MINIMUM_WEIGHT = 0.1;
+	
+	private Container contentPane;
 	private JToolBar toolbar;
 	private Component selector, recordDisplay, search;
 	
-	public WindowBuilder(){
-		frame = null;
-		title = null;
-		menubar = null;
+	public WindowBuilder(JFrame frame){
+		contentPane = frame.getContentPane();
 		toolbar = null;
 		selector = new JPanel();
 		recordDisplay = new JPanel();
 		search = new JPanel();
 	}
 	
-	public JFrame buildFrame(){
-		frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle((title == null)? "Default JFrame" : title);
+	public void build(){
+		// set sizes
+		selector.setPreferredSize(computeComponentSize(true, true, false));
+		recordDisplay.setPreferredSize(computeComponentSize(false, true, false));
+		search.setPreferredSize(computeComponentSize(true, false, false));
 		
-		// get main component
-		Component panel = null;
-		final int w = 960;
-		final int h = 600;
-		Component mainComponent = new JSplitPane(
+		selector.setMinimumSize(computeComponentSize(true, true, true));
+		recordDisplay.setMinimumSize(computeComponentSize(false, true, true));
+		search.setMinimumSize(computeComponentSize(true, false, true));
+		
+		// build components
+		JSplitPane mainComponent = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, selector, recordDisplay);
-		panel = new JSplitPane(
+		int divLoc = (int) (DEFAULT_WIDTH * DEFAULT_WEIGHT);
+		mainComponent.setDividerLocation(divLoc);
+		JSplitPane panel = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, mainComponent, search);
-		double g = 0.4;	// gamma, weight of left/top Component
-		int w0 = (int) (w * g);
-		int w1 = (int) (w * (1.0 - g));
-		int h0 = (int) (h * g);
-		int h1 = (int) (h * (1.0 - g));
-		selector.setPreferredSize(new Dimension(w0, h1));
-		recordDisplay.setPreferredSize(new Dimension(w1, h1));
-		search.setPreferredSize(new Dimension(w, h0));
-		frame.setLayout(new BorderLayout());
-		if (menubar != null){
-			frame.setJMenuBar(menubar);
-		}
+		divLoc = (int) (DEFAULT_HEIGHT * (1.0 - DEFAULT_WEIGHT));
+		panel.setDividerLocation(divLoc);
+		// layout components
+		contentPane.setLayout(new BorderLayout());
 		if (toolbar != null){
-			frame.add(toolbar, BorderLayout.NORTH);
+			contentPane.add(toolbar, BorderLayout.NORTH);
 		}
-		frame.add(panel, BorderLayout.CENTER);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		return frame;
+		contentPane.add(panel, BorderLayout.CENTER);
+	}
+	public Container getContentPane(){
+		return contentPane;
 	}
 	
-	public void setTitle(String value){
-		title = value;
-	}
-	public void setMenuBar(JMenuBar component){
-		menubar = component;
-	}
 	public void setToolBar(JToolBar component){
 		toolbar = component;
+	}
+	
+	private Dimension computeComponentSize(boolean isLeft, boolean isTop, boolean isMinimum){
+		final int w0 = DEFAULT_WIDTH;
+		final int h0 = DEFAULT_HEIGHT;
+		final double g0 = isMinimum ? MINIMUM_WEIGHT : DEFAULT_WEIGHT;
+		final double g1 = 1.0 - g0;
+		int w = 1;
+		int h = 1;
+		if (isMinimum){
+			w = (int) (w0 * g0);
+			h = (int) (h0 * g0);
+		} else {
+			w = (int) (w0 * (isLeft ? g0 : g1));
+			h = (int) (h0 * (isTop ? g1 : g0));
+			if (!isTop){
+				w = w0;
+			}
+		}
+		Dimension size = new Dimension(w, h);
+		return size;
 	}
 	public void setSelector(Component component){
 		selector = component;

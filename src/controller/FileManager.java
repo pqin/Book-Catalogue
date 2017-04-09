@@ -27,10 +27,6 @@ public class FileManager implements MarcComponent {
 	private FormatManager formatManager;
 	private ArrayList<FileListener> listener;
 	
-	public FileManager(){
-		parent = null;
-		create();
-	}
 	public FileManager(Component owner){
 		parent = owner;
 		create();
@@ -63,9 +59,6 @@ public class FileManager implements MarcComponent {
 	@Override
 	public Component getComponent(){
 		return fileChooser;
-	}
-	public void setParent(Component owner){
-		parent = owner;
 	}
 	
 	public void addFileListener(FileListener l){

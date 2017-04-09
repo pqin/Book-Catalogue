@@ -19,50 +19,46 @@ public class RecordTable extends JTable implements RecordView {
 	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_INDEX = 3;
 	private static final int DEFAULT_WIDTH = 40;
+	private static final int MAX_COLUMN_WIDTH = 100000;
 
 	public RecordTable(){
-		super();
-		initialize(DEFAULT_INDEX, DEFAULT_WIDTH);
+		super(new RecordTableModel());
+		initialize();
 	}
 	public RecordTable(RecordTableModel model){
 		super(model);
-		initialize(DEFAULT_INDEX, DEFAULT_WIDTH);
-	}
-	public RecordTable(RecordTableModel model, int index, int width){
-		super(model);
-		initialize(index, width);
+		initialize();
 	}
 	
-	private void initialize(final int index, final int width){
+	private final void initialize(){
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		setColumnWidths(index, width);
-	}
-	
-	private void setColumnWidths(final int index, final int width){
+		
+		getTableHeader().setReorderingAllowed(false);
+		
 		TableColumnModel columnModel = getColumnModel();
 		int colNum = columnModel.getColumnCount();
 		int tableWidth = getPreferredSize().width;
 				
 		TableColumn column = null;
-		int width0 = width;
+		int width0 = DEFAULT_WIDTH;
 		int width1 = 0;
 		int widthSum = 0;
 		for (int i = 0; i < colNum; ++i){
 			column = columnModel.getColumn(i);
-			if (i < index){
+			if (i < DEFAULT_INDEX){
 				column.setMinWidth(width0);
 				column.setMaxWidth(width0);
 				column.setPreferredWidth(width0);
 				column.setResizable(false);
 				widthSum += width0;
 			} else {
-				width1 = (tableWidth - widthSum) / (colNum - index);
+				width1 = (tableWidth - widthSum) / (colNum - DEFAULT_INDEX);
 				column.setMinWidth(width1);
-				column.setMaxWidth(100000);
+				column.setMaxWidth(MAX_COLUMN_WIDTH);
 				column.setPreferredWidth(width1);
 				column.setResizable(true);
 			}
-		}
+		}	
 	}
 	@Override
 	public void updateView(Record record, int index) {

@@ -3,14 +3,16 @@ package application;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -30,8 +32,8 @@ import action.SaveAsFileAction;
 import action.SaveFileAction;
 import action.SearchAction;
 import action.WindowAction;
-import controller.DialogManager;
 import controller.FileManager;
+import controller.MetadataListener;
 import controller.ProgramMetaData;
 import gui.RecordSelectionListener;
 import gui.RecordSelector;
@@ -39,10 +41,11 @@ import gui.form.CatalogCardPanel;
 import gui.search.SearchManager;
 import gui.table.RecordSearchFilter;
 import gui.table.RecordTable;
-import gui.table.RecordTableModel;
 import marc.Catalogue;
+import marc.field.DataField;
+import marc.field.Field;
 import marc.format.AbstractMarc;
-import marc.format.MarcDefault;
+import marc.format.MarcBinary;
 import marc.record.Record;
 
 public class CatalogueApp implements MarcComponent, RecordSelectionListener {
@@ -54,7 +57,6 @@ public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 
 	private FileAction saveFileAction;
 	private FileManager fileManager;
-	private DialogManager dialogManager;
 	private SearchManager searchManager;
 	
 	/**
@@ -94,100 +96,82 @@ public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 	}
 	
 	private CatalogueApp(){
-		metaData = new ProgramMetaData();
 		data = new Catalogue();
+		window = new MarcWindow(this);
+		metaData = new ProgramMetaData();
+		metaData.addMetadataListener(window);
 		
-		fileManager = new FileManager();
+		JFrame owner = (JFrame) window.getComponent();
+		fileManager = new FileManager(owner);
 		fileManager.addFileListener(metaData);
-		
-		dialogManager = new DialogManager();
-		
+		searchManager = new SearchManager(owner);
+				
 		navSelector = new RecordSelector(data, null);
-		searchSelector = new RecordSelector(data, new RecordSearchFilter());
-		
 		navSelector.addRecordSelectionListener(this);
+		searchSelector = new RecordSelector(data, new RecordSearchFilter());
 		searchSelector.addRecordSelectionListener(this);
-		
-		searchManager = new SearchManager();
 	}
 	
-	private JMenuBar buildMenuBar(RecordAction editRecordAction, RecordAction deleteRecordAction, WindowAction closeWindowAction, AboutProgramAction aboutProgramAction){
-		FileAction newFileAction = new NewFileAction(data, fileManager);
-		FileAction openFileAction = new OpenFileAction(data, fileManager);
-		FileAction saveAsFileAction = new SaveAsFileAction(data, fileManager);
-		RecordAction addRecordAction = new AddRecordAction(data, dialogManager);
-		AbstractAction searchAction = new SearchAction(searchManager, searchSelector);
-		AbstractAction clearSearchAction = new ClearSearchAction(searchManager, searchSelector);
-		
-		MenuBuilder builder = new MenuBuilder();
-		
-		builder.createMenu("File", KeyEvent.VK_F);
-		builder.addItem(newFileAction, KeyEvent.VK_N, KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
-		builder.addItem(openFileAction, KeyEvent.VK_O, KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
-		builder.addItem(saveFileAction, KeyEvent.VK_S, KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
-		builder.addItem(saveAsFileAction);
-		builder.addItem(closeWindowAction, KeyEvent.VK_X);
-		builder.addMenu();
-		
-		builder.createMenu("Edit", KeyEvent.VK_E);
-		builder.addItem(searchAction, KeyEvent.VK_F, KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK);
-		builder.addItem(clearSearchAction, KeyEvent.VK_C);
-		builder.addMenu();
-		
-		builder.createMenu("View", KeyEvent.VK_V);
-		builder.addRadioButton("Bibliographic");
-		builder.addRadioButton("Authority");
-		builder.addMenu();
-		
-		builder.createMenu("Tools", KeyEvent.VK_T);
-		builder.addItem(addRecordAction, KeyEvent.VK_A);
-		builder.addItem(editRecordAction, KeyEvent.VK_E);
-		builder.addItem(deleteRecordAction, KeyEvent.VK_D, KeyEvent.VK_DELETE, 0);
-		builder.addMenu();
-		
-		builder.createMenu("Help", KeyEvent.VK_H);
-		builder.addItem(aboutProgramAction, KeyEvent.VK_A);
-		builder.addMenu();
-		
-		return builder.getMenuBar();
-	}
 	@Override
 	public void create(){
-		RecordTable recordTable = new RecordTable(new RecordTableModel(), 3, 40);
+		RecordTable recordTable = new RecordTable();
 		CatalogCardPanel recordCard = new CatalogCardPanel();
 		JTabbedPane tabs = new JTabbedPane();
 		tabs.insertTab("Catalog Card", null, recordCard.getComponent(), "Catalog Card", 0);
 		tabs.insertTab("MARC", null, new JScrollPane(recordTable), "MARC", 1);
 		
-		saveFileAction = new SaveFileAction(data, fileManager);
-		RecordAction editRecordAction = new EditRecordAction(data, dialogManager);
-		RecordAction deleteRecordAction = new DeleteRecordAction(data, dialogManager);
-		WindowAction closeWindowAction = new WindowAction("Exit", WindowEvent.WINDOW_CLOSING);
-		AboutProgramAction aboutProgramAction = new AboutProgramAction(dialogManager);
-		metaData.addMetadataListener(aboutProgramAction);
-		JMenuBar menubar = buildMenuBar(editRecordAction, deleteRecordAction, closeWindowAction, aboutProgramAction);
-		
-		WindowBuilder builder = new WindowBuilder();
-		builder.setTitle("Catalogue Application v2.0");
+		JFrame owner = (JFrame) window.getComponent();
+		WindowBuilder builder = new WindowBuilder(owner);
 		builder.setSelector(navSelector.getComponent());
 		builder.setRecordDisplay(tabs);
 		builder.setSearchDisplay(searchSelector.getComponent());
-		builder.setMenuBar(menubar);
-		window = new MarcWindow(this, builder.buildFrame());
-		metaData.addMetadataListener(window);
+		builder.build();
+		window.setContentPane(builder.getContentPane());
 		
-		closeWindowAction.setWindow((JFrame) window.getComponent());
-		fileManager.setParent(window.getComponent());
-		dialogManager.setParent(window.getComponent());
-		searchManager.setParent(window.getComponent());
+		MenuBuilder menuBuilder = new MenuBuilder();
+		AbstractAction[] fileAction = {
+				new NewFileAction(data, fileManager),
+				new OpenFileAction(data, fileManager),
+				new SaveFileAction(data, fileManager),
+				new SaveAsFileAction(data, fileManager),
+				new WindowAction(owner, "Exit", WindowEvent.WINDOW_CLOSING)
+		};
+		menuBuilder.addMenu("File", fileAction);
+		AbstractAction[] editAction = {
+				new SearchAction(searchManager, searchSelector),
+				new ClearSearchAction(searchManager, searchSelector)
+		};
+		menuBuilder.addMenu("Edit", editAction);
+		String[] viewAction = {
+				"Bibliographic",
+				"Authority",
+				"Holdings",
+				"Classification",
+				"Community"
+		};
+		menuBuilder.addMenu("View", viewAction);
+		RecordAction[] toolAction = {
+				new AddRecordAction(data, owner),
+				new EditRecordAction(data, owner),
+				new DeleteRecordAction(data, owner)
+		};
+		menuBuilder.addMenu("Tool", toolAction);
+		AbstractAction[] helpAction = {
+				new AboutProgramAction(owner)
+		};
+		menuBuilder.addMenu("Help", helpAction);
+		window.setMenuBar(menuBuilder.getMenuBar());
+		
+		saveFileAction = (SaveFileAction) fileAction[2];
+		metaData.addMetadataListener((MetadataListener) helpAction[0]);
 		
 		data.addCatalogueView(navSelector);
 		data.addCatalogueView(searchSelector);
 		data.addCatalogueView(searchManager);
 		data.addRecordView(recordTable);
 		data.addRecordView(recordCard);
-		data.addRecordView(editRecordAction);
-		data.addRecordView(deleteRecordAction);
+		data.addRecordView(toolAction[1]);
+		data.addRecordView(toolAction[2]);
 	}
 	@Override
 	public void destroy(){
@@ -233,11 +217,21 @@ public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 		} else {
 			AbstractMarc format = fileManager.getFormatForFile(file);
 			if (format == null){
-				format = new MarcDefault();
+				format = new MarcBinary();
 			}
 			input = fileManager.read(file, format);
 		}
 		data.loadData(input);
+		dumpSQL(input);
+	}
+	private void dumpSQL(ArrayList<Record> list){
+		int id = 1;
+		Record record = null;
+		Iterator<Record> it = list.iterator();
+		while (it.hasNext()){
+			record = it.next();
+			++id;
+		}
 	}
 	
 	private void saveProperties(){

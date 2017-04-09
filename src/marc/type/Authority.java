@@ -10,12 +10,6 @@ public final class Authority extends AbstractRecordType {
 		super("Authority", 40);
 	}
 	
-	/* FixedDatum.label values / mnemonics referenced from OCLC.
-	 * "Authorities: Format and Indexes" www.oclc.org.
-	 * ©2017 OCLC Online Computer Library Center
-	 * 22 February 2017
-	 * < https://www.oclc.org/support/services/worldcat/documentation/authorities/authformat.en.html >
-	 */
 	@Override
 	protected List<FixedDatum> getTypeList() {
 		ArrayList<FixedDatum> tmp = new ArrayList<FixedDatum>();

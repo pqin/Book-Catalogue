@@ -17,11 +17,6 @@ public class SearchManager implements MarcComponent, CatalogueView {
 	private Catalogue data;
 	private ArrayList<Integer> searchResults;
 
-	public SearchManager(){
-		parent = null;
-		data = null;
-		create();
-	}
 	public SearchManager(Component owner){
 		parent = owner;
 		data = null;
@@ -46,10 +41,6 @@ public class SearchManager implements MarcComponent, CatalogueView {
 	@Override
 	public Component getComponent(){
 		return null;
-	}
-	
-	public void setParent(Component owner){
-		parent = owner;
 	}
 	
 	public void clearResults(){
