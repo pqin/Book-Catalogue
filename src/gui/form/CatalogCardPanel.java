@@ -6,12 +6,15 @@ package gui.form;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.util.Arrays;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import marc.MARC;
 import marc.field.DataField;
+import marc.field.Field;
 import marc.field.Subfield;
 
 /**
@@ -19,6 +22,8 @@ import marc.field.Subfield;
  *
  */
 public class CatalogCardPanel extends RecordPanel {
+	private static final Pattern FICTION_REGEX = Pattern.compile("^\\[([a-zA-Z]+)\\]$");
+	private static final Pattern SEGMENTATION_REGEX = Pattern.compile("[/\u2032;]");
 	private JTextArea callNumberField, contentField;
 
 	public CatalogCardPanel(){
@@ -77,7 +82,7 @@ public class CatalogCardPanel extends RecordPanel {
 		appendLn(b, summary[0], summary[1]);
 		appendLn(b, getNotes());
 		appendLn(b, "ISBN", getISBN());
-		b.append('\n');
+		b.append(newline);
 		
 		appendLn(b, getTopics());
 		appendLn(b, getTracings());
@@ -145,17 +150,19 @@ public class CatalogCardPanel extends RecordPanel {
 		return callNumber;
 	}
 	private String getDeweyNumber(final int length){
+		String d = "???";
 		String dewey = getDCC();
 		if (dewey == null){
-			return "???";
+			return d;
 		} else if (dewey.isEmpty()){
-			return "???";
-		} else if (dewey.equalsIgnoreCase("[FIC]")){
-			return "FIC";
-		} else if (dewey.equalsIgnoreCase("[E]")){
-			return "E";
+			return d;
 		}
-		String[] token = dewey.split("/");
+		Matcher m = null;
+		m = FICTION_REGEX.matcher(dewey);
+		if (m.matches() && m.groupCount() > 0){
+			return m.group(1);
+		}
+		String[] token = SEGMENTATION_REGEX.split(dewey);
 		StringBuilder b = new StringBuilder(token[0]);
 		int numberLength = token[0].length();
 		for (int i = 1; i < token.length; ++i){
@@ -166,7 +173,7 @@ public class CatalogCardPanel extends RecordPanel {
 				break;
 			}
 		}
-		String d = b.toString();
+		d = b.toString();
 		return d;
 	}
 	/**
@@ -194,7 +201,7 @@ public class CatalogCardPanel extends RecordPanel {
 			}
 		}
 		String m = String.copyValueOf(buffer);
-		m = m.toUpperCase(MARC.LANGUAGE_LOCALE);
+		m = m.toUpperCase(Locale.ENGLISH);
 		return m;
 	}
 	private String getDCC(){
@@ -231,13 +238,13 @@ public class CatalogCardPanel extends RecordPanel {
 		char code = 'a';
 		DataField f = (DataField) record.getFirstMatchingField(tag);
 		Subfield sub = null;
-		char indicator = MARC.BLANK_CHAR;
+		char indicator = Field.BLANK_INDICATOR;
 		if (f == null){
 			summary[0] = "Summary";
 		} else {
 			indicator = f.getIndicator1();
 			switch (indicator){
-			case MARC.BLANK_CHAR:
+			case Field.BLANK_INDICATOR:
 				summary[0] = "Summary";
 				break;
 			case '0':
@@ -283,22 +290,27 @@ public class CatalogCardPanel extends RecordPanel {
 	
 	private String[] getTopics(){
 		char[] code = {'a', 'x', 'z', 'y', 'v'};
-		String[] topic = record.getFormattedData("650", code, " -- ");
+		String[] f = record.getFormattedData("650", code, " -- ");
+		String[] topic = new String[f.length];
+		String format = "%d. %s";
+		for (int i = 0; i < f.length; ++i){
+			topic[i] = String.format(format, i+1, f[i]);
+		}
+		
 		return topic;
 	}
 	private String[] getTracings(){
 		char[] code = {'a', 'b'};
 		String[] f = record.getFormattedData("700", code, " ");
-		
 		String[] tracing = new String[f.length + 1];
 		tracing[0] = "Title";
 		for (int i = 0; i < f.length; ++i){
 			tracing[i+1] = f[i];
 		}
 		
-		String tracingFormat = "%d. %s";
+		String format = "%s. %s";
 		for (int i = 0; i < tracing.length; ++i){
-			tracing[i] = String.format(tracingFormat, i+1, tracing[i]);
+			tracing[i] = String.format(format, RomanNumeral.parse(i+1), tracing[i]);
 		}
 		return tracing;
 	}
