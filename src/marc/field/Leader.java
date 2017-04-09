@@ -1,8 +1,5 @@
 package marc.field;
 
-import marc.MARC;
-
-
 public final class Leader extends FixedField {
 	public static final String TAG = "LDR";
 	public static final int FIELD_LENGTH = 24;
@@ -19,8 +16,8 @@ public final class Leader extends FixedField {
 	
 	private final void initialize(){
 		setDataToValue(0, RECORD_LENGTH, 5);
-		data[TYPE] = MARC.BLANK_CHAR;
-		data[CHARACTER_CODING_SCHEME] = MARC.BLANK_CHAR;
+		data[TYPE] = FixedField.BLANK;
+		data[CHARACTER_CODING_SCHEME] = FixedField.BLANK;
 		data[10] = '2';
 		data[11] = '2';
 		setDataToValue(24, BASE_ADDRESS, 5);

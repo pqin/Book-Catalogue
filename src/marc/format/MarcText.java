@@ -19,18 +19,21 @@ import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import marc.MARC;
-import marc.field.ControlField;
 import marc.field.DataField;
 import marc.field.Field;
 import marc.field.FixedDataElement;
+import marc.field.FixedField;
 import marc.field.Leader;
 import marc.field.Subfield;
 import marc.record.Record;
+import marc.record.RecordBuilder;
 
-public class MarcPlain extends AbstractMarc {
-	public static final Pattern FIELD_REGEX = Pattern.compile("(LDR|\\d{3})([#\\d])([#\\d])");
-    public static final Pattern SUBFIELD_REGEX = Pattern.compile("\\$([a-z0-9])([^\\$\\r\\n]*)");
+public class MarcText extends AbstractMarc {
+	private static final Charset IO_CHARSET = StandardCharsets.UTF_8;
+	private static final Pattern FIELD_REGEX = Pattern.compile("(LDR|\\d{3})([#\\d])([#\\d])");
+    private static final Pattern SUBFIELD_REGEX = Pattern.compile("\\$([a-z0-9])([^\\$\\r\\n]*)");
+    private static final char INDICATOR_BLANK_REPLACEMENT = 0x23;
+    private static final char FIELD_BLANK_REPLACEMENT = 0x23;
 	
     @Override
 	public FileNameExtensionFilter getExtensionFilter() {
@@ -40,55 +43,6 @@ public class MarcPlain extends AbstractMarc {
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(filterDesc, ext);
 		return filter;
 	}
-    
-    private void build(Record record, Field field){
-    	String tag = field.getTag();
-    	char ind1, ind2;
-    	String data = null;
-    	Subfield subfield = null;
-    	Leader leader = null;
-    	FixedDataElement dataElementField = null;
-    	ControlField cField = null;
-    	if (tag.startsWith("00")){
-    		subfield = field.getSubfield(0);
-    		cField = new ControlField(tag, subfield.getData().length());
-    		cField.setSubfield(0, subfield);
-    	}
-    	
-		if (tag.equals(Leader.TAG)){
-    		leader = new Leader();
-    		subfield = field.getSubfield(0);
-        	if (subfield == null){
-        		data = "";
-        	} else {
-        		data = subfield.getData();
-        	}
-    		leader.setAllSubfields(data.replace('#', MARC.BLANK_CHAR));
-    		record.setLeader(leader);
-    	} else if (tag.equals(FixedDataElement.TAG)){
-    		dataElementField = new FixedDataElement();
-    		subfield = field.getSubfield(0);
-        	if (subfield == null){
-        		data = "";
-        	} else {
-        		data = subfield.getData();
-        		data = data.replace('#', MARC.BLANK_CHAR);
-        	}
-    		dataElementField.setFieldData(data.toCharArray());
-    		record.setFixedDataElement(dataElementField);
-    	} else {
-    		ind1 = field.getIndicator1();
-    		ind2 = field.getIndicator2();
-    		ind1 = (ind1 == '#')? MARC.BLANK_CHAR: ind1;
-    		ind2 = (ind2 == '#')? MARC.BLANK_CHAR: ind2;
-    		field.setIndicators(ind1, ind2);
-    		if (tag.startsWith("00")){
-    			record.addField(cField);
-    		} else {
-    			record.addField((DataField) field);
-    		}
-    	}
-    }
 
 	@Override
 	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {
@@ -99,64 +53,72 @@ public class MarcPlain extends AbstractMarc {
         Matcher m2 = null;	// match subfield pattern
         
         ArrayList<Record> list = new ArrayList<Record>();
+        int recordCount = 0;
+        RecordBuilder builder = new RecordBuilder();
         Record record = null;
-        DataField field = null;
-        String tag = null;
-        char ind1 = MARC.BLANK_CHAR;
-        char ind2 = MARC.BLANK_CHAR;
+        String tag, data;
+        char ind1, ind2;
         
-        in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+        in = new BufferedReader(new InputStreamReader(new FileInputStream(file), IO_CHARSET));
         while ((line = in.readLine()) != null){
             m1 = FIELD_REGEX.matcher(line);
             m2 = SUBFIELD_REGEX.matcher(line);
             if (m1.find()){
-                tag = m1.group(1);
-                ind1 = m1.group(2).charAt(0);
-                ind2 = m1.group(3).charAt(0);
-                // add data from before previous loop
-                if (record != null){
-                	build(record, field);
-                    if (tag.equals(Leader.TAG)){
-                    	record.sortFields();
-                        list.add(record);
-                    }
-                }
-                // start new loop
-                if (tag.equals(Leader.TAG)){
-                    record = new Record();
-                }
-                field = new DataField(tag, ind1, ind2);
-            }
-            if (field != null){
+            	tag = m1.group(1);
+            	ind1 = m1.group(2).charAt(0);
+            	ind2 = m1.group(3).charAt(0);
+            	if (Leader.TAG.equals(tag)){
+            		if (recordCount != list.size()){
+            			record = builder.build();
+                		list.add(record);
+                		builder.reset();
+            		}
+            		++recordCount;
+            	}
+            	builder.createField(tag);
+            	builder.setIndicator1((ind1 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind1);
+            	builder.setIndicator2((ind2 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind2);
             	while (m2.find()){
-                    field.addSubfield(m2.group(1).charAt(0), m2.group(2));
-                }
+            		data = m2.group(2);
+            		if (Leader.TAG.equals(tag)){
+            			data = data.replace(FIELD_BLANK_REPLACEMENT, FixedField.BLANK);
+            			builder.setControlData(data);
+            			break;
+            		} else if (FixedDataElement.TAG.equals(tag)){
+            			data = data.replace(FIELD_BLANK_REPLACEMENT, FixedField.BLANK);
+            			builder.setControlData(data);
+            			break;
+            		} else if (Field.isControlTag(tag)){
+            			builder.setControlData(data);
+            			break;
+            		} else {
+            			builder.addSubfield(m2.group(1).charAt(0), data);
+            		}
+            	}
+            	builder.addField();
             }
         }
         in.close();
         // add data from last loop
-        if (record != null){
-        	build(record, field);
-        	record.sortFields();
-            list.add(record);
-        }
+        if (recordCount != list.size()){
+    		record = builder.build();
+    		list.add(record);
+    	}
         return list;
 	}
 	
 	@Override
 	public void write(File file, List<Record> data) throws FileNotFoundException, IOException {
-		final Charset encoding = StandardCharsets.UTF_8;
-		final String charsetName = encoding.displayName(MARC.COUNTRY_LOCALE);
 		BufferedWriter out = null;
 		
 		Record record = null;
 		String tag = null;
 		char ind1, ind2;
-		String subdata = null;
+		String fieldData = null;
 		Subfield subfield = null;
 		Iterator<Record> it = null;
 		
-		out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charsetName));
+		out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), IO_CHARSET));
 		it = data.iterator();
 		while (it.hasNext()){
 			record = it.next();
@@ -164,22 +126,27 @@ public class MarcPlain extends AbstractMarc {
 				tag = f.getTag();
 				ind1 = f.getIndicator1();
 				ind2 = f.getIndicator2();
-				ind1 = (ind1 == MARC.BLANK_CHAR)? '#': ind1;
-	    		ind2 = (ind2 == MARC.BLANK_CHAR)? '#': ind2;
+				ind1 = (ind1 == Field.BLANK_INDICATOR) ? INDICATOR_BLANK_REPLACEMENT : ind1;
+				ind2 = (ind2 == Field.BLANK_INDICATOR) ? INDICATOR_BLANK_REPLACEMENT : ind2;
 				out.write(tag);
 				out.write(ind1);
 				out.write(ind2);
-				for (int s = 0; s < f.getDataCount(); ++s){
-					subfield = f.getSubfield(s);
-					out.write('$');
-					out.write(subfield.getCode());
-					subdata = subfield.getData();
-					if (tag.equals(Leader.TAG)){
-						subdata = subdata.replace(MARC.BLANK_CHAR, '#');
-					} else if (tag.equals(FixedDataElement.TAG)){
-						subdata = subdata.replace(MARC.BLANK_CHAR, '#');
+				if (Field.isFixedFieldTag(tag)){
+					fieldData = f.getFieldString();
+					fieldData = fieldData.replace(FixedField.BLANK, FIELD_BLANK_REPLACEMENT);
+					out.write("$a");
+					out.write(fieldData);
+				} else if (Field.isControlTag(tag)){
+					fieldData = f.getFieldString();
+					out.write("$a");
+					out.write(fieldData);
+				} else {
+					for (int s = 0; s < f.getDataCount(); ++s){
+						subfield = ((DataField) f).getSubfield(s);
+						out.write('$');
+						out.write(subfield.getCode());
+						out.write(subfield.getData());
 					}
-					out.write(subdata);
 				}
 				out.newLine();
 			}

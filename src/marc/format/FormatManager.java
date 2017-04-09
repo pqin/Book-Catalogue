@@ -10,8 +10,8 @@ public class FormatManager {
 	
 	public FormatManager(){
 		format = new ArrayList<AbstractMarc>();
-		format.add(new MarcDefault());
-		format.add(new MarcPlain());
+		format.add(new MarcBinary());
+		format.add(new MarcText());
 		format.add(new MarcXML());
 	}
 	

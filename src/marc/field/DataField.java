@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import marc.MARC;
-
 public final class DataField extends Field {
 	private ArrayList<Subfield> subfield;
 	
@@ -14,7 +12,7 @@ public final class DataField extends Field {
 		subfield = new ArrayList<Subfield>();
 	}
 	public DataField(String tag){
-		super(tag, MARC.BLANK_CHAR, MARC.BLANK_CHAR);
+		super(tag, Field.BLANK_INDICATOR, Field.BLANK_INDICATOR);
 		subfield = new ArrayList<Subfield>();
 	}
 	public DataField(String tag, char ind1, char ind2){
@@ -54,21 +52,19 @@ public final class DataField extends Field {
 		return subfield.size();
 	}
 	@Override
+	public String getFieldString(){
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < subfield.size(); ++i){
+			buf.append(subfield.get(i).toString());
+		}
+		return buf.toString();
+	}
+	
 	public Subfield getSubfield(int index){
 		Subfield s = null;
 		if (index >= 0 && index < subfield.size()){
 			s = subfield.get(index);
 		}
-		return s;
-	}
-	@Override
-	public String getSubfield(){
-		String s = null;
-		StringBuffer buffer = new StringBuffer();
-		for (int i = 0; i < subfield.size(); ++i){
-			buffer.append(subfield.get(i).toString());
-		}
-		s = buffer.toString();
 		return s;
 	}
 	
@@ -86,7 +82,7 @@ public final class DataField extends Field {
 			}
 		}
 	}
-	@Override
+	
 	public void setAllSubfields(Subfield[] value){
 		if (value == null){
 			value = new Subfield[0];
@@ -140,17 +136,5 @@ public final class DataField extends Field {
 			}
 		}
 		return match;
-	}
-	@Override
-	public String toString(){
-		String s = null;
-		StringBuffer buf = new StringBuffer();
-		
-		buf.append(super.toString());
-		for (int i = 0; i < subfield.size(); ++i){
-			buf.append(subfield.get(i).toString());
-		}
-		s = buf.toString();
-		return s;
 	}
 }

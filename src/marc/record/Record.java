@@ -138,11 +138,11 @@ public final class Record implements Serializable {
 		Field tmp = null;
 		Iterator<? extends Field> it = null;
 		if (tag != null){
-			if (tag.equals(Leader.TAG)){
+			if (Leader.TAG.equals(tag)){
 				f.add(leader);
-			} else if (tag.equals(FixedDataElement.TAG)){
+			} else if (FixedDataElement.TAG.equals(tag)){
 				f.add(dataElement);
-			} else if (tag.startsWith("00")){
+			} else if (Field.isControlTag(tag)){
 				it = controlField.iterator();
 			} else {
 				it = dataField.iterator();
@@ -163,11 +163,11 @@ public final class Record implements Serializable {
 		Field tmp = null;
 		Iterator<? extends Field> it = null;
 		if (tag != null){
-			if (tag.equals(Leader.TAG)){
+			if (Leader.TAG.equals(tag)){
 				return leader;
-			} else if (tag.equals(FixedDataElement.TAG)){
+			} else if (FixedDataElement.TAG.equals(tag)){
 				return dataElement;
-			} else if (tag.startsWith("00")){
+			} else if (Field.isControlTag(tag)){
 				it = controlField.iterator();
 			} else {
 				it = dataField.iterator();
@@ -250,6 +250,7 @@ public final class Record implements Serializable {
 		}
 		return b.toString();
 	}
+	
 	public void addField(ControlField f){
 		controlField.add(f);
 	}

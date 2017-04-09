@@ -1,15 +1,18 @@
 package marc.record;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 import marc.Factory;
-import marc.MARC;
 import marc.field.FixedDataElement;
 import marc.field.Leader;
 import marc.type.AbstractRecordType;
 import marc.type.RecordType;
 
 public final class RecordFactory {
+	private static final ZoneId TIME_ZONE = ZoneId.ofOffset("", ZoneOffset.UTC);
+	
 	public static final Record generate(RecordType type){
 		Leader leader = getLeader(type);
 		AbstractRecordType t = Factory.getMaterialConfig(leader);
@@ -18,7 +21,7 @@ public final class RecordFactory {
 		Record record = new Record();
 		record.setLeader(leader);
 		record.setFixedDataElement(dataElement);
-		record.setEntryDate(LocalDate.now(MARC.TIME_ZONE));
+		record.setEntryDate(LocalDate.now(TIME_ZONE));
 		return record;
 	}
 	

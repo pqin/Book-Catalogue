@@ -14,27 +14,65 @@ import java.util.List;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import marc.MARC;
+import marc.encoding.Marc8;
 import marc.field.ControlField;
 import marc.field.DataField;
 import marc.field.Field;
-import marc.field.FixedDataElement;
+import marc.field.FixedField;
 import marc.field.Leader;
 import marc.field.Subfield;
 import marc.record.Record;
+import marc.record.RecordBuilder;
 
-public class MarcDefault extends AbstractMarc {
+public class MarcBinary extends AbstractMarc {
 	// encodings
 	private static final Charset ASCII = StandardCharsets.US_ASCII;
 	private static final Charset UTF8 = StandardCharsets.UTF_8;
-	private static final Charset MARC8 = new marc.encoding.Marc8();
-	
-	private static final int DIRECTORY_ENTRY_LENGTH = 12;
-	private static final int RADIX = 10;
+	private static final Charset MARC8 = new Marc8();
 	
 	public static final byte RECORD_TERMINATOR = 0x1D;
 	public static final byte FIELD_TERMINATOR = 0x1E;
 	public static final byte SUBFIELD_DELIMITER = 0x1F;
+	private static final String SUBFIELD_SPLITTER_REGEX = String.valueOf((char) SUBFIELD_DELIMITER);
+	
+	private class DirectoryEntry {
+		private static final int LENGTH = 12;
+		private static final int RADIX = 10;
+		
+		private int[] map;
+		protected String tag;
+		private int fieldPos, fieldLength;
+		
+		protected DirectoryEntry(int index, byte[] data){
+			int[] mapOffset = {3, 4, 5, 0};
+			int offset = 0;
+			map = new int[mapOffset.length];
+			for (int i = 0; i < map.length; ++i){
+				map[i] = (index * LENGTH) + offset;
+				offset += mapOffset[i];
+			}
+			
+			tag = Field.UNKNOWN_TAG;
+			fieldPos = 0;
+			fieldLength = 0;
+		}
+		protected void parseDirectory(final byte[] data){
+			byte[] bytes = null;
+			bytes = Arrays.copyOfRange(data, map[0], map[1]);
+			tag = new String(bytes, ASCII);
+			
+			bytes = Arrays.copyOfRange(data, map[1], map[2]);
+			fieldLength = parseInt(bytes, ASCII, RADIX);
+			
+			bytes = Arrays.copyOfRange(data, map[2], map[3]);
+			fieldPos = parseInt(bytes, ASCII, RADIX);
+		}
+		protected String parseField(final Charset charset, final byte[] data){
+			byte[] bytes = Arrays.copyOfRange(data, fieldPos, fieldPos + fieldLength);
+			String fieldData = new String(bytes, charset);
+			return fieldData;
+		}
+	};
 	
 	@Override
 	public FileNameExtensionFilter getExtensionFilter() {
@@ -45,118 +83,70 @@ public class MarcDefault extends AbstractMarc {
 		return filter;
 	}
 
-	private Leader parseLeader(final byte[] data){
-		byte[] bytes = Arrays.copyOfRange(data, 0, Leader.FIELD_LENGTH);
-		Leader leader = new Leader();
-		leader.setAllSubfields(bytes, ASCII);
-		return leader;
+	private char[] getAsciiChars(final byte[] bytes){
+		char[] data = new char[bytes.length];
+		for (int i = 0; i < bytes.length; ++i){
+			data[i] = (char) bytes[i];
+		}
+		return data;
 	}
 	
-    private Record parseRecord(final byte[] data){
-    	Record record = new Record();
-    	// parse Leader
-    	Leader leader = parseLeader(data);
-		record.setLeader(leader);
+    private static int parseInt(final byte[] bytes, final Charset charset, final int radix){
+		int value = 0;
+		try {
+			value = Integer.parseInt(new String(bytes, charset), radix);
+		} catch (NumberFormatException e){
+			value = 0;
+		}
+		return value;
+	}
+
+	private Record parseRecord(final RecordBuilder builder, final byte[] directory, final byte[] data, final Charset charset){
 		// parse Directory
-		int baseAddress = leader.getBaseAddress();
-		byte[] directory = Arrays.copyOfRange(data, Leader.FIELD_LENGTH, baseAddress);
 		int entryCount = 0;
-		if ((directory.length - 1) % DIRECTORY_ENTRY_LENGTH == 0){
-			entryCount = Math.floorDiv(directory.length - 1, DIRECTORY_ENTRY_LENGTH);
+		if ((directory.length - 1) % DirectoryEntry.LENGTH == 0){
+			entryCount = Math.floorDiv(directory.length - 1, DirectoryEntry.LENGTH);
 		}
-		int[][] index = new int[entryCount][4];
-		for (int r = 0; r < entryCount; ++r){
-			index[r][0] = (r * DIRECTORY_ENTRY_LENGTH) + 0;
-			index[r][1] = (r * DIRECTORY_ENTRY_LENGTH) + 3;
-			index[r][2] = (r * DIRECTORY_ENTRY_LENGTH) + 7;
-			index[r][3] = (r * DIRECTORY_ENTRY_LENGTH) + DIRECTORY_ENTRY_LENGTH;
+		DirectoryEntry[] entry = new DirectoryEntry[entryCount];
+		for (int i = 0; i < entryCount; ++i){
+			entry[i] = new DirectoryEntry(i, directory);
+			entry[i].parseDirectory(directory);
 		}
-		byte[] bytes = null;
-		String[] tag = new String[entryCount];
-		for (int r = 0; r < entryCount; ++r){
-			bytes = Arrays.copyOfRange(directory, index[r][0], index[r][1]);
-			tag[r] = new String(bytes, ASCII);
-		}
-		int[][] map = new int[entryCount][2];
-		int mapValue = 0;
-		for (int r = 0; r < entryCount; ++r){
-			bytes = Arrays.copyOfRange(directory, index[r][1], index[r][2]);
-			mapValue = parseInt(bytes, ASCII, RADIX);
-			map[r][1] = mapValue;	// field length
-			
-			bytes = Arrays.copyOfRange(directory, index[r][2], index[r][3]);
-			mapValue = parseInt(bytes, ASCII, RADIX);
-			map[r][0] = mapValue;	// field index
-		}
+		
 		// build Record
-		ControlField cField = null;
-		FixedDataElement dataElementField = null;
-		DataField dField = null;
-		int fieldOffset = 0;
-		int fieldLength = 0;
 		String fieldData = null;
-		char ind1, ind2;
 		String[] subData = null;
 		int index0, index1;
 
 		for (int r = 0; r < entryCount; ++r){
-			fieldOffset = baseAddress + map[r][0];
-			fieldLength = map[r][1];
-			bytes = Arrays.copyOfRange(data, fieldOffset, fieldOffset + fieldLength);
-			if (leader.getCharacterCodingScheme() == 'a'){
-				fieldData = new String(bytes, UTF8);
-			} else {
-				fieldData = new String(bytes, MARC8);
-			}
-			if (tag[r].startsWith("00")){
-				ind1 = MARC.BLANK_CHAR;
-				ind2 = MARC.BLANK_CHAR;
+			fieldData = entry[r].parseField(charset, data);
+			builder.createField(entry[r].tag);
+			if (Field.isControlTag(entry[r].tag)){
 				index0 = 0;
 				index1 = fieldData.indexOf(FIELD_TERMINATOR);
 				if (index1 == -1){
 					index1 = fieldData.length();
 				}
-				fieldData = fieldData.substring(index0, index1);
-				subData = new String[1];
-				if (tag[r].equals(FixedDataElement.TAG)){
-					subData[0] = fieldData.replace(' ', MARC.BLANK_CHAR);
-				} else {
-					subData[0] = fieldData;
-				}
+				builder.setControlData(fieldData.substring(index0, index1));
 			} else {
-				ind1 = fieldData.charAt(0);
-				ind2 = fieldData.charAt(1);
+				builder.setIndicator1(fieldData.charAt(0));
+				builder.setIndicator2(fieldData.charAt(1));
 				index0 = fieldData.indexOf(SUBFIELD_DELIMITER)+1;
-				index1 = fieldData.indexOf(FIELD_TERMINATOR);
+				index1 = fieldData.indexOf(FIELD_TERMINATOR, index0);
 				if (index1 == -1){
 					index1 = fieldData.length();
 				}
 				fieldData = fieldData.substring(index0, index1);
-				subData = fieldData.split(String.valueOf((char) SUBFIELD_DELIMITER));
-			}
-			ind1 = (ind1 == ' ')? MARC.BLANK_CHAR: ind1;
-			ind2 = (ind2 == ' ')? MARC.BLANK_CHAR: ind2;
-			if (tag[r].startsWith("00")){
-				if (tag[r].equals(FixedDataElement.TAG)){
-					dataElementField = new FixedDataElement();
-					dataElementField.setFieldData(subData[0].toCharArray());
-					record.setFixedDataElement(dataElementField);
-				} else {
-					cField = new ControlField(tag[r], subData[0].length());
-					cField.setAllSubfields(subData[0]);
-					record.addField(cField);
-				}
-			} else {
-				dField = new DataField(tag[r], ind1, ind2);
+				subData = fieldData.split(SUBFIELD_SPLITTER_REGEX);
 				for (int i = 0; i < subData.length; ++i){
 					if (subData[i].length() > 0){
-						dField.addSubfield(subData[i].charAt(0), subData[i].substring(1));
+						builder.addSubfield(subData[i].charAt(0), subData[i].substring(1));
 					}
 				}
-				record.addField(dField);
 			}
+			builder.addField();
 		}
-    	return record;
+    	return builder.build();
     }
     
 	@Override
@@ -164,35 +154,44 @@ public class MarcDefault extends AbstractMarc {
 		byte[] leader = new byte[Leader.FIELD_LENGTH];
 		byte[] directory = null;
 		byte[] fieldData = null;
-		byte[] recordData = null;
 		
 		ArrayList<Record> list = new ArrayList<Record>();
+		RecordBuilder builder = new RecordBuilder();
 		Record record = null;
-		Leader ldr = null;
+		Leader ldr = new Leader();
+		Charset charset = null;
+		char[] leaderData = null;
 		int recordLength = 0;
 		int baseAddress = 0;
-		int destPos = 0;
 		
 		FileInputStream in = new FileInputStream(file);
-		while (in.read(leader) != -1){
-			ldr = parseLeader(leader);
+		while (in.read(leader) == Leader.FIELD_LENGTH){
+			leaderData = getAsciiChars(leader);
+			ldr.setFieldData(leaderData);
 			recordLength = ldr.getLength();
 			baseAddress = ldr.getBaseAddress();
 			directory = new byte[baseAddress - Leader.FIELD_LENGTH];
 			fieldData = new byte[recordLength - baseAddress];
-			recordData = new byte[recordLength];
 
 			in.read(directory);
 			in.read(fieldData);
-			destPos = 0;
-			System.arraycopy(leader, 0, recordData, destPos, leader.length);
-			destPos += leader.length;
-			System.arraycopy(directory, 0, recordData, destPos, directory.length);
-			destPos += directory.length;
-			System.arraycopy(fieldData, 0, recordData, destPos, fieldData.length);
 			
-			record = parseRecord(recordData);
+			switch (ldr.getCharacterCodingScheme()){
+			case FixedField.BLANK:
+				charset = MARC8;
+				break;
+			case 'a':
+				charset = UTF8;
+				break;
+			default:
+				charset = ASCII;
+				break;
+			}
+			
+			builder.setLeader(leaderData);
+			record = parseRecord(builder, directory, fieldData, charset);
 			list.add(record);
+			builder.reset();
 		}
 		in.close();
 		
@@ -205,10 +204,11 @@ public class MarcDefault extends AbstractMarc {
 		final char charCodingScheme = 'a';
 		FileOutputStream out = new FileOutputStream(file);
 		Record record = null;
+		Leader leader = null;
 		ArrayList<Field> field = null;
 		Field f = null;
 		String tag = null;
-		byte[] leader = null;
+		byte[] ldr = null;
 		byte[][] directory = null;
 		int fi = 0;
 		int fl = 0;
@@ -221,25 +221,28 @@ public class MarcDefault extends AbstractMarc {
 		while (it.hasNext()){
 			record = it.next();
 			// get all data
-			leader = getBytes(record.getLeader().getFieldData(), ASCII);
 			field = record.getFields();
-			directory = new byte[field.size() - 1][DIRECTORY_ENTRY_LENGTH];
+			directory = new byte[field.size() - 1][DirectoryEntry.LENGTH];
 			fieldData = new byte[field.size() - 1][];
 			fi = 0;
 			fl = 0;
 			for (int i = 1; i < field.size(); ++i){
 				f = field.get(i);
 				tag = f.getTag();
-				fieldData[i-1] = getBytes(f, encoding);
+				if (Field.isControlTag(tag)){
+					fieldData[i-1] = getBytes((ControlField)f, encoding);
+				} else {
+					fieldData[i-1] = getBytes((DataField)f, encoding);
+				}
 				fl = fieldData[i-1].length;
 				dirEntry[0] = getBytes(tag, ASCII);
 				dirEntry[1] = getBytes(fl, 4, ASCII);
 				dirEntry[2] = getBytes(fi, 5, ASCII);
-				directory[i-1] = concatenateBytes(dirEntry);
+				directory[i-1] = flatten(dirEntry);
 				fi += fl;
 			}
 			// calculate addresses
-			recordLength = leader.length;
+			recordLength = Leader.FIELD_LENGTH;
 			for (int i = 0; i < directory.length; ++i){
 				recordLength += directory[i].length;
 			}
@@ -250,12 +253,12 @@ public class MarcDefault extends AbstractMarc {
 			}
 			++recordLength;
 			// write Leader
-			Leader l = record.getLeader();
-			l.setLength(recordLength);
-			l.setBaseAddress(baseAddress);
-			l.setCharacterCodingScheme(charCodingScheme);
-			leader = getBytes(l.getFieldData(), ASCII);
-			out.write(leader);
+			leader = record.getLeader();
+			leader.setLength(recordLength);
+			leader.setBaseAddress(baseAddress);
+			leader.setCharacterCodingScheme(charCodingScheme);
+			ldr = getBytes(leader.getFieldData(), ASCII);
+			out.write(ldr);
 			// write directory
 			for (int i = 0; i < directory.length; ++i){
 				out.write(directory[i]);
@@ -271,13 +274,18 @@ public class MarcDefault extends AbstractMarc {
 		out.close();
 	}
 	
-	private static byte[] getBytes(Field f, Charset charset){
-		final boolean controlField = f.isControlField();
+	private static byte[] getBytes(ControlField f, Charset charset){
+		byte[] t = getBytes(f.getFieldData(), charset);
+		byte[] b = Arrays.copyOf(t, t.length + 1);
+		b[t.length] = FIELD_TERMINATOR;
+		return b;
+	}
+	private static byte[] getBytes(DataField f, Charset charset){
 		final int subCount = f.getDataCount();
 		Subfield s = null;
 		byte[][] tmp = null;
 		int k = 0;
-		if (controlField){
+		if (f.isControlField()){
 			tmp = new byte[subCount][];
 			for (int i = 0; i < subCount; ++i){
 				s = f.getSubfield(i);
@@ -300,15 +308,14 @@ public class MarcDefault extends AbstractMarc {
 			}
 		}
 		
-		byte[] t = concatenateBytes(tmp);
+		byte[] t = flatten(tmp);
 		byte[] b = Arrays.copyOf(t, t.length + 1);
 		b[t.length] = FIELD_TERMINATOR;
 		return b;
 	}
 	
-	private static byte[] getBytes(Character c, Charset charset){
-		String s = String.valueOf(c);
-		byte[] b = s.getBytes(charset);
+	private static byte[] getBytes(char c, Charset charset){
+		byte[] b = String.valueOf(c).getBytes(charset);
 		return b;
 	}
 	private static byte[] getBytes(char[] c, Charset charset){
@@ -326,7 +333,7 @@ public class MarcDefault extends AbstractMarc {
 		byte[] b = s.getBytes(charset);
 		return b;
 	}
-	private static byte[] concatenateBytes(byte[][] src){
+	private static byte[] flatten(byte[][] src){
 		int length = 0;
 		for (int i = 0; i < src.length; ++i){
 			length += src[i].length;
@@ -340,15 +347,5 @@ public class MarcDefault extends AbstractMarc {
 			}
 		}
 		return dest;
-	}
-	private static int parseInt(final byte[] bytes, final Charset charset, final int radix){
-		int value = 0;
-		String s = new String(bytes, charset);
-		try {
-			value = Integer.parseInt(s, radix);
-		} catch (NumberFormatException e){
-			value = 0;
-		}
-		return value;
 	}
 }

@@ -1,11 +1,8 @@
 package marc.field;
 
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import marc.MARC;
 
 public class ControlField extends Field {
 	private static final int RADIX = 10;	// all numbers in data are in base-10
@@ -19,12 +16,16 @@ public class ControlField extends Field {
 	public ControlField(int length){
 		super();
 		data = new char[length];
-		Arrays.fill(data, MARC.BLANK_CHAR);
+		Arrays.fill(data, FixedField.BLANK);
 	}
 	public ControlField(String tag, int length){
-		super(tag, MARC.BLANK_CHAR, MARC.BLANK_CHAR);
+		super(tag, Field.BLANK_INDICATOR, Field.BLANK_INDICATOR);
 		data = new char[length];
-		Arrays.fill(data, MARC.BLANK_CHAR);
+		Arrays.fill(data, FixedField.BLANK);
+	}
+	public ControlField(String tag, char[] value){
+		super(tag, Field.BLANK_INDICATOR, Field.BLANK_INDICATOR);
+		data = Arrays.copyOf(value, value.length);
 	}
 	
 	@Override
@@ -43,8 +44,7 @@ public class ControlField extends Field {
 	}
 	@Override
 	public String getFieldString(){
-		String value = String.valueOf(data);
-		return value;
+		return String.valueOf(data);
 	}
 	@Override
 	public void setFieldData(char[] value){
@@ -55,51 +55,6 @@ public class ControlField extends Field {
 				data = new char[value.length];
 			}
 			System.arraycopy(value, 0, data, 0, data.length);
-		}
-	}
-	@Override
-	public Subfield getSubfield(int index){
-		Subfield s = null;
-		if (index == 0){
-			s = new Subfield('a', String.copyValueOf(data));
-		}
-		return s;
-	}
-	@Override
-	public String getSubfield(){
-		return String.copyValueOf(data);
-	}
-	public void setAllSubfields(byte[] value, Charset encoding){
-		String tmp = new String(value, encoding);
-		setAllSubfields(tmp.toCharArray());
-	}
-	public void setAllSubfields(char[] value){
-		data = Arrays.copyOf(value, data.length);
-		for (int i = 0; i < data.length; ++i){
-			if (data[i] == '\u0000'){
-				data[i] = MARC.BLANK_CHAR;
-			}
-		}
-	}
-	
-	public void setAllSubfields(String value){
-		setAllSubfields(value.toCharArray());
-	}
-	@Override
-	public void setAllSubfields(Subfield[] value){
-		if (value == null){
-			value = new Subfield[0];
-		}
-		if (value.length > 0){
-			setAllSubfields(value[0].getData());
-		}
-	}
-	
-	public void setSubfield(int index, Subfield value){
-		if (index == 0 && value != null){
-			if (value.getCode() == 'a'){
-				setAllSubfields(value.getData());
-			}
 		}
 	}
 	
@@ -114,7 +69,7 @@ public class ControlField extends Field {
 		if (index >= 0 && index+length <= data.length){
 			value = Arrays.copyOfRange(data, index, index+length);
 		} else {
-			Arrays.fill(value, MARC.BLANK_CHAR);
+			Arrays.fill(value, FixedField.BLANK);
 		}
 		return value;
 	}
@@ -145,7 +100,7 @@ public class ControlField extends Field {
 		setDataToValue(value, index);
 	}
 	public void setData(char[] value, int index, int length){
-		setDataToValue(value, MARC.BLANK_CHAR, index, length);
+		setDataToValue(value, FixedField.BLANK, index, length);
 	}
 	
 	protected void setDataToValue(int value, int offset, int length){
@@ -188,10 +143,5 @@ public class ControlField extends Field {
 		ControlField copy = new ControlField(this.tag, data.length);
 		copy.setFieldData(this.data);
 		return copy;
-	}
-	
-	public String toString(){
-		String s = super.toString() + "$a" + getSubfield();
-		return s;
 	}
 }

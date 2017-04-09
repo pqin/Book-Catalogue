@@ -19,14 +19,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import marc.MARC;
-import marc.field.ControlField;
 import marc.field.DataField;
 import marc.field.Field;
-import marc.field.FixedDataElement;
 import marc.field.Leader;
 import marc.field.Subfield;
 import marc.record.Record;
+import marc.record.RecordBuilder;
 
 public class MarcXML extends AbstractMarc {
 	private static final String NAMESPACE = "xmlns";
@@ -53,15 +51,8 @@ public class MarcXML extends AbstractMarc {
 
 	@Override
 	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {
-		ArrayList<Record> list = null;
-		Record record = null;
-		String tag = MARC.UNKNOWN_TAG;
-		char ind1 = MARC.BLANK_CHAR;
-		char ind2 = MARC.BLANK_CHAR;
-		ControlField cField = null;
-		Leader leader = null;
-		FixedDataElement dataElementField = null;
-		DataField dField = null;
+		ArrayList<Record> list = new ArrayList<Record>();
+		RecordBuilder builder = new RecordBuilder();
 		char code = '\0';
         
 		XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -78,62 +69,39 @@ public class MarcXML extends AbstractMarc {
 					localName = reader.getLocalName();
 					switch (localName){
 					case CATALOGUE:
-						if (list == null){
-							list = new ArrayList<Record>();
-						}
 						break;
 					case RECORD:
-						record = new Record();
 						break;
 					case LEADER:
-						leader = new Leader();
 						break;
 					case CONTROLFIELD:
-						cField = new ControlField();
-						tag = MARC.UNKNOWN_TAG;
 						for (int i = 0; i < reader.getAttributeCount(); ++i){
-							switch (reader.getAttributeLocalName(i)){
-							case TAG:
-								tag = reader.getAttributeValue(i);
-								break;
-							default:
-								break;
+							if (TAG.equals(reader.getAttributeLocalName(i))){
+								builder.createField(reader.getAttributeValue(i));
 							}
 						}
-						cField.setTag(tag);
 						break;
 					case DATAFIELD:
-						dField = new DataField();
-						tag = MARC.UNKNOWN_TAG;
-						ind1 = MARC.BLANK_CHAR;
-						ind2 = MARC.BLANK_CHAR;
 						for (int i = 0; i < reader.getAttributeCount(); ++i){
 							switch (reader.getAttributeLocalName(i)){
 							case TAG:
-								tag = reader.getAttributeValue(i);
+								builder.createField(reader.getAttributeValue(i));
 								break;
 							case INDICATOR1:
-								ind1 = reader.getAttributeValue(i).charAt(0);
+								builder.setIndicator1(reader.getAttributeValue(i).charAt(0));
 								break;
 							case INDICATOR2:
-								ind2 = reader.getAttributeValue(i).charAt(0);
+								builder.setIndicator2(reader.getAttributeValue(i).charAt(0));
 								break;
 							default:
 								break;
 							}
 						}
-						dField.setTag(tag);
-						dField.setIndicators(ind1, ind2);
 						break;
 					case SUBFIELD:
-						code = '\0';
 						for (int i = 0; i < reader.getAttributeCount(); ++i){
-							switch (reader.getAttributeLocalName(i)){
-							case CODE:
+							if (CODE.equals(reader.getAttributeLocalName(i))){
 								code = reader.getAttributeValue(i).charAt(0);
-								break;
-							default:
-								break;
 							}
 						}
 						break;
@@ -142,35 +110,27 @@ public class MarcXML extends AbstractMarc {
 					}
 					break;
 				case XMLStreamConstants.CHARACTERS:
-					content = reader.getText().trim();
+					content = reader.getText();
 					break;
 				case XMLStreamConstants.END_ELEMENT:
 					localName = reader.getLocalName();
 					switch (localName){
 					case RECORD:
-						list.add(record);
+						list.add(builder.build());
+						builder.reset();
 						break;
 					case LEADER:
-						leader.setFieldData(content.toCharArray());
-						record.setLeader(leader);
+						builder.setLeader(content);
 						break;
 					case CONTROLFIELD:
-						if (cField.getTag().equals(FixedDataElement.TAG)){
-							dataElementField = new FixedDataElement();
-							dataElementField.setFieldData(content.toCharArray());
-							record.setFixedDataElement(dataElementField);
-						} else {
-							cField.setFieldData(content.toCharArray());
-							record.addField(cField);
-						}
+						builder.setControlData(content);
+						builder.addField();
 						break;
 					case DATAFIELD:
-						record.addField(dField);
+						builder.addField();
 						break;
 					case SUBFIELD:
-						if (code != '\0'){
-							dField.addSubfield(code, content);
-						}
+						builder.addSubfield(code, content);
 						break;
 					default:
 						break;
@@ -242,7 +202,7 @@ public class MarcXML extends AbstractMarc {
 						writer.writeCharacters(content);
 						writer.writeEndElement();
 						writer.writeCharacters(newline);
-					} else if (tag.startsWith("00")){
+					} else if (Field.isControlTag(tag)){
 						content = String.valueOf(f.getFieldData());
 						writer.writeStartElement(CONTROLFIELD);
 						writer.writeAttribute(TAG, tag);
@@ -257,7 +217,7 @@ public class MarcXML extends AbstractMarc {
 						writer.writeCharacters(newline);
 						subfieldCount = f.getDataCount();
 						for (int s = 0; s < subfieldCount; ++s){
-							subfield = f.getSubfield(s);
+							subfield = ((DataField) f).getSubfield(s);
 							writer.writeCharacters(indent);
 							writer.writeCharacters(indent);
 							writer.writeCharacters(indent);

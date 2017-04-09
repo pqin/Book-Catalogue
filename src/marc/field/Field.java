@@ -2,21 +2,43 @@ package marc.field;
 
 import java.util.regex.Pattern;
 
-import marc.MARC;
-
-public class Field implements Comparable<Field> {	
+public class Field implements Comparable<Field> {
+	public static final String UNKNOWN_TAG = "???";
+	public static final char BLANK_INDICATOR = 0x20;
+	
 	protected String tag;
 	protected char indicator1, indicator2;
 	
 	public Field(){
-		tag = MARC.UNKNOWN_TAG;
-		indicator1 = MARC.BLANK_CHAR;
-		indicator2 = MARC.BLANK_CHAR;
+		tag = UNKNOWN_TAG;
+		indicator1 = BLANK_INDICATOR;
+		indicator2 = BLANK_INDICATOR;
 	}
 	protected Field(String tag, char ind1, char ind2){
 		this.tag = tag;
 		indicator1 = ind1;
 		indicator2 = ind2;
+	}
+	
+	public static final boolean isControlTag(String t){
+		boolean status = (t == null) ? false : t.startsWith("00");
+		return status;
+	}
+	public static final boolean isFixedFieldTag(String t){
+		boolean status = false;
+		if (t != null){
+			status |= Leader.TAG.equals(t);
+			status |= "006".equals(t);
+			status |= "007".equals(t);
+			status |= FixedDataElement.TAG.equals(t);
+		}
+		return status;
+	}
+	public final boolean isControlField(){
+		return isControlTag(tag);
+	}
+	public final boolean isFixedField(){
+		return isFixedFieldTag(tag);
 	}
 	
 	public String getTag(){
@@ -55,15 +77,6 @@ public class Field implements Comparable<Field> {
 	public void setFieldData(char[] value){
 		// implementation defined
 	}
-	public Subfield getSubfield(int index){
-		return null;
-	}
-	public String getSubfield(){
-		return null;
-	}
-	public void setAllSubfields(Subfield[] value){
-		// implementation defined
-	}
 	public void clear(){
 		// implementation defined
 	}
@@ -71,13 +84,17 @@ public class Field implements Comparable<Field> {
 	public final boolean hasTag(String value){
 		return tag.equals(value);
 	}
-	public final boolean isControlField(){
-		return tag.startsWith("00");
-	}
 	
 	public String toString(){
-		String s = String.format("%s%c%c", tag, indicator1, indicator2);
-		return s;
+		StringBuilder buf = new StringBuilder();
+		buf.append(tag);
+		buf.append(indicator1);
+		buf.append(indicator2);
+		String f = getFieldString();
+		if (f != null){
+			buf.append(f);
+		}
+		return buf.toString();
 	}
 	
 	public boolean contains(Pattern query){
