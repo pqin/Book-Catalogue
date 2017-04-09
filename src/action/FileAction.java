@@ -14,11 +14,6 @@ public abstract class FileAction extends AbstractAction {
 	protected Catalogue catalogue;
 	protected FileManager manager;
 	
-	public FileAction(){
-		super();
-		catalogue = new Catalogue();
-		manager = new FileManager();
-	}
 	public FileAction(Catalogue catalogue, FileManager manager){
 		super();
 		this.catalogue = catalogue;

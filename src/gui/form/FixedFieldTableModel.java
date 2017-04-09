@@ -2,12 +2,13 @@ package gui.form;
 
 import javax.swing.table.AbstractTableModel;
 
-import marc.MARC;
+import marc.field.Field;
 import marc.field.FixedDatum;
 import marc.field.FixedField;
 
 public class FixedFieldTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
+	private static final char BLANK_REPLACEMENT = 0x23;
 	private static final int ROW_INDEX = 0;
 	private static final int COL_INDEX = 1;
 	private static final int ROW_NUM = 4;
@@ -38,7 +39,7 @@ public class FixedFieldTableModel extends AbstractTableModel {
 		super();
 		
 		editable = edit;
-		field = new FixedField(MARC.UNKNOWN_TAG, length);
+		field = new FixedField(Field.UNKNOWN_TAG, length);
 		map = new FixedDatum[0];
 		
 		cellLabel = new String[ROW_NUM][COL_NUM];
@@ -88,7 +89,7 @@ public class FixedFieldTableModel extends AbstractTableModel {
 		if (columnIndex % 2 == 0){
 			value = cellLabel[rowIndex][c];
 		} else {
-			value = cellValue[rowIndex][c].replace(MARC.BLANK_CHAR, '#');
+			value = cellValue[rowIndex][c].replace(FixedField.BLANK, BLANK_REPLACEMENT);
 		}
 		return value;
 	}
@@ -101,7 +102,7 @@ public class FixedFieldTableModel extends AbstractTableModel {
 			if (columnIndex % 2 == 0){
 				cellLabel[rowIndex][c] = s;
 			} else {
-				cellValue[rowIndex][c] = s.replace('#', MARC.BLANK_CHAR);
+				cellValue[rowIndex][c] = s.replace(BLANK_REPLACEMENT, FixedField.BLANK);
 			}
 		}
 		fireTableDataChanged();

@@ -51,13 +51,13 @@ public class FixedFieldForm extends JPanel {
 	}
 	
 	/**
-	 * @param field the FixedField to set
+	 * @param f the FixedField to set
 	 */
-	public void setFixedField(FixedField field) {
-		if (field == null){
+	public void setFixedField(FixedField f) {
+		if (f == null){
 			model.clear();
 		} else {
-			model.setFieldData(field);
+			model.setFieldData(f);
 		}
 	}
 }

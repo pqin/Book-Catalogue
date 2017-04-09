@@ -18,12 +18,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import gui.SubfieldListCellRenderer;
-import marc.field.Field;
+import marc.field.DataField;
 import marc.field.Subfield;
 
-public class FieldForm extends JPanel implements ActionListener,
+public class DataFieldForm extends JPanel implements ActionListener,
 												 ListSelectionListener {
 	private static final long serialVersionUID = 1L;
+	
 	private JTextField tagField;
 	private JTextField[] indicatorField;
 	private JList<Subfield> subfieldList;
@@ -32,9 +33,9 @@ public class FieldForm extends JPanel implements ActionListener,
 	private JButton addButton, removeButton, upButton, downButton, saveButton;
 	
 	private DefaultListModel<Subfield> subfieldListModel;
-	private Field data;
+	private DataField data;
 	
-	public FieldForm(){
+	public DataFieldForm(){
 		super();
 		
 		final int columns = 3;
@@ -132,7 +133,7 @@ public class FieldForm extends JPanel implements ActionListener,
 		add(saveButton, cons);
 	}
 	
-	public void setData(Field f){
+	public void setDataField(DataField f){
 		data = f;
 		
 		clearForm();
@@ -145,7 +146,7 @@ public class FieldForm extends JPanel implements ActionListener,
 			}
 		}
 	}
-	public Field getData(){
+	public DataField getDataField(){
 		data.setTag(tagField.getText());
 		data.setIndicator1(indicatorField[0].getText().charAt(0));
 		data.setIndicator2(indicatorField[1].getText().charAt(0));

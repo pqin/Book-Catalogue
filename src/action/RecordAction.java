@@ -1,34 +1,24 @@
 package action;
 
+import java.awt.Component;
+
 import javax.swing.AbstractAction;
 
+import application.MarcDialog;
 import application.RecordView;
-import controller.DialogManager;
 import marc.Catalogue;
 import marc.record.Record;
 
 public abstract class RecordAction extends AbstractAction implements RecordView {
 	private static final long serialVersionUID = 1L;
 	protected Catalogue catalogue;
-	protected DialogManager manager;
+	protected MarcDialog dialog;
 	protected int recordIndex;
 
-	public RecordAction(){
-		super();
-		catalogue = new Catalogue();
-		manager = new DialogManager();
-		recordIndex = -1;
-	}
-	public RecordAction(Catalogue catalogue, DialogManager manager){
-		super();
-		this.catalogue = catalogue;
-		this.manager = manager;
-		recordIndex = -1;
-	}
-	public RecordAction(String text, Catalogue catalogue, DialogManager manager){
+	public RecordAction(String text, Catalogue catalogue, Component owner){
 		super(text);
 		this.catalogue = catalogue;
-		this.manager = manager;
+		dialog = new MarcDialog(owner);
 		recordIndex = -1;
 	}
 	
