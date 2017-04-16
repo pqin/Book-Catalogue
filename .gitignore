@@ -1,4 +1,5 @@
 /bin/
+resource/session.properties
 resource/settings.properties
 
 # Eclipse Java project files

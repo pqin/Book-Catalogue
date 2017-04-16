@@ -5,9 +5,6 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -42,8 +39,6 @@ import gui.search.SearchManager;
 import gui.table.RecordSearchFilter;
 import gui.table.RecordTable;
 import marc.Catalogue;
-import marc.field.DataField;
-import marc.field.Field;
 import marc.format.AbstractMarc;
 import marc.format.MarcBinary;
 import marc.record.Record;
