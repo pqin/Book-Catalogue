@@ -50,13 +50,12 @@ public class MarcXML extends AbstractMarc {
 	}
 
 	@Override
-	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {
+	public ArrayList<Record> read(FileInputStream in) throws FileNotFoundException, IOException, RecordParseException {
 		ArrayList<Record> list = new ArrayList<Record>();
 		RecordBuilder builder = new RecordBuilder();
 		char code = '\0';
         
 		XMLInputFactory factory = XMLInputFactory.newInstance();
-		FileInputStream in = new FileInputStream(file);
 	    XMLStreamReader reader = null;
 	    String localName = null;
 	    String content = null;
@@ -146,12 +145,7 @@ public class MarcXML extends AbstractMarc {
 			try {
 				reader.close();
 			} catch (XMLStreamException e) {
-				e.printStackTrace();
-			}
-			try {
-				in.close();
-			} catch (IOException e){
-				e.printStackTrace();
+				throw new RecordParseException("Failed to parse record.", e);
 			}
 		}
 		return list;

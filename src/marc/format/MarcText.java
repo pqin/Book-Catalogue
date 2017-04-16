@@ -45,8 +45,8 @@ public class MarcText extends AbstractMarc {
 	}
 
 	@Override
-	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {
-		BufferedReader in = null;
+	public ArrayList<Record> read(FileInputStream in) throws FileNotFoundException, IOException, RecordParseException {
+		BufferedReader reader = null;
         String line = null;
 
         Matcher m1 = null;	// match field pattern
@@ -55,54 +55,54 @@ public class MarcText extends AbstractMarc {
         ArrayList<Record> list = new ArrayList<Record>();
         int recordCount = 0;
         RecordBuilder builder = new RecordBuilder();
-        Record record = null;
         String tag, data;
         char ind1, ind2;
         
-        in = new BufferedReader(new InputStreamReader(new FileInputStream(file), IO_CHARSET));
-        while ((line = in.readLine()) != null){
-            m1 = FIELD_REGEX.matcher(line);
-            m2 = SUBFIELD_REGEX.matcher(line);
-            if (m1.find()){
-            	tag = m1.group(1);
-            	ind1 = m1.group(2).charAt(0);
-            	ind2 = m1.group(3).charAt(0);
-            	if (Leader.TAG.equals(tag)){
-            		if (recordCount != list.size()){
-            			record = builder.build();
-                		list.add(record);
-                		builder.reset();
-            		}
-            		++recordCount;
-            	}
-            	builder.createField(tag);
-            	builder.setIndicator1((ind1 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind1);
-            	builder.setIndicator2((ind2 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind2);
-            	while (m2.find()){
-            		data = m2.group(2);
-            		if (Leader.TAG.equals(tag)){
-            			data = data.replace(FIELD_BLANK_REPLACEMENT, FixedField.BLANK);
-            			builder.setControlData(data);
-            			break;
-            		} else if (FixedDataElement.TAG.equals(tag)){
-            			data = data.replace(FIELD_BLANK_REPLACEMENT, FixedField.BLANK);
-            			builder.setControlData(data);
-            			break;
-            		} else if (Field.isControlTag(tag)){
-            			builder.setControlData(data);
-            			break;
-            		} else {
-            			builder.addSubfield(m2.group(1).charAt(0), data);
-            		}
-            	}
-            	builder.addField();
+        reader = new BufferedReader(new InputStreamReader(in, IO_CHARSET));
+        try {
+        	while ((line = reader.readLine()) != null){
+                m1 = FIELD_REGEX.matcher(line);
+                m2 = SUBFIELD_REGEX.matcher(line);
+                if (m1.find()){
+                	tag = m1.group(1);
+                	ind1 = m1.group(2).charAt(0);
+                	ind2 = m1.group(3).charAt(0);
+                	if (Leader.TAG.equals(tag)){
+                		if (recordCount != list.size()){
+                    		list.add(builder.build());
+                    		builder.reset();
+                		}
+                		++recordCount;
+                	}
+                	builder.createField(tag);
+                	builder.setIndicator1((ind1 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind1);
+                	builder.setIndicator2((ind2 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind2);
+                	while (m2.find()){
+                		data = m2.group(2);
+                		if (Leader.TAG.equals(tag)){
+                			data = data.replace(FIELD_BLANK_REPLACEMENT, FixedField.BLANK);
+                			builder.setControlData(data);
+                			break;
+                		} else if (FixedDataElement.TAG.equals(tag)){
+                			data = data.replace(FIELD_BLANK_REPLACEMENT, FixedField.BLANK);
+                			builder.setControlData(data);
+                			break;
+                		} else if (Field.isControlTag(tag)){
+                			builder.setControlData(data);
+                			break;
+                		} else {
+                			builder.addSubfield(m2.group(1).charAt(0), data);
+                		}
+                	}
+                	builder.addField();
+                }
             }
+        } finally {
+        	reader.close();
         }
-        in.close();
         // add data from last loop
         if (recordCount != list.size()){
-    		record = builder.build();
-    		list.add(record);
+    		list.add(builder.build());
     	}
         return list;
 	}

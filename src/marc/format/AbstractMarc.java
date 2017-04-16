@@ -1,6 +1,7 @@
 package marc.format;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public abstract class AbstractMarc {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public abstract ArrayList<Record> read(File file) throws FileNotFoundException, IOException;
+	public abstract ArrayList<Record> read(FileInputStream in) throws FileNotFoundException, IOException, RecordParseException;
 	/**
 	 * Writes the list of Records to the specified file.
 	 * @param file the File to write to

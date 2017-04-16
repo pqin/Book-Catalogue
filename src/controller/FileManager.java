@@ -2,6 +2,7 @@ package controller;
 
 import java.awt.Component;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import application.MarcComponent;
 import marc.Catalogue;
 import marc.format.AbstractMarc;
 import marc.format.FormatManager;
+import marc.format.RecordParseException;
 import marc.record.Record;
 
 public class FileManager implements MarcComponent {
@@ -127,12 +129,14 @@ public class FileManager implements MarcComponent {
 	 * @return the Records read from
 	 */
 	public ArrayList<Record> read(File file, AbstractMarc format){
-		fileChooser.setCurrentDirectory(file);
 		String filename = file.getName();
 		String path = file.getParent();
 		ArrayList<Record> data = null;
+		FileInputStream in = null;
 		try {
-			data = format.read(file);
+			in = new FileInputStream(file);
+			data = format.read(in);
+			fileChooser.setCurrentDirectory(file);
 			updateListeners(file);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(parent,
@@ -141,19 +145,28 @@ public class FileManager implements MarcComponent {
 							filename, path),
 					"File not Found",
 					JOptionPane.ERROR_MESSAGE);
-			data = new ArrayList<Record>();
-			e.printStackTrace();
         } catch (IOException e) {
-        	data = new ArrayList<Record>();
-        	e.printStackTrace();
+        	System.err.println("I/O Exception thrown on File parse.");
+        } catch (RecordParseException e){
+        	// TODO handle parsing exception
+        } finally {
+        	if (in != null){
+        		try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        	if (data == null){
+        		data = new ArrayList<Record>();
+        	}
         }
 		int size = data.size();
 		if (size > RECORD_CAP){
 			data.subList(RECORD_CAP, size).clear();
 		}
-		if (data != null){
-			data.trimToSize();
-		}
+		data.trimToSize();
 		return data;
 	}
 	

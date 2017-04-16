@@ -150,7 +150,7 @@ public class MarcBinary extends AbstractMarc {
     }
     
 	@Override
-	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {		
+	public ArrayList<Record> read(FileInputStream in) throws FileNotFoundException, IOException, RecordParseException {		
 		byte[] leader = new byte[Leader.FIELD_LENGTH];
 		byte[] directory = null;
 		byte[] fieldData = null;
@@ -164,7 +164,6 @@ public class MarcBinary extends AbstractMarc {
 		int recordLength = 0;
 		int baseAddress = 0;
 		
-		FileInputStream in = new FileInputStream(file);
 		while (in.read(leader) == Leader.FIELD_LENGTH){
 			leaderData = getAsciiChars(leader);
 			ldr.setFieldData(leaderData);
@@ -193,7 +192,6 @@ public class MarcBinary extends AbstractMarc {
 			list.add(record);
 			builder.reset();
 		}
-		in.close();
 		
 		return list;
 	}
