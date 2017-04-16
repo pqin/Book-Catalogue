@@ -56,6 +56,10 @@ public final class Leader extends FixedField {
 	}
 	
 	@Override
+	public boolean isRepeatable(){
+		return false;
+	}
+	@Override
 	public void clear(){
 		super.clear();
 		initialize();

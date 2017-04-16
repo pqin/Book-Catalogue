@@ -40,6 +40,9 @@ public class Field implements Comparable<Field> {
 	public final boolean isFixedField(){
 		return isFixedFieldTag(tag);
 	}
+	public boolean isRepeatable(){
+		return true;
+	}
 	
 	public String getTag(){
 		return tag;

@@ -40,7 +40,10 @@ public final class FixedDataElement extends FixedField {
 		LocalDate entryDate = LocalDate.parse(text, formatter);
 		return entryDate;
 	}
-	
+	@Override
+	public boolean isRepeatable(){
+		return false;
+	}
 	@Override
 	public final void clear(){
 		LocalDate tmp = getEntryDate();
