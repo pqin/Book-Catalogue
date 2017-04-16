@@ -19,11 +19,13 @@ import javax.swing.event.ListSelectionListener;
 
 import gui.SubfieldListCellRenderer;
 import marc.field.DataField;
+import marc.field.Field;
 import marc.field.Subfield;
 
 public class DataFieldForm extends JPanel implements ActionListener,
 												 ListSelectionListener {
 	private static final long serialVersionUID = 1L;
+	private static final char REPLACEMENT_BLANK = '#';
 	
 	private JTextField tagField;
 	private JTextField[] indicatorField;
@@ -139,8 +141,16 @@ public class DataFieldForm extends JPanel implements ActionListener,
 		clearForm();
 		if (data != null){
 			tagField.setText(f.getTag());
-			indicatorField[0].setText(String.valueOf(f.getIndicator1()));
-			indicatorField[1].setText(String.valueOf(f.getIndicator2()));
+			char ind1 = f.getIndicator1();
+			if (ind1 == Field.BLANK_INDICATOR){
+				ind1 = REPLACEMENT_BLANK;
+			}
+			char ind2 = f.getIndicator2();
+			if (ind2 == Field.BLANK_INDICATOR){
+				ind2 = REPLACEMENT_BLANK;
+			}
+			indicatorField[0].setText(String.valueOf(ind1));
+			indicatorField[1].setText(String.valueOf(ind2));
 			for (int i = 0; i < f.getDataCount(); ++i){
 				subfieldListModel.addElement(f.getSubfield(i));
 			}
@@ -148,8 +158,16 @@ public class DataFieldForm extends JPanel implements ActionListener,
 	}
 	public DataField getDataField(){
 		data.setTag(tagField.getText());
-		data.setIndicator1(indicatorField[0].getText().charAt(0));
-		data.setIndicator2(indicatorField[1].getText().charAt(0));
+		char ind1 = indicatorField[0].getText().charAt(0);
+		if (ind1 == REPLACEMENT_BLANK){
+			ind1 = Field.BLANK_INDICATOR;
+		}
+		char ind2 = indicatorField[1].getText().charAt(0);
+		if (ind2 == REPLACEMENT_BLANK){
+			ind2 = Field.BLANK_INDICATOR;
+		}
+		data.setIndicator1(ind1);
+		data.setIndicator2(ind2);
 		Subfield[] tmp = new Subfield[subfieldListModel.size()];
 		for (int i = 0; i < tmp.length; ++i){
 			tmp[i] = subfieldListModel.get(i);

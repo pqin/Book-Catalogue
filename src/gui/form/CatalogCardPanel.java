@@ -33,11 +33,13 @@ public class CatalogCardPanel extends RecordPanel {
 		Font monospace = new Font("monospaced", Font.PLAIN, 12);
 		callNumberField = new JTextArea();
 		callNumberField.setEditable(false);
+		callNumberField.getCaret().setVisible(true);
 		callNumberField.setLineWrap(false);
 		callNumberField.setFont(monospace);
 		
 		contentField = new JTextArea();
 		contentField.setEditable(false);
+		contentField.getCaret().setVisible(true);
 		contentField.setLineWrap(true);
 		contentField.setWrapStyleWord(true);
 		contentField.setFont(monospace);
