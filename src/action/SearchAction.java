@@ -13,7 +13,7 @@ public class SearchAction extends AbstractAction {
 	private RecordSelector selector;
 
 	public SearchAction(SearchManager manager, RecordSelector selector){
-		super("Find");
+		super("Search");
 		this.manager = manager;
 		this.selector = selector;
 	}

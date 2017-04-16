@@ -5,9 +5,10 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import application.MarcDialog;
 import controller.MetadataListener;
 import controller.ProgramMetaData;
+import gui.MarcDialog;
+import gui.MessageDialog;
 
 public class AboutProgramAction extends AbstractAction implements MetadataListener {
 	private static final long serialVersionUID = 1L;
@@ -19,13 +20,14 @@ public class AboutProgramAction extends AbstractAction implements MetadataListen
 	public AboutProgramAction(Component owner){
 		super("About Application");
 		message = null;
-		dialog = new MarcDialog(owner);
-		dialog.setTitle("About");
+		dialog = new MessageDialog(owner);
+		dialog.setTitle("About Application");
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent ignored) {
-		dialog.setContent(message, false);
+	public void actionPerformed(ActionEvent e) {
+		dialog.setContent(message);
+		dialog.setWarning(false);
 		dialog.showDialog();
 	}
 

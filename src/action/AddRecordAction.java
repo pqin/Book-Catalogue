@@ -18,18 +18,15 @@ public class AddRecordAction extends RecordAction {
 		super("Add Record", data, owner);
 		form = new RecordForm();
 		
-		dialog.setTitle("Add Record");
-		dialog.setContent(form.getComponent());
-		String[] options = {"OK", "Cancel"};
-		dialog.setOptions(options);
-		dialog.create();
+		formDialog.setContent(form.getComponent());
+		formDialog.create();
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent ignored) {
 		Record record = RecordFactory.generate(RecordType.BIBLIOGRAPHIC);
 		form.setRecord(record);
-		int option = dialog.showDialog();
+		int option = formDialog.showDialog();
 		if (option == 0){
 			catalogue.add(record);
 		}

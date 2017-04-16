@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.regex.Pattern;
 
+import gui.MessageDialog;
 import marc.Catalogue;
 import marc.record.Record;
 
@@ -18,11 +19,11 @@ public class DeleteRecordAction extends RecordAction {
 	public DeleteRecordAction(Catalogue data, Component owner){
 		super("Delete Record", data, owner);
 		
-		dialog.setTitle("Delete Record");
-		dialog.setContent(null, false);
+		formDialog = new MessageDialog(owner);
+		formDialog.setTitle("Delete Record");
 		String[] options = {"OK", "Cancel"};
-		dialog.setOptions(options);
-		dialog.create();
+		formDialog.setOptions(options);
+		formDialog.setWarning(true);
 	}
 	
 	@Override
@@ -31,7 +32,8 @@ public class DeleteRecordAction extends RecordAction {
 		String title = null;
 		String message = null;
 		if (recordIndex == -1){
-			dialog.setContent("No Record selected.", true);
+			messageDialog.setContent("No Record selected.");
+			messageDialog.showDialog();
 		} else {
 			record = catalogue.get(recordIndex);
 			// generate message: split into multiple lines along ISBD punctuation if needed
@@ -40,8 +42,8 @@ public class DeleteRecordAction extends RecordAction {
 				title = String.join("\n", TITLE_ISBD_REGEX.split(title));
 			}
 			message = String.format("Delete Record:%n%s", title);
-			dialog.setContent(message, true);
-			int option = dialog.showDialog();
+			formDialog.setContent(message);
+			int option = formDialog.showDialog();
 			if (option == 0){
 				catalogue.remove(recordIndex);
 			}

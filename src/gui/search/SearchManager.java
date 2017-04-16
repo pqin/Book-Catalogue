@@ -8,10 +8,13 @@ import javax.swing.JOptionPane;
 
 import application.CatalogueView;
 import application.MarcComponent;
+import gui.FormDialog;
+import gui.MarcDialog;
 import marc.Catalogue;
 
 public class SearchManager implements MarcComponent, CatalogueView {
 	private Component parent;
+	private MarcDialog dialog;
 	private SearchForm searchForm;
 	private SearchParser parser;
 	private Catalogue data;
@@ -19,6 +22,7 @@ public class SearchManager implements MarcComponent, CatalogueView {
 
 	public SearchManager(Component owner){
 		parent = owner;
+		dialog = new FormDialog(parent);
 		data = null;
 		create();
 	}
@@ -28,10 +32,17 @@ public class SearchManager implements MarcComponent, CatalogueView {
 		searchForm = new SearchForm();
 		parser = new SearchParser(searchForm);
 		searchResults = new ArrayList<Integer>();
+		
+		dialog.setTitle("Search Catalogue");
+		dialog.setContent(searchForm);
+		String[] options = { "Search", "Cancel" };
+		dialog.setOptions(options);
+		dialog.create();
 	}
 
 	@Override
 	public void destroy() {
+		dialog.destroy();
 		searchForm.resetForm();
 		parser.reset();
 		searchResults.clear();
@@ -53,9 +64,7 @@ public class SearchManager implements MarcComponent, CatalogueView {
 	public boolean searchCatalogue(){
 		searchForm.resetForm();
 		searchResults.clear();
-		int option = JOptionPane.showConfirmDialog(parent,
-				searchForm, "Record Search",
-				JOptionPane.OK_CANCEL_OPTION);
+		int option = dialog.showDialog();
 		boolean status = (option == JOptionPane.OK_OPTION);
 		if (status){
 			processSearchFormInput();

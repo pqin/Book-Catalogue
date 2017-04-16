@@ -15,23 +15,21 @@ public class EditRecordAction extends RecordAction {
 		super("Edit Record", data, owner);
 		form = new RecordForm();
 		
-		dialog.setTitle("Edit Record");
-		dialog.setContent(form.getComponent());
-		String[] options = {"OK", "Cancel"};
-		dialog.setOptions(options);
-		dialog.create();
+		formDialog.setContent(form.getComponent());
+		formDialog.create();
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent ignored) {
 		Record record = null;
 		if (recordIndex == -1){
-			dialog.setContent("No record selected.", true);
+			messageDialog.setContent("No record selected.");
+			messageDialog.showDialog();
 		} else {
 			record = catalogue.get(recordIndex).copy();
 			form.setRecord(record);
-			dialog.setContent(form.getComponent());
-			int option = dialog.showDialog();
+			formDialog.setContent(form.getComponent());
+			int option = formDialog.showDialog();
 			if (option == 0){
 				catalogue.set(recordIndex, record);
 				catalogue.updateRecordView(recordIndex);

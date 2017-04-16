@@ -16,7 +16,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import application.MarcDialog;
+import gui.FormDialog;
+import gui.MarcDialog;
 import gui.table.RecordTable;
 import gui.table.RecordTableModel;
 import marc.Factory;
@@ -33,7 +34,7 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 	private FixedFieldForm leaderForm, resourceForm;
 	private DataFieldForm fieldForm;
 	private MarcDialog dialog;
-	private JButton addButton, removeButton, editButton;
+	private JButton addButton, removeButton, editButton, duplicateButton;
 	
 	private Record record;
 	private AbstractRecordType type;
@@ -53,21 +54,21 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		resourceForm = new FixedFieldForm(type.getConfigMap(), type.getConfigLength(), true);
 		fieldForm = new DataFieldForm();
 		
-		dialog = new MarcDialog(this.getComponent());
-		dialog.setTitle("Edit Record");
+		dialog = new FormDialog(this.getComponent());
 		String[] options = {"OK", "Cancel"};
 		dialog.setOptions(options);
 		dialog.create();
 		
-		addButton = new JButton("Add");
-		removeButton = new JButton("Remove");
-		editButton = new JButton("Edit");
-		addButton.addActionListener(this);
-		removeButton.addActionListener(this);
-		editButton.addActionListener(this);
-		addButton.setHorizontalAlignment(SwingConstants.LEFT);
-		removeButton.setHorizontalAlignment(SwingConstants.LEFT);
-		editButton.setHorizontalAlignment(SwingConstants.LEFT);
+		addButton = initButton("Add");
+		removeButton = initButton("Remove");
+		editButton = initButton("Edit");
+		duplicateButton = initButton("Duplicate");
+	}
+	private JButton initButton(String text){
+		JButton button = new JButton(text);
+		button.addActionListener(this);
+		button.setHorizontalAlignment(SwingConstants.LEFT);
+		return button;
 	}
 	protected final void layoutComponents(){
 		JPanel controlPanel = new JPanel();
@@ -83,8 +84,11 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		cons.weighty = 0.0;
 		cons.gridy = 1;
 		controlPanel.add(editButton, cons);
-		cons.weighty = 1.0;
+		cons.weighty = 0.0;
 		cons.gridy = 2;
+		controlPanel.add(duplicateButton, cons);
+		cons.weighty = 1.0;
+		cons.gridy = 3;
 		controlPanel.add(removeButton, cons);
 		
 		panel.setLayout(new BorderLayout());
@@ -116,9 +120,11 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		boolean recordSelected = (table.getSelectedRow() != -1);
 		removeButton.setEnabled(recordSelected);
 		editButton.setEnabled(recordSelected);
+		duplicateButton.setEnabled(recordSelected);
 	}
 	
-	private int showEditForm(JPanel form){
+	private int showForm(JPanel form, String title){
+		dialog.setTitle(title);
 		dialog.setContent(form);
 		int option = dialog.showDialog();
 		return option;
@@ -132,10 +138,7 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		Field f = null;
 		if (e.getSource() == addButton){
 			fieldForm.setDataField(new DataField());
-			int option = JOptionPane.showConfirmDialog(panel,
-					fieldForm, "New Field",
-					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
-			);
+			int option = showForm(fieldForm, "Add Record");
 			if (option == JOptionPane.OK_OPTION){
 				i = record.addSortedField((DataField) fieldForm.getDataField());
 				model.fireTableRowsInserted(i, i);
@@ -151,7 +154,7 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 			String message = String.format("Field will be removed from record.%nProceed?");
 			int option = JOptionPane.showConfirmDialog(panel,
 					message, "Remove Field",
-					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE
 			);
 			if (option == JOptionPane.OK_OPTION){
 				record.removeField((DataField) field.remove(i));
@@ -173,23 +176,33 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 				type = Factory.getMaterialConfig(record.getLeader());
 				leaderForm.setMask(type.getTypeMap());
 				leaderForm.setFixedField(record.getLeader());
-				option = showEditForm(leaderForm);
+				option = showForm(leaderForm, "Edit Record");
 				data = leaderForm.getFixedField();
 			} else if (tag.equals(FixedDataElement.TAG)){
 				type = Factory.getMaterialConfig(record.getLeader());
 				resourceForm.setMask(type.getConfigMap());
 				resourceForm.setFixedField(record.getFixedDataElement());
-				option = showEditForm(resourceForm);
+				option = showForm(resourceForm, "Edit Record");
 				data = resourceForm.getFixedField();
 			} else {
 				fieldForm.setDataField((DataField)f);
-				option = showEditForm(fieldForm);
+				option = showForm(fieldForm, "Edit Record");
 				data = fieldForm.getDataField();
 			}
 			if (option == JOptionPane.OK_OPTION){
 				field.set(i, data);
 				model.fireTableRowsUpdated(row, row);
 			}
+		}
+		if (e.getSource() == duplicateButton){
+			row = table.getSelectedRow();
+			i = table.convertRowIndexToModel(row);
+			f = field.get(i);
+			DataField duplicate = ((DataField) f).copy();
+			i = record.addSortedField(duplicate);
+			model.fireTableRowsInserted(i, i);
+			row = table.convertRowIndexToView(i);
+			table.setRowSelectionInterval(row, row);
 		}
 	}
 
@@ -211,12 +224,12 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 				} else {
 					tag = "";
 				}
-				if (tag.equals(Leader.TAG)){
+				if (tag.equals(Leader.TAG) || tag.equals(FixedDataElement.TAG)){
 					removeButton.setEnabled(false);
-				} else if (tag.equals(FixedDataElement.TAG)){
-					removeButton.setEnabled(false);
+					duplicateButton.setEnabled(false);
 				} else {
 					removeButton.setEnabled(ready);
+					duplicateButton.setEnabled(ready);
 				}
 				editButton.setEnabled(ready);
 			}
