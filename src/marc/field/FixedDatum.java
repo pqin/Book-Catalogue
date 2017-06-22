@@ -1,14 +1,20 @@
 package marc.field;
 
 public class FixedDatum implements Comparable<FixedDatum> {
-	private int index;
-	private int length;
-	private String label;
+	private int index, length;
+	private String label, description;
 	
 	public FixedDatum(int index, int length, String label){
 		this.index = index;
 		this.length = length;
 		this.label = label;
+		this.description = null;
+	}
+	public FixedDatum(int index, int length, String label, String description){
+		this.index = index;
+		this.length = length;
+		this.label = label;
+		this.description = description;
 	}
 	
 	public final int getIndex(){
@@ -20,9 +26,12 @@ public class FixedDatum implements Comparable<FixedDatum> {
 	public final String getLabel(){
 		return label;
 	}
+	public final String getDescription(){
+		return description;
+	}
 	
 	public final FixedDatum copy(){
-		FixedDatum copy = new FixedDatum(this.index, this.length, this.label);
+		FixedDatum copy = new FixedDatum(this.index, this.length, this.label, this.label);
 		return copy;
 	}
 
@@ -34,8 +43,9 @@ public class FixedDatum implements Comparable<FixedDatum> {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + index;
-		result = prime * result + ((label == null) ? 0 : label.hashCode());
 		result = prime * result + length;
+		result = prime * result + ((label == null) ? 0 : label.hashCode());
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		return result;
 	}
 
@@ -57,6 +67,9 @@ public class FixedDatum implements Comparable<FixedDatum> {
 		if (index != other.index) {
 			return false;
 		}
+		if (length != other.length) {
+			return false;
+		}
 		if (label == null) {
 			if (other.label != null) {
 				return false;
@@ -64,7 +77,11 @@ public class FixedDatum implements Comparable<FixedDatum> {
 		} else if (!label.equals(other.label)) {
 			return false;
 		}
-		if (length != other.length) {
+		if (description == null) {
+			if (other.description != null) {
+				return false;
+			}
+		} else if (!description.equals(other.description)) {
 			return false;
 		}
 		return true;
