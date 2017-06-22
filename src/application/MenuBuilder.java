@@ -1,11 +1,8 @@
 package application;
 
-<<<<<<< HEAD
-=======
 import java.awt.event.ActionListener;
 import java.util.Locale;
 
->>>>>>> marc-8
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
@@ -50,28 +47,18 @@ public class MenuBuilder {
 		menubar.add(menu);
 		menu = null;
 	}
-<<<<<<< HEAD
-	public void addMenu(String label,String[] actions){
-		menu = new JMenu(label);
-		group = new ButtonGroup();
-		JRadioButtonMenuItem radioButton = null;
-=======
 	public void addMenu(String label, String[] actions, ActionListener listener){
 		menu = new JMenu(label);
 		group = new ButtonGroup();
 		JRadioButtonMenuItem radioButton = null;
 		String command = null;
->>>>>>> marc-8
 		ButtonModel model = null;
 		final int initialSelection = 0;
 		for (int i = 0; i < actions.length; ++i){
 			radioButton = new JRadioButtonMenuItem(actions[i]);
-<<<<<<< HEAD
-=======
 			command = actions[i].toUpperCase(Locale.ENGLISH);
 			radioButton.setActionCommand(command);
 			radioButton.addActionListener(listener);
->>>>>>> marc-8
 			if (i == initialSelection){
 				model = radioButton.getModel();
 			}
@@ -125,8 +112,6 @@ public class MenuBuilder {
 			menu.add(item);
 		}
 	}
-<<<<<<< HEAD
-=======
 	public void addItems(Action[] action){
 		JMenuItem item;
 		if (menu != null){
@@ -141,5 +126,4 @@ public class MenuBuilder {
 			menu.addSeparator();
 		}
 	}
->>>>>>> marc-8
 }
