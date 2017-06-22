@@ -50,7 +50,7 @@ import gui.table.RecordTableModel;
 import marc.Catalogue;
 import marc.Record;
 import marc.format.AbstractMarc;
-import marc.format.MarcDefault;
+import marc.format.MarcBinary;
 
 public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 	private static final String SETTINGS_PATH = "resource/settings.properties";
@@ -286,7 +286,7 @@ public class CatalogueApp implements MarcComponent, RecordSelectionListener {
 			File file = new File(recentFile);		
 			AbstractMarc format = fileManager.getFormatForFile(file);
 			if (format == null){
-				format = new MarcDefault();
+				format = new MarcBinary();
 			}
 			ArrayList<Record> input = fileManager.read(file, format);
 			loadRecords(input, file);

@@ -21,13 +21,14 @@ import marc.field.DataField;
 import marc.field.Field;
 import marc.field.Leader;
 import marc.field.Subfield;
+import marc.marc8.Marc8;
 import marc.resource.Resource;
 
-public class MarcDefault extends AbstractMarc {
+public class MarcBinary extends AbstractMarc {
 	// encodings
 	private static final Charset ASCII = StandardCharsets.US_ASCII;
 	private static final Charset UTF8 = StandardCharsets.UTF_8;
-	private static final Charset MARC8 = new marc.encoding.Marc8();
+	private static final Charset MARC8 = new Marc8();
 	
 	private static final int DIRECTORY_ENTRY_LENGTH = 12;
 	private static final int RADIX = 10;
