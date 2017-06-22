@@ -11,7 +11,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import marc.record.AuthorFormatter;
-import marc.record.BibliographicFormatter;
 import marc.record.RecordFormatter;
 
 /**
@@ -49,9 +48,13 @@ public class CatalogCardPanel extends RecordPanel {
 		callNumberField.setText(null);
 		contentField.setText(null);
 	}
-	@Override
+	// TODO extract to super class?
 	public void addMouseListener(MouseListener listener){
 		contentField.addMouseListener(listener);
+	}
+	
+	public void setFormatter(RecordFormatter fmt){
+		format = fmt;
 	}
 	
 	@Override

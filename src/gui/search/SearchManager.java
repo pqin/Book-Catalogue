@@ -1,6 +1,7 @@
 package gui.search;
 
 import java.awt.Component;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +53,10 @@ public class SearchManager implements MarcComponent, CatalogueView {
 	@Override
 	public Component getComponent(){
 		return null;
+	}
+	// TODO extract to super class?
+	public void addMouseListener(MouseListener listener){
+		searchForm.addMouseListener(listener);
 	}
 	
 	public void clearResults(){
