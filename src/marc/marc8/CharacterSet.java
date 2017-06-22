@@ -2,103 +2,133 @@ package marc.marc8;
 
 import java.util.Arrays;
 
-public abstract class CharacterSet {
+public class CharacterSet {
 	public static final char UNKNOWN_CHAR = '\uFFFD';
 	public static final char UNDERFLOW = '\0';
-	protected static final int START_INDEX = 0x21;
-	protected static final int END_INDEX = 0x7E;
-	protected static final int TABLE_LENGTH = (END_INDEX - START_INDEX) + 1;
-	
-	private final byte F;
+	protected static final int MAX_BYTES_PER_CHAR = 10;
+	protected final String name;
 	protected final byte bytesPerChar;
+	private final int offset, length;
 	protected int counter;
+	protected int defaultGraphicSet;
 	protected int[] buffer;
 	protected int[] base;
-	protected char[] table;
-	
-	protected CharacterSet(final byte finalByte, final int charByteCount){
-		F = finalByte;
-		bytesPerChar = (byte) charByteCount > 0 && charByteCount <= 10
-								? (byte) charByteCount
-								: 0x01;
-		
+	private char[] table;
+
+	public CharacterSet(String name, final int bytesPerChar, final int offset, final int length) {
+		this.name = name;
+		if (bytesPerChar > 0 && bytesPerChar <= MAX_BYTES_PER_CHAR){
+			this.bytesPerChar = (byte) bytesPerChar;
+		} else {
+			this.bytesPerChar = 0x01;
+		}
+		this.offset = offset;
+		this.length = length;
+				
 		counter = 0;
 		buffer = new int[bytesPerChar];
 		base = new int[bytesPerChar];
-		int length = 1;
+		int len = 1;
 		for (int i = 0; i < bytesPerChar; ++i){
-			base[i] = length;
-			length *= TABLE_LENGTH;
+			base[i] = len;
+			len *= length;
 		}
+		table = new char[length*base[this.bytesPerChar - 1]];
+		defaultGraphicSet = 0;
 	}
-	
-	public final int getBytesPerChar(){
+
+	public final String getName() {
+		return name;
+	}
+
+	public final int getBytesPerChar() {
 		int i = bytesPerChar;
 		return i;
 	}
-	/**
-	 * @return the final byte identifying this encoding
-	 */
-	public final byte getFinal() {
-		byte f = F;
-		return f;
-	}
-	
-	public final void reset(){
+
+	public final void reset() {
 		counter = 0;
 		Arrays.fill(buffer, 0);
 	}
-	protected static final char[] buildBlankTable(){
-		char[] t = new char[0x100];
-		Arrays.fill(t, UNKNOWN_CHAR);
-		t[0x20] = (char) 0x20;
-		t[0x7F] = (char) 0x7F;
-		return t;
+
+	public int getOffset(){
+		return offset;
 	}
-	protected static final char[] buildASCIITable(){
-		char[] t = new char[0x100];
-		Arrays.fill(t, UNKNOWN_CHAR);
-		char c;
-		for (int i = 0x20; i < 0x80; ++i){
-			c = (char) i;
-			t[i] = c;
-			t[i+0x80] = c;
+	public int setTable(char[] value) {
+		final int difference = value.length - table.length;
+		table = Arrays.copyOf(value, table.length);
+		for (int i = value.length; i < table.length; ++i){
+			table[i] = UNKNOWN_CHAR;
 		}
-		t[0xA0] = UNKNOWN_CHAR;
-		t[0xFF] = UNKNOWN_CHAR;
-		return t;
+		return difference;
 	}
-	
-	protected final void allocateTable(){
-		int length = 1;
-		for (int i = 0; i < bytesPerChar; ++i){
-			length *= TABLE_LENGTH;
-		}
-		table = new char[length];
+	public final int getTableLength(){
+		return length;
 	}
-	/**
-	 * Build table that maps bytes to chars.
-	 * @return table
-	 */
-	protected abstract char[] buildTable();
-	public void build(){
-		if (table == null){
-			allocateTable();
-			table = Arrays.copyOfRange(buildTable(), START_INDEX, END_INDEX+1);
+
+	public void setGraphicSet(int g) {
+		if (g == 0 || g == 1){
+			defaultGraphicSet = g;
 		}
 	}
-	
-	public char decode(int b){
+
+	public int getGraphicSet() {
+		return defaultGraphicSet;
+	}
+
+	public final char decode(int b) {
 		char c = UNDERFLOW;
-		buffer[counter] = (b - START_INDEX)*base[counter];
+		buffer[counter] = (b - offset)*base[counter];
 		if (counter == bytesPerChar - 1){
 			int index = 0;
 			for (int i = 0; i < bytesPerChar; ++i){
 				index += buffer[i];
+			}
+			if (index < 0){
+				System.out.printf("%H > %H%n", b, index);
 			}
 			c = table[index];
 		}
 		counter = (counter + 1) % bytesPerChar;
 		return c;
 	}
+
+	public boolean contains(final char c) {
+		boolean match = false;
+		for (int i = 0; i < table.length; ++i){
+			if (table[i] == c){
+				match = true;
+				break;
+			}
+		}
+		return match;
+	}
+
+	public byte[] encode(final char c, final int g) {
+		byte b[] = null;
+		if (c < offset){
+			b = new byte[1];
+			b[0] = (byte) c;
+			return b;
+		} else {
+			b = new byte[bytesPerChar];
+		}
+		int q, r;
+		for (int i = 0; i < table.length; ++i){
+			if (table[i] == c){
+				for (int k = base.length - 1; k >= 0; --k){
+					q = i / base[k];
+					r = i - (q * base[k]);
+					b[k] = (byte) (q + offset);
+					if (g > 0){
+						b[k] = (byte) (b[k] | 0x80);
+					}
+					i = r;
+				}
+				break;
+			}
+		}
+		return b;
+	}
+
 }
