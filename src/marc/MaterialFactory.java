@@ -13,7 +13,7 @@ import marc.material.Microform;
 import marc.material.MotionPicture;
 import marc.material.NonprojectedGraphic;
 import marc.material.NotatedMusic;
-import marc.material.ProjectedMaterial;
+import marc.material.ProjectedGraphic;
 import marc.material.RemoteSensingImage;
 import marc.material.SoundRecording;
 import marc.material.TactileMaterial;
@@ -32,7 +32,7 @@ public final class MaterialFactory {
 		tmp.put("c", ElectronicResource.class);
 		tmp.put("d", Globe.class);
 		tmp.put("f", TactileMaterial.class);
-		tmp.put("g", ProjectedMaterial.class);
+		tmp.put("g", ProjectedGraphic.class);
 		tmp.put("h", Microform.class);
 		tmp.put("k", NonprojectedGraphic.class);
 		tmp.put("m", MotionPicture.class);
