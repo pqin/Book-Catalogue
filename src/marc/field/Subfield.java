@@ -79,13 +79,12 @@ public final class Subfield {
 		}
 		return true;
 	}
-	@Override
-	public String toString(){
-		return String.format("$%c%s", code, data);
-	}
-	
 	public Subfield copy(){
 		Subfield clone = new Subfield(code, data);
 		return clone;
+	}
+	@Override
+	public String toString(){
+		return String.format("$%c%s", code, data);
 	}
 }

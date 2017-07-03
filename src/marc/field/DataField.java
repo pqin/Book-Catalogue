@@ -20,16 +20,6 @@ public final class DataField extends Field {
 		subfield = new ArrayList<Subfield>();
 	}
 	
-	public DataField copy(){
-		DataField copy = new DataField(this.tag, this.indicator1, this.indicator2);
-		Subfield s = null;
-		for (int i = 0; i < subfield.size(); ++i){
-			s = subfield.get(i);
-			copy.addSubfield(s.getCode(), s.getData());
-		}
-		return copy;
-	}
-	
 	public void addSubfield(char code, String data){
 		if (!Character.isLetterOrDigit(code)){
 			code = '?';
@@ -118,11 +108,6 @@ public final class DataField extends Field {
 	}
 	
 	@Override
-	public void clear(){
-		subfield.clear();
-	}
-	
-	@Override
 	public boolean contains(Pattern query){
 		Matcher m = null;
 		String reference = null;
@@ -136,5 +121,52 @@ public final class DataField extends Field {
 			}
 		}
 		return match;
+	}
+	@Override
+	public void clear(){
+		subfield.clear();
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((subfield == null) ? 0 : subfield.hashCode());
+		return result;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (!(obj instanceof DataField)) {
+			return false;
+		}
+		DataField other = (DataField) obj;
+		if (subfield == null) {
+			if (other.subfield != null) {
+				return false;
+			}
+		} else if (!subfield.equals(other.subfield)) {
+			return false;
+		}
+		return true;
+	}
+	public DataField copy(){
+		DataField copy = new DataField(this.tag, this.indicator1, this.indicator2);
+		Subfield s = null;
+		for (int i = 0; i < subfield.size(); ++i){
+			s = subfield.get(i);
+			copy.addSubfield(s.getCode(), s.getData());
+		}
+		return copy;
 	}
 }

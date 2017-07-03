@@ -328,7 +328,70 @@ public final class Record implements Serializable {
 		}
 		return copy;
 	}
-	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((controlField == null) ? 0 : controlField.hashCode());
+		result = prime * result + ((dataElement == null) ? 0 : dataElement.hashCode());
+		result = prime * result + ((dataField == null) ? 0 : dataField.hashCode());
+		result = prime * result + ((leader == null) ? 0 : leader.hashCode());
+		result = prime * result + length;
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Record)) {
+			return false;
+		}
+		Record other = (Record) obj;
+		if (controlField == null) {
+			if (other.controlField != null) {
+				return false;
+			}
+		} else if (!controlField.equals(other.controlField)) {
+			return false;
+		}
+		if (dataElement == null) {
+			if (other.dataElement != null) {
+				return false;
+			}
+		} else if (!dataElement.equals(other.dataElement)) {
+			return false;
+		}
+		if (dataField == null) {
+			if (other.dataField != null) {
+				return false;
+			}
+		} else if (!dataField.equals(other.dataField)) {
+			return false;
+		}
+		if (leader == null) {
+			if (other.leader != null) {
+				return false;
+			}
+		} else if (!leader.equals(other.leader)) {
+			return false;
+		}
+		if (length != other.length) {
+			return false;
+		}
+		return true;
+	}
+
 	@Override
 	public String toString(){
 		return String.format("%s[%s][%s]", getClass().getName(), getControlNumber(), getMainEntry());

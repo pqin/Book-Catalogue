@@ -138,7 +138,36 @@ public class ControlField extends Field {
 		boolean match = m.find();
 		return match;
 	}
-	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Arrays.hashCode(data);
+		return result;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (!(obj instanceof ControlField)) {
+			return false;
+		}
+		ControlField other = (ControlField) obj;
+		if (!Arrays.equals(data, other.data)) {
+			return false;
+		}
+		return true;
+	}
 	public ControlField copy(){
 		ControlField copy = new ControlField(this.tag, data.length);
 		copy.setFieldData(this.data);

@@ -20,6 +20,9 @@ public class Field implements Comparable<Field> {
 		indicator2 = ind2;
 	}
 	
+	public final boolean hasTag(String value){
+		return tag.equals(value);
+	}
 	public static final boolean isControlTag(String t){
 		boolean status = (t == null) ? false : t.startsWith("00");
 		return status;
@@ -80,30 +83,6 @@ public class Field implements Comparable<Field> {
 	public void setFieldData(char[] value){
 		// implementation defined
 	}
-	public void clear(){
-		// implementation defined
-	}
-	
-	public final boolean hasTag(String value){
-		return tag.equals(value);
-	}
-	
-	public String toString(){
-		StringBuilder buf = new StringBuilder();
-		buf.append(tag);
-		buf.append(indicator1);
-		buf.append(indicator2);
-		String f = getFieldString();
-		if (f != null){
-			buf.append(f);
-		}
-		return buf.toString();
-	}
-	
-	public boolean contains(Pattern query){
-		return false;
-	}
-	
 	@Override
 	public int compareTo(Field o) {
 		String tag0 = this.tag;
@@ -115,5 +94,64 @@ public class Field implements Comparable<Field> {
 			result = Math.abs(result);
 		}
 		return result;
+	}
+	public boolean contains(Pattern query){
+		return false;
+	}
+	public void clear(){
+		// implementation defined
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((tag == null) ? 0 : tag.hashCode());
+		result = prime * result + indicator1;
+		result = prime * result + indicator2;
+		return result;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Field)) {
+			return false;
+		}
+		Field other = (Field) obj;
+		if (indicator1 != other.indicator1) {
+			return false;
+		}
+		if (indicator2 != other.indicator2) {
+			return false;
+		}
+		if (tag == null) {
+			if (other.tag != null) {
+				return false;
+			}
+		} else if (!tag.equals(other.tag)) {
+			return false;
+		}
+		return true;
+	}
+	public String toString(){
+		StringBuilder buf = new StringBuilder();
+		buf.append(tag);
+		buf.append(indicator1);
+		buf.append(indicator2);
+		String f = getFieldString();
+		if (f != null){
+			buf.append(f);
+		}
+		return buf.toString();
 	}
 }
