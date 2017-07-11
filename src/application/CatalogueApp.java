@@ -6,9 +6,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -49,15 +51,19 @@ import gui.table.RecordTable;
 import marc.Catalogue;
 import marc.format.AbstractMarc;
 import marc.format.MarcBinary;
-import marc.record.AuthorFormatter;
+import marc.record.AuthorityFormatter;
 import marc.record.BibliographicFormatter;
+import marc.record.ClassificationFormatter;
+import marc.record.CommunityFormatter;
+import marc.record.FormatterModel;
+import marc.record.HoldingsFormatter;
 import marc.record.Record;
 import marc.record.RecordFormatter;
 
 public class CatalogueApp implements MarcComponent, ActionListener, RecordSelectionListener {
 	private ProgramMetaData metaData;
 	private Catalogue data;
-	private RecordFormatter authorityFormat, bibliographicFormat;
+	private FormatterModel formatterModel;
 
 	private MarcWindow window;
 	private RecordSelector navSelector, searchSelector;
@@ -119,6 +125,7 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		searchSelector = new RecordSelector(data, new RecordSearchFilter());
 		searchSelector.addRecordSelectionListener(this);
 		
+		formatterModel = new FormatterModel();
 		catalogCard = new CatalogCardPanel();
 	}
 	
@@ -147,11 +154,29 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 	}
 	@Override
 	public void create(){
-		authorityFormat = new AuthorFormatter();
-		bibliographicFormat = new BibliographicFormatter();
+		String[] viewFormatterKey = {
+				"Bibliographic",
+				"Authority",
+				"Holdings",
+				"Classification",
+				"Community"
+		};
+		RecordFormatter[] recordFormatter = {
+				new BibliographicFormatter(),
+				new AuthorityFormatter(),
+				new HoldingsFormatter(),
+				new ClassificationFormatter(),
+				new CommunityFormatter()
+		};
+		String k = null;
+		for (int i = 0; i < viewFormatterKey.length; ++i){
+			k = viewFormatterKey[i].toUpperCase(Locale.ENGLISH);
+			formatterModel.addEntry(k, recordFormatter[i]);
+		}
+		formatterModel.addFormatterListener(catalogCard);
 		
 		RecordTable recordTable = new RecordTable();
-		catalogCard.setFormatter(bibliographicFormat);
+		catalogCard.setFormatter(recordFormatter[0]);
 		JTabbedPane tabs = new JTabbedPane();
 		tabs.insertTab("Catalog Card", null, catalogCard.getComponent(), "Catalog Card", 0);
 		tabs.insertTab("MARC", null, new JScrollPane(recordTable), "MARC", 1);
@@ -183,14 +208,7 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		menuBuilder.addSeparator();
 		menuBuilder.addItems(searchAction);
 		menuBuilder.addMenu();
-		String[] viewAction = {
-				"Bibliographic",
-				"Authority",
-				"Holdings",
-				"Classification",
-				"Community"
-		};
-		menuBuilder.addMenu("View", viewAction, this);
+		menuBuilder.addMenu("View", viewFormatterKey, this);
 		RecordAction[] toolAction = {
 				new AddRecordAction(data, owner),
 				new EditRecordAction(data, owner),
@@ -304,14 +322,12 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
-		if ("AUTHORITY".equals(command)){
-			catalogCard.setFormatter(authorityFormat);
-		} else {
-			catalogCard.setFormatter(bibliographicFormat);
-		}
+		formatterModel.updateListeners(command);
 		int index = navSelector.getModelIndex();
 		if (index >= 0){
 			catalogCard.updateView(data.get(index), index);
 		}
 	}
+	@Override
+	public void addMouseListener(MouseListener listener) {}
 }

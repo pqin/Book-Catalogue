@@ -2,11 +2,23 @@ package marc.record;
 
 import java.util.Arrays;
 
-public class AuthorFormatter extends RecordFormatter {
+public class AuthorityFormatter extends RecordFormatter {
+	private static final String[] indent;
+	static {
+		indent = new String[2];
+		final int amount = 4;
+		char[] tmp = null;
+		for (int i = 0; i < indent.length; ++i){
+			tmp = new char[amount * (i+1)];
+			Arrays.fill(tmp, ' ');
+			indent[i] = String.valueOf(tmp);
+		}
+	}
+	
 	String fullName;
 	String[] tracingSeeFrom, tracingSeeAlso;
 	
-	public AuthorFormatter(){
+	public AuthorityFormatter(){
 		super();
 	}
 
@@ -33,10 +45,7 @@ public class AuthorFormatter extends RecordFormatter {
 		// parse tracings
 		char[] code = { 'a' };
 		tracingSeeFrom = formatAll(record, "400", code, "");
-		Arrays.sort(tracingSeeFrom);
-		
 		tracingSeeAlso = formatAll(record, "500", code, "");
-		Arrays.sort(tracingSeeAlso);
 	}
 
 	@Override
@@ -49,14 +58,6 @@ public class AuthorFormatter extends RecordFormatter {
 			b.append(')');
 		}
 		b.append('\n');
-		String[] indent = new String[2];
-		final int amount = 4;
-		char[] tmp = null;
-		for (int i = 0; i < indent.length; ++i){
-			tmp = new char[amount * (i+1)];
-			Arrays.fill(tmp, ' ');
-			indent[i] = String.valueOf(tmp);
-		}
 		for (int i = 0; i < tracingSeeAlso.length; ++i){
 			b.append(indent[0]);
 			appendLn(b, tracingSeeAlso[i]);

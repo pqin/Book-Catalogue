@@ -47,15 +47,15 @@ public class MenuBuilder {
 		menubar.add(menu);
 		menu = null;
 	}
-	public void addMenu(String label, String[] actions, ActionListener listener){
+	public void addMenu(String label, String[] option, ActionListener listener){
 		menu = new JMenu(label);
 		group = new ButtonGroup();
 		JRadioButtonMenuItem radioButton = null;
 		ButtonModel model = null;
 		final int initialSelection = 0;
-		for (int i = 0; i < actions.length; ++i){
-			radioButton = new JRadioButtonMenuItem(actions[i]);
-			radioButton.setActionCommand(actions[i].toUpperCase(Locale.ENGLISH));
+		for (int i = 0; i < option.length; ++i){
+			radioButton = new JRadioButtonMenuItem(option[i]);
+			radioButton.setActionCommand(option[i].toUpperCase(Locale.ENGLISH));
 			radioButton.addActionListener(listener);
 			if (i == initialSelection){
 				model = radioButton.getModel();

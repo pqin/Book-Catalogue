@@ -10,20 +10,21 @@ import java.awt.event.MouseListener;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import marc.record.AuthorFormatter;
+import gui.FormatterListener;
+import marc.record.AuthorityFormatter;
 import marc.record.RecordFormatter;
 
 /**
  * @author Peter
  *
  */
-public class CatalogCardPanel extends RecordPanel {
+public class CatalogCardPanel extends RecordPanel implements FormatterListener {
 	private JTextArea callNumberField, contentField;
 	private RecordFormatter format;
 
 	public CatalogCardPanel(){
 		super();
-		format = new AuthorFormatter();
+		format = new AuthorityFormatter();
 	}
 	protected void layoutComponents(){
 		Font font = new Font(Font.SERIF, Font.PLAIN, 14);
@@ -48,13 +49,13 @@ public class CatalogCardPanel extends RecordPanel {
 		callNumberField.setText(null);
 		contentField.setText(null);
 	}
-	// TODO extract to super class?
+	@Override
 	public void addMouseListener(MouseListener listener){
 		contentField.addMouseListener(listener);
 	}
-	
-	public void setFormatter(RecordFormatter fmt){
-		format = fmt;
+	@Override
+	public void setFormatter(RecordFormatter formatter){
+		format = formatter;
 	}
 	
 	@Override

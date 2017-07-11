@@ -4,6 +4,7 @@
 package gui.form;
 
 import java.awt.Component;
+import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
@@ -36,17 +37,17 @@ public class RecordPanel implements MarcComponent, RecordView {
 		layoutComponents();
 		clearForm();
 	}
-
 	@Override
 	public void destroy() {
 		panel.removeAll();
 		record = null;
 	}
-
 	@Override
 	public Component getComponent() {
 		return panel;
 	}
+	@Override
+	public void addMouseListener(MouseListener listener) {}
 		
 	/**
 	 * @return the record
@@ -66,7 +67,6 @@ public class RecordPanel implements MarcComponent, RecordView {
 	protected void updateView(){
 		
 	}
-
 	@Override
 	public final void updateView(Record record, int index) {
 		this.record = record;
