@@ -1,6 +1,7 @@
 package controller;
 
 import java.awt.Component;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -60,6 +61,8 @@ public class FileManager implements MarcComponent {
 	public Component getComponent(){
 		return fileChooser;
 	}
+	@Override
+	public void addMouseListener(MouseListener listener) {}
 	
 	public void addFileListener(FileListener l){
 		listener.add(l);

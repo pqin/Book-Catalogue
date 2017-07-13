@@ -2,6 +2,7 @@ package application;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -47,6 +48,8 @@ public class MarcWindow extends WindowAdapter implements MarcComponent, Metadata
 	public Component getComponent(){
 		return frame;
 	}
+	@Override
+	public void addMouseListener(MouseListener listener){}
 	
 	@Override
 	public void windowClosing(WindowEvent e){

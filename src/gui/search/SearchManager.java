@@ -54,7 +54,7 @@ public class SearchManager implements MarcComponent, CatalogueView {
 	public Component getComponent(){
 		return null;
 	}
-	// TODO extract to super class?
+	@Override
 	public void addMouseListener(MouseListener listener){
 		searchForm.addMouseListener(listener);
 	}

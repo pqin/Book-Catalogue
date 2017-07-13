@@ -1,6 +1,7 @@
 package marc;
 
 import java.awt.Component;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -36,6 +37,8 @@ public final class Catalogue implements MarcComponent {
 	public Component getComponent(){
 		return null;
 	}
+	@Override
+	public void addMouseListener(MouseListener listener){}
 
 	public boolean contains(Record record){
 		boolean hasRecord = data.contains(record);

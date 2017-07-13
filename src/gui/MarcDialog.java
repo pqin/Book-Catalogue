@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
+import java.awt.event.MouseListener;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -48,6 +49,8 @@ public class MarcDialog implements MarcComponent {
 	public Component getComponent() {
 		return dialog;
 	}
+	@Override
+	public void addMouseListener(MouseListener listener){}
 	
 	public void setTitle(String text){
 		title = text;
