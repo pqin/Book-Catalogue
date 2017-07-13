@@ -33,7 +33,6 @@ public abstract class RecordAction extends AbstractAction implements RecordView 
 		String[] options = {"OK", "Cancel"};
 		formDialog.setOptions(options);
 	}
-	
 	@Override
 	public void updateView(Record record, int index){
 		recordIndex = index;

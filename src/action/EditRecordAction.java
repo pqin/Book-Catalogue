@@ -18,7 +18,6 @@ public class EditRecordAction extends RecordAction {
 		formDialog.setContent(form.getComponent());
 		formDialog.create();
 	}
-	
 	@Override
 	public void actionPerformed(ActionEvent ignored) {
 		Record record = null;
@@ -36,5 +35,4 @@ public class EditRecordAction extends RecordAction {
 			}
 		}
 	}
-
 }
