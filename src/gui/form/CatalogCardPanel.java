@@ -11,7 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import gui.FormatterListener;
-import marc.record.AuthorityFormatter;
+import marc.record.BibliographicFormatter;
 import marc.record.RecordFormatter;
 
 /**
@@ -24,7 +24,7 @@ public class CatalogCardPanel extends RecordPanel implements FormatterListener {
 
 	public CatalogCardPanel(){
 		super();
-		format = new AuthorityFormatter();
+		format = new BibliographicFormatter();
 	}
 	protected void layoutComponents(){
 		Font font = new Font(Font.SERIF, Font.PLAIN, 14);

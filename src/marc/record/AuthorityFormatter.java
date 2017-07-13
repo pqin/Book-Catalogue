@@ -39,8 +39,8 @@ public class AuthorityFormatter extends RecordFormatter {
 		heading = (m == null) ? "" : m;
 		fullName = (f == null) ? "" : f;
 
-		title = heading;
-		filingTitle = heading;
+		title = "";
+		filingTitle = "";
 		callNumber = "";
 		// parse tracings
 		char[] code = { 'a' };

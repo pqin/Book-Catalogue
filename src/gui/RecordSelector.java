@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,8 +25,9 @@ import gui.table.NavigationTableModel;
 import gui.table.RecordSearchFilter;
 import gui.table.TitleRenderer;
 import marc.Catalogue;
+import marc.record.RecordFormatter;
 
-public class RecordSelector implements MarcComponent, CatalogueView, ListSelectionListener {
+public class RecordSelector implements MarcComponent, CatalogueView, ListSelectionListener, FormatterListener {
 	private static String STATUS_FORMAT = "Record: %d / %d";
 
 	private JPanel panel;
@@ -80,6 +82,8 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 	public Component getComponent(){
 		return panel;
 	}
+	@Override
+	public void addMouseListener(MouseListener listener) {}
 	
 	public void setSearchIndices(List<Integer> searchIndices){
 		filter.showSearch(true);
@@ -190,5 +194,10 @@ public class RecordSelector implements MarcComponent, CatalogueView, ListSelecti
 		}
 		
 		updateStatusBar();
+	}
+
+	@Override
+	public void setFormatter(RecordFormatter formatter) {
+		model.setFormatter(formatter);
 	}
 }

@@ -5,17 +5,12 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import marc.record.Record;
-
 public class TitleRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;
-	
-	private Record record;
 	
 	public TitleRenderer(){
 		super();
 		setOpaque(true);
-		record = null;
 	}
 	
 	@Override
@@ -23,20 +18,19 @@ public class TitleRenderer extends DefaultTableCellRenderer {
 			JTable table, Object value,
 			boolean isSelected, boolean hasFocus,
 			int row, int column) {
-		Component comp = null;
+		Component component = null;
 		NavigationTableModel model = (NavigationTableModel) table.getModel();
-		int rowIndex = table.convertRowIndexToModel(row);
-		int columnIndex = table.convertColumnIndexToModel(column);
+		final int rowIndex = table.convertRowIndexToModel(row);
+		final int columnIndex = table.convertColumnIndexToModel(column);
 		String cellValue = null;
 		if (columnIndex == NavigationTableModel.TITLE){
-			record = model.getRecordAt(rowIndex);
-			cellValue = record.getTitle();
+			cellValue = model.getTitle(rowIndex);
 		} else {
 			cellValue = String.valueOf(value);
 		}
-		comp = super.getTableCellRendererComponent(table, cellValue, isSelected, hasFocus, row, column);
+		component = super.getTableCellRendererComponent(table, cellValue, isSelected, hasFocus, row, column);
 		
-		return comp;
+		return component;
 	}
 
 }

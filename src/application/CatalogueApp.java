@@ -174,6 +174,8 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 			formatterModel.addEntry(k, recordFormatter[i]);
 		}
 		formatterModel.addFormatterListener(catalogCard);
+		formatterModel.addFormatterListener(navSelector);
+		formatterModel.updateListeners(viewFormatterKey[0].toUpperCase(Locale.ENGLISH));
 		
 		RecordTable recordTable = new RecordTable();
 		catalogCard.setFormatter(recordFormatter[0]);
@@ -209,12 +211,12 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		menuBuilder.addItems(searchAction);
 		menuBuilder.addMenu();
 		menuBuilder.addMenu("View", viewFormatterKey, this);
-		RecordAction[] toolAction = {
+		RecordAction[] toolsAction = {
 				new AddRecordAction(data, owner),
 				new EditRecordAction(data, owner),
 				new DeleteRecordAction(data, owner)
 		};
-		menuBuilder.addMenu("Tool", toolAction);
+		menuBuilder.addMenu("Tools", toolsAction);
 		AbstractAction[] helpAction = {
 				new AboutProgramAction(owner)
 		};
@@ -237,8 +239,8 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		data.addCatalogueView(searchManager);
 		data.addRecordView(recordTable);
 		data.addRecordView(catalogCard);
-		data.addRecordView(toolAction[1]);
-		data.addRecordView(toolAction[2]);
+		data.addRecordView(toolsAction[1]);
+		data.addRecordView(toolsAction[2]);
 	}
 	@Override
 	public void destroy(){
