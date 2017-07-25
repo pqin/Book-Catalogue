@@ -294,17 +294,6 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		}
 		data.loadData(input);
 	}
-	/*
-	private void dumpSQL(ArrayList<Record> list){
-		int id = 1;
-		Record record = null;
-		Iterator<Record> it = list.iterator();
-		while (it.hasNext()){
-			record = it.next();
-			++id;
-		}
-	}
-	*/
 	private void saveProperties(){
 		metaData.save();
 	}
@@ -325,11 +314,12 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		final int index = navSelector.getModelIndex();
 		String command = e.getActionCommand();
 		formatterModel.updateListeners(command);
-		int index = navSelector.getModelIndex();
 		if (index >= 0){
-			catalogCard.updateView(data.get(index), index);
+			int row = navSelector.getRowForModel(index);
+			navSelector.scrollToRow(row);
 		}
 	}
 	@Override
