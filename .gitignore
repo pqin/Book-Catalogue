@@ -1,5 +1,7 @@
 /bin/
 resource/settings.properties
+resource/session.properties
+test_files/
 
 # Eclipse Java project files
 .classpath
