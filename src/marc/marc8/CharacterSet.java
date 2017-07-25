@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class CharacterSet {
 	public static final char UNKNOWN_CHAR = '\uFFFD';
 	public static final char UNDERFLOW = '\0';
-	protected static final int MAX_BYTES_PER_CHAR = 10;
+	protected static final int MAX_BYTES_PER_CHAR = Integer.BYTES;
 	protected final String name;
 	protected final byte bytesPerChar;
 	private final int offset, length;
