@@ -34,6 +34,7 @@ import action.FileAction;
 import action.NewFileAction;
 import action.OpenFileAction;
 import action.RecordAction;
+import action.ReplaceRecordAction;
 import action.SaveAsFileAction;
 import action.SaveFileAction;
 import action.SearchAction;
@@ -214,6 +215,7 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		RecordAction[] toolsAction = {
 				new AddRecordAction(data, owner),
 				new EditRecordAction(data, owner),
+				new ReplaceRecordAction(data, fileManager, owner),
 				new DeleteRecordAction(data, owner)
 		};
 		menuBuilder.addMenu("Tools", toolsAction);

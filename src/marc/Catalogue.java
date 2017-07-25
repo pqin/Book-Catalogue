@@ -75,15 +75,21 @@ public final class Catalogue implements MarcComponent {
 	public void add(Record[] records){
 		addData(Arrays.asList(records));
 	}
+	public void add(List<Record> records){
+		addData(records);
+	}
 	public void loadData(List<Record> list) {
 		data.clear();
 		addData(list);
 	}
 	private void addData(List<Record> list){
-		int size = data.size();
+		final int size = data.size();
 		int index = list.size() > 0 ? size : size - 1;
 		data.addAll(list);
 		updateCatalogueView(index);
+	}
+	public void insert(int index, List<Record> list){
+		data.addAll(index, list);
 	}
 	public void set(int index, Record record){
 		data.set(index, record);

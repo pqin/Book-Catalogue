@@ -31,6 +31,7 @@ public class EditRecordAction extends RecordAction {
 			int option = formDialog.showDialog();
 			if (option == 0){
 				catalogue.set(recordIndex, record);
+				catalogue.updateCatalogueView(recordIndex);
 				catalogue.updateRecordView(recordIndex);
 			}
 		}
