@@ -88,8 +88,10 @@ public final class Catalogue implements MarcComponent {
 		data.addAll(list);
 		updateCatalogueView(index);
 	}
-	public void insert(int index, List<Record> list){
+	public void replace(int index, List<Record> list){
+		data.remove(index);
 		data.addAll(index, list);
+		updateCatalogueView(index);
 	}
 	public void set(int index, Record record){
 		data.set(index, record);

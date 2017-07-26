@@ -241,8 +241,9 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		data.addCatalogueView(searchManager);
 		data.addRecordView(recordTable);
 		data.addRecordView(catalogCard);
-		data.addRecordView(toolsAction[1]);
-		data.addRecordView(toolsAction[2]);
+		for (int i = 1; i < toolsAction.length; ++i){
+			data.addRecordView(toolsAction[i]);
+		}
 	}
 	@Override
 	public void destroy(){
