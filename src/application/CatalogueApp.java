@@ -318,10 +318,7 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		final int index = navSelector.getModelIndex();
 		String command = e.getActionCommand();
 		formatterModel.updateListeners(command);
-		if (index >= 0){
-			int row = navSelector.getRowForModel(index);
-			navSelector.scrollToRow(row);
-		}
+		data.updateCatalogueView(index);
 	}
 	@Override
 	public void addMouseListener(MouseListener listener) {}
