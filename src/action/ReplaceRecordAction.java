@@ -25,10 +25,7 @@ public class ReplaceRecordAction extends RecordAction {
 				messageDialog.setContent("No record selected.");
 				messageDialog.showDialog();
 			} else {
-				catalogue.remove(recordIndex);
-				catalogue.insert(recordIndex, input);
-				catalogue.updateCatalogueView(recordIndex);
-				catalogue.updateRecordView(recordIndex);
+				catalogue.replace(recordIndex, input);
 			}
 		}
 	}
