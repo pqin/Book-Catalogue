@@ -20,6 +20,7 @@ public class NewFileAction extends FileAction {
 	@Override
 	public void actionPerformed(ActionEvent ignored) {
 		catalogue.loadData(new ArrayList<Record>());
+		manager.updateListeners(null);
 	}
 
 }

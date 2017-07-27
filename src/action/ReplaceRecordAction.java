@@ -10,6 +10,7 @@ import marc.record.Record;
 
 public class ReplaceRecordAction extends RecordAction {
 	private static final long serialVersionUID = 1L;
+	
 	private FileManager manager;
 	
 	public ReplaceRecordAction(Catalogue data, FileManager manager, Component owner){

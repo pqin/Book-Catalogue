@@ -22,6 +22,7 @@ public class OpenFileAction extends FileAction {
 		ArrayList<Record> input = manager.openFile();
 		if (input != null){
 			catalogue.loadData(input);
+			manager.updateListeners();
 		}
 	}
 }

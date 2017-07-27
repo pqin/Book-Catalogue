@@ -20,6 +20,7 @@ public class SaveFileAction extends FileAction {
 		AbstractMarc format = null;
 		if (file == null){
 			manager.saveFile(catalogue);
+			manager.updateListeners();
 		} else {
 			format = manager.getFormatForFile(file);
 			manager.write(file, format, catalogue.toList());

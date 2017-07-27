@@ -15,6 +15,7 @@ public class SaveAsFileAction extends FileAction {
 	@Override
 	public void actionPerformed(ActionEvent ignored) {
 		manager.saveFile(catalogue);
+		manager.updateListeners();
 	}
 
 }

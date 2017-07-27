@@ -30,6 +30,7 @@ import action.AddRecordAction;
 import action.ClearSearchAction;
 import action.DeleteRecordAction;
 import action.EditRecordAction;
+import action.ExtractRecordAction;
 import action.FileAction;
 import action.NewFileAction;
 import action.OpenFileAction;
@@ -215,6 +216,7 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		RecordAction[] toolsAction = {
 				new AddRecordAction(data, owner),
 				new EditRecordAction(data, owner),
+				new ExtractRecordAction(data, fileManager, owner),
 				new ReplaceRecordAction(data, fileManager, owner),
 				new DeleteRecordAction(data, owner)
 		};

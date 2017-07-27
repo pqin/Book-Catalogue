@@ -67,7 +67,14 @@ public class FileManager implements MarcComponent {
 	public void addFileListener(FileListener l){
 		listener.add(l);
 	}
-	private void updateListeners(File file){
+	public void updateListeners(){
+		File file = fileChooser.getSelectedFile();
+		Iterator<FileListener> it = listener.iterator();
+		while (it.hasNext()){
+			it.next().fileChanged(file);
+		}
+	}
+	public void updateListeners(File file){
 		fileChooser.setSelectedFile(file);
 		Iterator<FileListener> it = listener.iterator();
 		while (it.hasNext()){
@@ -136,7 +143,6 @@ public class FileManager implements MarcComponent {
 		ArrayList<Record> data = null;
 		try {
 			data = format.read(file);
-			updateListeners(file);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(parent,
 					String.format(
@@ -171,7 +177,6 @@ public class FileManager implements MarcComponent {
 		String path = file.getParent();
 		try {
 			format.write(file, data);
-			updateListeners(file);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(parent,
 					String.format(
