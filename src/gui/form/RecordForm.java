@@ -5,7 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -134,7 +134,7 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 	public void actionPerformed(ActionEvent e) {
 		int row = -1;
 		int i = -1;
-		ArrayList<Field> field = record.getFields();
+		List<Field> field = record.getFields();
 		Field f = null;
 		if (e.getSource() == addButton){
 			fieldForm.setDataField(new DataField());

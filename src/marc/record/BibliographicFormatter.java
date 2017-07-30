@@ -1,6 +1,7 @@
 package marc.record;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +17,7 @@ public class BibliographicFormatter extends RecordFormatter {
 	
 	private String ddc, lccn, isbn;
 	private String description, edition, series;
-	private String summary, summaryLabel;
+	private String[] summary;
 	private String notes;
 	private String[] imprint, topic, tracing;
 	
@@ -69,10 +70,7 @@ public class BibliographicFormatter extends RecordFormatter {
 			series = "(" + series + ")";
 		}
 		
-		String[] s = parseSummary(record);
-		summaryLabel = s[0];
-		summary = s[1];
-		
+		summary = parseSummary(record);
 		notes = record.getData("500", 'a');
 		
 		char[] imprintCode = {'a', 'b', 'c'};
@@ -164,46 +162,62 @@ public class BibliographicFormatter extends RecordFormatter {
 		return m;
 	}
 	private String[] parseSummary(Record record){
-		String[] s = new String[2];
-		DataField summaryField = (DataField) record.getFirstMatchingField("520");
-		char indicator = Field.BLANK_INDICATOR;
-		if (summaryField == null){
-			s[0] = "Summary";
-			s[1] = null;
-		} else {
-			indicator = summaryField.getIndicator1();
-			switch (indicator){
-			case Field.BLANK_INDICATOR:
-				s[0] = "Summary";
-				break;
-			case '0':
-				s[0] = "Subject";
-				break;
-			case '1':
-				s[0] = "Review";
-				break;
-			case '2':
-				s[0] = "Scope and content";
-				break;
-			case '3':
-				s[0] = "Abstract";
-				break;
-			case '4':
-				s[0] = "Content advice";
-				break;
-			case '8':
-				s[0] = "";	// No display constant generated.
-				break;
-			default:
-				s[0] = "Summary";
-				break;
+		List<Field> summaryField = record.getField("520");
+		String[] s = null;
+		if (summaryField == null || summaryField.isEmpty()){
+			s = new String[0];
+			return s;
+		}
+		s = new String[summaryField.size()];
+		DataField field = null;
+		char indPrev = '\0';
+		char indicator = '\0';
+		String label = null;
+		for (int i = 0; i < s.length; ++i){
+			field = (DataField) summaryField.get(i);
+			indicator = field.getIndicator1();
+			if (indicator == indPrev){
+				label = "";
+			} else {
+				switch (indicator){
+				case Field.BLANK_INDICATOR:
+					label = "Summary";
+					break;
+				case '0':
+					label = "Subject";
+					break;
+				case '1':
+					label = "Review";
+					break;
+				case '2':
+					label = "Scope and content";
+					break;
+				case '3':
+					label = "Abstract";
+					break;
+				case '4':
+					label = "Content advice";
+					break;
+				case '8':
+					label = "";	// No display constant generated.
+					break;
+				default:
+					label = "Summary";
+					break;
+				}
+				indPrev = indicator;
 			}
-			char summaryCode = 'a';
+			s[i] = label;
+			
 			Subfield sub = null;
-			for (int i = 0; i < summaryField.getDataCount(); ++i){
-				sub = summaryField.getSubfield(i);
-				if (sub.getCode() == summaryCode){
-					s[1] = sub.getData();
+			for (int j = 0; j < field.getDataCount(); ++j){
+				sub = field.getSubfield(j);
+				if (sub.getCode() == 'a'){
+					if (s[i].isEmpty()){
+						s[i] = sub.getData();
+					} else {
+						s[i] = s[i] + ": " + sub.getData();
+					}
 					break;
 				}
 			}
@@ -226,7 +240,7 @@ public class BibliographicFormatter extends RecordFormatter {
 		appendLn(b, series);
 		b.append('\n');
 		
-		appendLn(b, summaryLabel, summary);
+		appendLn(b, summary);
 		appendLn(b, notes);
 		appendLn(b, "ISBN", isbn);
 		b.append('\n');

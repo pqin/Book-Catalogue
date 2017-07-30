@@ -205,7 +205,7 @@ public class MarcBinary extends AbstractMarc {
 		FileOutputStream out = new FileOutputStream(file);
 		Record record = null;
 		Leader leader = null;
-		ArrayList<Field> field = null;
+		List<Field> field = null;
 		Field f = null;
 		String tag = null;
 		byte[] ldr = null;

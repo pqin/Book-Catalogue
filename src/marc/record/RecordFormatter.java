@@ -1,6 +1,6 @@
 package marc.record;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import marc.field.DataField;
 import marc.field.Field;
@@ -42,7 +42,7 @@ public abstract class RecordFormatter {
 		}
 	}
 	protected final String[] formatAll(Record record, String tag, char[] code, String delimiter){
-		ArrayList<Field> field = record.getField(tag);
+		List<Field> field = record.getField(tag);
 		DataField d;
 		String[] s = new String[field.size()];
 		for (int i = 0; i < s.length; ++i){

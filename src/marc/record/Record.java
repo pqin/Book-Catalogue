@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import marc.field.ControlField;
@@ -45,7 +46,7 @@ public final class Record implements Serializable {
 	
 	public String getControlNumber(){
 		String ctrlNum = null;
-		ArrayList<ControlField> field = getControlField("001");
+		List<ControlField> field = getControlField("001");
 		if (field.size() > 0){
 			ctrlNum = String.valueOf(field.get(0).getFieldData());
 		}
@@ -85,7 +86,7 @@ public final class Record implements Serializable {
 	}
 
 	public String getFilingTitle(){
-		ArrayList<DataField> list = getDataField("245");
+		List<DataField> list = getDataField("245");
 		if (list.isEmpty()){
 			return "";
 		}
@@ -124,7 +125,7 @@ public final class Record implements Serializable {
 		int count = controlField.size() + dataField.size() + 2;
 		return count;
 	}
-	public ArrayList<Field> getFields(){
+	public List<Field> getFields(){
 		ArrayList<Field> tmp = new ArrayList<Field>();
 		tmp.add(leader);
 		tmp.add(dataElement);
@@ -133,7 +134,7 @@ public final class Record implements Serializable {
 		Collections.sort(tmp);
 		return tmp;
 	}
-	public ArrayList<Field> getField(String tag){
+	public List<Field> getField(String tag){
 		ArrayList<Field> f = new ArrayList<Field>();
 		Field tmp = null;
 		Iterator<? extends Field> it = null;
@@ -185,7 +186,7 @@ public final class Record implements Serializable {
 		return f;
 	}
 	
-	private ArrayList<ControlField> getControlField(String tag){
+	private List<ControlField> getControlField(String tag){
 		ArrayList<ControlField> f = new ArrayList<ControlField>();
 		Iterator<ControlField> it = controlField.iterator();
 		ControlField tmp = null;
@@ -198,7 +199,7 @@ public final class Record implements Serializable {
 		return f;
 	}
 	
-	private ArrayList<DataField> getDataField(String tag){
+	private List<DataField> getDataField(String tag){
 		ArrayList<DataField> f = new ArrayList<DataField>();
 		Iterator<DataField> it = dataField.iterator();
 		DataField tmp = null;
@@ -212,7 +213,7 @@ public final class Record implements Serializable {
 	}
 	
 	public String[] getFormattedData(String tag, char[] code, String delimiter){
-		ArrayList<DataField> f = getDataField(tag);
+		List<DataField> f = getDataField(tag);
 		String[] formattedData = new String[f.size()];
 		for (int i = 0; i < formattedData.length; ++i){
 			formattedData[i] = getFormattedData(f.get(i), code, delimiter);
@@ -272,7 +273,7 @@ public final class Record implements Serializable {
 	}
 	
 	public String getData(String tag, char code){
-		ArrayList<DataField> list = getDataField(tag);
+		List<DataField> list = getDataField(tag);
 		DataField f = null;
 		Subfield s = null;
 		String data = null;
@@ -292,7 +293,7 @@ public final class Record implements Serializable {
 	}
 	
 	public boolean contains(Pattern query, String tag){
-		ArrayList<DataField> field = null;
+		List<DataField> field = null;
 		if (tag == null || tag.isEmpty()){
 			field = dataField;
 		} else {

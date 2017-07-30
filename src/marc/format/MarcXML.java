@@ -165,7 +165,7 @@ public class MarcXML extends AbstractMarc {
 		final String indent = "  ";
 		
 		Record record = null;
-		ArrayList<Field> field = null;
+		List<Field> field = null;
 		Field f = null;
 		String tag = null;
 		Subfield subfield = null;
