@@ -150,19 +150,18 @@ public class FileManager implements MarcComponent {
 							filename, path),
 					"File not Found",
 					JOptionPane.ERROR_MESSAGE);
-			data = new ArrayList<Record>();
 			e.printStackTrace();
         } catch (IOException e) {
-        	data = new ArrayList<Record>();
         	e.printStackTrace();
+        } finally {
+        	if (data != null){
+        		final int size = data.size();
+        		if (size > RECORD_CAP){
+        			data.subList(RECORD_CAP, size).clear();
+        		}
+        		data.trimToSize();
+        	}
         }
-		int size = data.size();
-		if (size > RECORD_CAP){
-			data.subList(RECORD_CAP, size).clear();
-		}
-		if (data != null){
-			data.trimToSize();
-		}
 		return data;
 	}
 	
@@ -172,11 +171,11 @@ public class FileManager implements MarcComponent {
 	 * @param data the Records to write
 	 */
 	public void write(File file, AbstractMarc format, List<Record> data){
-		fileChooser.setCurrentDirectory(file);
 		String filename = file.getName();
 		String path = file.getParent();
 		try {
 			format.write(file, data);
+			fileChooser.setCurrentDirectory(file);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(parent,
 					String.format(

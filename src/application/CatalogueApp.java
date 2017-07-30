@@ -285,17 +285,21 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		File file = metaData.getFile();
 		
 		ArrayList<Record> input = null;
-		if (file == null){
-			fileManager.setFile(file);
-			input = new ArrayList<Record>();
-		} else {
+		if (file != null){
 			AbstractMarc format = fileManager.getFormatForFile(file);
 			if (format == null){
 				format = new MarcBinary();
 			}
 			input = fileManager.read(file, format);
 		}
-		data.loadData(input);
+		
+		if (input == null){
+			file = null;
+			data.loadData(new ArrayList<Record>());
+		} else {
+			data.loadData(input);
+		}
+		fileManager.updateListeners(file);
 	}
 	private void saveProperties(){
 		metaData.save();
