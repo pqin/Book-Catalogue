@@ -39,7 +39,7 @@ public class BibliographicFormatter extends RecordFormatter {
 		
 		// get title
 		char[] titlecode = {'a', 'h', 'b', 'c'};
-		DataField titleField = (DataField) record.getFirstMatchingField("245");
+		final DataField titleField = (DataField) record.getFirstMatchingField("245");
 		int nonfiling = 0;
 		final int radix = 10;
 		if (titleField == null){
@@ -85,12 +85,20 @@ public class BibliographicFormatter extends RecordFormatter {
 		
 		char[] tracingCode = {'a', 'b'};
 		String[] tmpTrace = formatAll(record, "700", tracingCode, " ");
-		tracing = new String[tmpTrace.length + 1];
-		tracing[0] = "Title";
-		for (int i = 0; i < tmpTrace.length; ++i){
-			tracing[i+1] = tmpTrace[i];
+		boolean titleTraced = false;
+		if (titleField != null && titleField.getIndicator1() == '1'){
+			titleTraced = true;
+		} else {
+			titleTraced = false;
 		}
-		
+		final int tracingIndexOffset = titleTraced ? 1 : 0;
+		tracing = new String[tmpTrace.length + tracingIndexOffset];
+		if (titleTraced){
+			tracing[0] = "Title";
+		}
+		for (int i = 0; i < tmpTrace.length; ++i){
+			tracing[i+tracingIndexOffset] = tmpTrace[i];
+		}
 		for (int i = 0; i < tracing.length; ++i){
 			tracing[i] = String.format("%s. %s", RomanNumeral.parse(i+1), tracing[i]);
 		}
