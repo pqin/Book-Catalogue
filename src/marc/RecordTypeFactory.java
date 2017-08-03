@@ -18,7 +18,7 @@ import marc.type.Music;
 import marc.type.UnknownType;
 import marc.type.VisualMaterial;
 
-public final class Factory {
+public final class RecordTypeFactory {
 	private static final HashMap<String, Class<? extends AbstractRecordType>> typeMap = buildTypeMap();
 	private static final HashMap<String, Class<? extends AbstractRecordType>> configMap = buildConfigMap();
 	private static final Class<? extends AbstractRecordType> UNKNOWN_TYPE = UnknownType.class;
@@ -118,12 +118,7 @@ public final class Factory {
 		Class<? extends AbstractRecordType> c = null;
 		c = typeMap.getOrDefault(String.valueOf(type), UNKNOWN_TYPE);
 		if (c == Bibliographic.class){
-			char[] key = null;
-			if (type[0] == 'a'){
-				key = leader.getData(Leader.TYPE, 2);
-			} else {
-				key = leader.getData(Leader.TYPE, 1);
-			}
+			char[] key = leader.getData(Leader.TYPE, (type[0] == 'a') ? 2 : 1);
 			c = configMap.getOrDefault(String.valueOf(key), UNKNOWN_TYPE);
 		}
 		

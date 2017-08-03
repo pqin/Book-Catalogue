@@ -20,7 +20,7 @@ import gui.FormDialog;
 import gui.MarcDialog;
 import gui.table.RecordTable;
 import gui.table.RecordTableModel;
-import marc.Factory;
+import marc.RecordTypeFactory;
 import marc.field.DataField;
 import marc.field.Field;
 import marc.field.FixedDataElement;
@@ -45,7 +45,7 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 	
 	protected void initialize(){
 		record = new Record();
-		type = Factory.getMaterialConfig(record.getLeader());
+		type = RecordTypeFactory.getMaterialConfig(record.getLeader());
 		
 		model = new RecordTableModel();
 		table = new RecordTable(model);
@@ -59,12 +59,12 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		dialog.setOptions(options);
 		dialog.create();
 		
-		addButton = initButton("Add");
-		removeButton = initButton("Remove");
-		editButton = initButton("Edit");
-		duplicateButton = initButton("Duplicate");
+		addButton = createButton("Add");
+		removeButton = createButton("Remove");
+		editButton = createButton("Edit");
+		duplicateButton = createButton("Duplicate");
 	}
-	private JButton initButton(String text){
+	private JButton createButton(String text){
 		JButton button = new JButton(text);
 		button.addActionListener(this);
 		button.setHorizontalAlignment(SwingConstants.LEFT);
@@ -103,13 +103,13 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 
 	public void setRecord(Record r){
 		record = r;
-		type = Factory.getMaterialConfig(record.getLeader());
+		type = RecordTypeFactory.getMaterialConfig(record.getLeader());
 		updateView();
 	}
 
 	public void clearForm(){
 		record = new Record();
-		type = Factory.getMaterialConfig(record.getLeader());
+		type = RecordTypeFactory.getMaterialConfig(record.getLeader());
 		updateView();
 	}
 	
@@ -173,13 +173,13 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 			Field data = null;
 			int option = JOptionPane.CANCEL_OPTION;
 			if (tag.equals(Leader.TAG)){
-				type = Factory.getMaterialConfig(record.getLeader());
+				type = RecordTypeFactory.getMaterialConfig(record.getLeader());
 				leaderForm.setMask(type.getTypeMap());
 				leaderForm.setFixedField(record.getLeader());
 				option = showForm(leaderForm, "Edit Record");
 				data = leaderForm.getFixedField();
 			} else if (tag.equals(FixedDataElement.TAG)){
-				type = Factory.getMaterialConfig(record.getLeader());
+				type = RecordTypeFactory.getMaterialConfig(record.getLeader());
 				resourceForm.setMask(type.getConfigMap());
 				resourceForm.setFixedField(record.getFixedDataElement());
 				option = showForm(resourceForm, "Edit Record");

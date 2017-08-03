@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
-import marc.Factory;
+import marc.RecordTypeFactory;
 import marc.field.FixedDataElement;
 import marc.field.Leader;
 import marc.type.AbstractRecordType;
@@ -15,7 +15,7 @@ public final class RecordFactory {
 	
 	public static final Record generate(RecordType type){
 		Leader leader = getLeader(type);
-		AbstractRecordType t = Factory.getMaterialConfig(leader);
+		AbstractRecordType t = RecordTypeFactory.getMaterialConfig(leader);
 		FixedDataElement dataElement = getFixedDataElement(t);
 		
 		Record record = new Record();
