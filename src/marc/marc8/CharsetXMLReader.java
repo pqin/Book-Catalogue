@@ -32,17 +32,20 @@ final public class CharsetXMLReader {
 	private static final int RADIX = 16;
 	
 	public List<GraphicSet> read(String filename){
+		List<GraphicSet> list = new ArrayList<GraphicSet>();
 		File file = new File(filename);
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		FileInputStream in = null;
 		try {
 			in = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
-			System.err.println(e.getMessage());
 			e.printStackTrace();
+		} finally {
+			if (in == null){
+				return list;
+			}
 		}
 		
-		List<GraphicSet> list = new ArrayList<GraphicSet>();
 		GraphicSet set = null;
 		char[] table = new char[0];
 		Map<String, Character> map = new HashMap<String, Character>(128, 0.75f);
@@ -50,7 +53,6 @@ final public class CharsetXMLReader {
 		int[] tmp = new int[0];
 		int tableIndex = 0;
 		
-		XMLStreamReader reader = null;
 		String localName = null;
 		String content = null;
 		
@@ -63,10 +65,10 @@ final public class CharsetXMLReader {
 		char[] c = null;
 		boolean extended = false;
 		
+		XMLStreamReader reader = null;
 		try {
 			reader = factory.createXMLStreamReader(in);
 		} catch (XMLStreamException e) {
-			System.err.println(e.getMessage());
 			e.printStackTrace();
 		}
 		try {

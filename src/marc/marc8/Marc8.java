@@ -42,6 +42,10 @@ public final class Marc8 extends Charset {
 		control[1].setTable(controlData[1]);
 		
 		List<GraphicSet> list = new CharsetXMLReader().read("resource/codetables.xml");
+		if (list.isEmpty()){
+			list.add(new BasicLatin());
+			list.add(new ExtendedLatin());
+		}
 		Iterator<GraphicSet> it = list.iterator();
 		GraphicSet lang = null;
 		int byteSum = 0;
