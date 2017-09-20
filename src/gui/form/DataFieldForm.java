@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -17,21 +16,19 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import gui.SubfieldListCellRenderer;
+import gui.renderer.SubfieldListCellRenderer;
 import marc.field.DataField;
 import marc.field.Field;
 import marc.field.Subfield;
 
-public class DataFieldForm extends JPanel implements ActionListener,
-												 ListSelectionListener {
+public class DataFieldForm extends JPanel implements ActionListener, ListSelectionListener {
 	private static final long serialVersionUID = 1L;
-	private static final char REPLACEMENT_BLANK = '#';
 	
 	private JTextField tagField;
-	private JTextField[] indicatorField;
-	private JList<Subfield> subfieldList;
-	private JTextField codeField;
+	private CharSpinner[] indicatorField;
+	private CharSpinner codeField;
 	private JTextArea dataField;
+	private JList<Subfield> subfieldList;
 	private JButton addButton, removeButton, upButton, downButton, saveButton;
 	
 	private DefaultListModel<Subfield> subfieldListModel;
@@ -43,9 +40,11 @@ public class DataFieldForm extends JPanel implements ActionListener,
 		final int columns = 3;
 		final int rows = 5;
 		tagField = new JTextField(columns);
-		indicatorField = new JTextField[2];
-		indicatorField[0] = new JTextField(columns);
-		indicatorField[1] = new JTextField(columns);
+		indicatorField = new CharSpinner[2];
+		for (int i = 0; i < indicatorField.length; ++i){
+			indicatorField[i] = new CharSpinner(Field.INDICATOR_VALUES);
+			indicatorField[i].setColumns(columns);
+		}
 		
 		subfieldListModel = new DefaultListModel<Subfield>();
 		subfieldList = new JList<Subfield>(subfieldListModel);
@@ -58,7 +57,9 @@ public class DataFieldForm extends JPanel implements ActionListener,
 		upButton = buildButton("Move Up", this);
 		downButton = buildButton("Move Down", this);
 		saveButton = buildButton("Save", this);
-		codeField = new JTextField(columns);
+		
+		codeField = new CharSpinner(Subfield.CODE_VALUES);
+		codeField.setColumns(columns);
 		dataField = new JTextArea(rows, columns * 4);
 		dataField.setLineWrap(true);
 		dataField.setWrapStyleWord(true);
@@ -141,16 +142,8 @@ public class DataFieldForm extends JPanel implements ActionListener,
 		clearForm();
 		if (data != null){
 			tagField.setText(f.getTag());
-			char ind1 = f.getIndicator1();
-			if (ind1 == Field.BLANK_INDICATOR){
-				ind1 = REPLACEMENT_BLANK;
-			}
-			char ind2 = f.getIndicator2();
-			if (ind2 == Field.BLANK_INDICATOR){
-				ind2 = REPLACEMENT_BLANK;
-			}
-			indicatorField[0].setText(String.valueOf(ind1));
-			indicatorField[1].setText(String.valueOf(ind2));
+			indicatorField[0].setValue(f.getIndicator1());
+			indicatorField[1].setValue(f.getIndicator2());
 			for (int i = 0; i < f.getDataCount(); ++i){
 				subfieldListModel.addElement(f.getSubfield(i));
 			}
@@ -158,16 +151,9 @@ public class DataFieldForm extends JPanel implements ActionListener,
 	}
 	public DataField getDataField(){
 		data.setTag(tagField.getText());
-		char ind1 = indicatorField[0].getText().charAt(0);
-		if (ind1 == REPLACEMENT_BLANK){
-			ind1 = Field.BLANK_INDICATOR;
-		}
-		char ind2 = indicatorField[1].getText().charAt(0);
-		if (ind2 == REPLACEMENT_BLANK){
-			ind2 = Field.BLANK_INDICATOR;
-		}
-		data.setIndicator1(ind1);
-		data.setIndicator2(ind2);
+		data.setIndicator1((char) indicatorField[0].getValue());
+		data.setIndicator2((char) indicatorField[1].getValue());
+		
 		Subfield[] tmp = new Subfield[subfieldListModel.size()];
 		for (int i = 0; i < tmp.length; ++i){
 			tmp[i] = subfieldListModel.get(i);
@@ -178,10 +164,10 @@ public class DataFieldForm extends JPanel implements ActionListener,
 	
 	public void clearForm(){
 		tagField.setText(null);
-		indicatorField[0].setText(null);
-		indicatorField[1].setText(null);
+		indicatorField[0].setValue(Field.BLANK_INDICATOR);
+		indicatorField[1].setValue(Field.BLANK_INDICATOR);
 		subfieldListModel.clear();
-		codeField.setText(null);
+		codeField.setValue('a');
 		dataField.setText(null);
 		addButton.setEnabled(true);
 		removeButton.setEnabled(false);
@@ -192,19 +178,9 @@ public class DataFieldForm extends JPanel implements ActionListener,
 	
 	private void saveSubfield(final int index){
 		Subfield subfield = subfieldListModel.get(index);
-		String subfieldCodeValue = codeField.getText();
-		String subfieldDataValue = dataField.getText();
-		if (subfieldCodeValue.isEmpty()){
-			JOptionPane.showMessageDialog(
-					this,
-					"Subfield code not specified.",
-					"Warning",
-					JOptionPane.WARNING_MESSAGE);
-		} else {
-			subfield.setCode(subfieldCodeValue.charAt(0));
-			subfield.setData(subfieldDataValue);
-			subfieldListModel.set(index, subfield);
-		}
+		subfield.setCode((char) codeField.getValue());
+		subfield.setData(dataField.getText());
+		subfieldListModel.set(index, subfield);
 	}
 	
 	private void swapValues(final int index1, final int index2){
@@ -243,7 +219,7 @@ public class DataFieldForm extends JPanel implements ActionListener,
 					index = subfieldListModel.size() - 1;
 				}
 				if (index < 0){
-					codeField.setText(null);
+					codeField.setValue('a');
 					dataField.setText(null);
 				}
 				subfieldList.setSelectedIndex(index);
@@ -282,10 +258,10 @@ public class DataFieldForm extends JPanel implements ActionListener,
 			if (ready){
 				subfield = subfieldList.getSelectedValue();
 				if (subfield == null){
-					codeField.setText(null);
+					codeField.setValue('a');
 					dataField.setText(null);
 				} else {
-					codeField.setText(String.valueOf(subfield.getCode()));
+					codeField.setValue(subfield.getCode());
 					dataField.setText(subfield.getData());
 					dataField.setCaretPosition(0);
 				}
