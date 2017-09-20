@@ -5,6 +5,18 @@ import java.util.regex.Pattern;
 public class Field implements Comparable<Field> {
 	public static final String UNKNOWN_TAG = "???";
 	public static final char BLANK_INDICATOR = 0x20;
+	public static final char[] INDICATOR_VALUES;
+	static {
+		INDICATOR_VALUES = new char[1 + 10 + 26];
+		int k = 0;
+		INDICATOR_VALUES[k++] = BLANK_INDICATOR;
+		for (char c = '0'; c <= '9'; ++c){
+			INDICATOR_VALUES[k++] = c;
+		}
+		for (char c = 'a'; c <= 'z'; ++c){
+			INDICATOR_VALUES[k++] = c;
+		}
+	}
 	
 	protected String tag;
 	protected char indicator1, indicator2;

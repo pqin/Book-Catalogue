@@ -105,14 +105,6 @@ public final class RecordTypeFactory {
 		return object;
 	}
 	
-	public static final AbstractRecordType getRecordType(Leader leader){
-		char[] key = leader.getData(Leader.TYPE, 1);
-		Class<? extends AbstractRecordType> c = null;
-		c = typeMap.getOrDefault(String.valueOf(key), UNKNOWN_TYPE);
-		AbstractRecordType object = getInstance(c);
-		return object;
-	}
-	
 	public static final AbstractRecordType getMaterialConfig(Leader leader){
 		char[] type = leader.getData(Leader.TYPE, 1);
 		Class<? extends AbstractRecordType> c = null;
@@ -121,8 +113,6 @@ public final class RecordTypeFactory {
 			char[] key = leader.getData(Leader.TYPE, (type[0] == 'a') ? 2 : 1);
 			c = configMap.getOrDefault(String.valueOf(key), UNKNOWN_TYPE);
 		}
-		
-		AbstractRecordType object = getInstance(c);
-		return object;
+		return getInstance(c);
 	}
 }

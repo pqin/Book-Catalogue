@@ -1,66 +1,49 @@
 package marc.type;
 
-import java.util.Arrays;
 import java.util.List;
 
 import marc.field.FixedDatum;
 import marc.field.Leader;
 
 public abstract class AbstractRecordType {
-	private String typeName, configName;
-	private int typeLength, configLength;
-	private FixedDatum[] typeMap, configMap;
+	private ConfigType type, config;
 	
 	protected AbstractRecordType(String name, int length){
-		typeName = name;
-		typeLength = Leader.FIELD_LENGTH;
-		typeMap = null;
-		
-		configName = name;
-		configLength = length;
-		configMap = null;
+		type = new ConfigType(name, Leader.FIELD_LENGTH);
+		config = new ConfigType(name, length);
 	}
 	protected AbstractRecordType(String name0, String name1, int length){
-		typeName = name0;
-		typeLength = Leader.FIELD_LENGTH;
-		typeMap = null;
-		
-		configName = name1;
-		configLength = length;
-		configMap = null;
+		type = new ConfigType(name0, Leader.FIELD_LENGTH);
+		config = new ConfigType(name1, length);
 	}
 	
 	public final String getTypeName(){
-		return typeName;
+		return type.getName();
 	}
 	public final String getConfigName(){
-		return configName;
+		return config.getName();
 	}
 	
 	public final int getTypeLength(){
-		return typeLength;
+		return type.getLength();
 	}
 	public final int getConfigLength(){
-		return configLength;
+		return config.getLength();
 	}
 	
 	public final FixedDatum[] getTypeMap(){
-		if (typeMap == null){
+		if (type.getMap() == null){
 			List<FixedDatum> list = getTypeList();
-			typeMap = new FixedDatum[list.size()];
-			typeMap = list.toArray(typeMap);
-			Arrays.sort(typeMap);
+			type.setMap(list);
 		}
-		return typeMap;
+		return type.getMap();
 	}
 	public final FixedDatum[] getConfigMap(){
-		if (configMap == null){
+		if (config.getMap() == null){
 			List<FixedDatum> list = getConfigList();
-			configMap = new FixedDatum[list.size()];
-			configMap = list.toArray(configMap);
-			Arrays.sort(configMap);
+			config.setMap(list);
 		}
-		return configMap;
+		return config.getMap();
 	}
 	
 	protected abstract List<FixedDatum> getTypeList();

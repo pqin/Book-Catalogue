@@ -5,8 +5,9 @@ public final class Leader extends FixedField {
 	public static final int FIELD_LENGTH = 24;
 	// positions of data
 	private static final int RECORD_LENGTH = 0;
+	public static final int STATUS = 5;
 	public static final int TYPE = 6;
-	private static final int CHARACTER_CODING_SCHEME = 9;
+	public static final int CHARACTER_CODING_SCHEME = 9;
 	private static final int BASE_ADDRESS = 12;
 	
 	public Leader(){
@@ -16,6 +17,7 @@ public final class Leader extends FixedField {
 	
 	private final void initialize(){
 		setDataToValue(0, RECORD_LENGTH, 5);
+		data[STATUS] = FixedField.BLANK;
 		data[TYPE] = FixedField.BLANK;
 		data[CHARACTER_CODING_SCHEME] = FixedField.BLANK;
 		data[10] = '2';

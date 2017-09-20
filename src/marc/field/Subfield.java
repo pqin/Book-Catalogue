@@ -1,6 +1,18 @@
 package marc.field;
 
 public final class Subfield {
+	public static final char[] CODE_VALUES;
+	static {
+		CODE_VALUES = new char[26 + 10];
+		int k = 0;
+		for (char c = 'a'; c <= 'z'; ++c){
+			CODE_VALUES[k++] = c;
+		}
+		for (char c = '0'; c <= '9'; ++c){
+			CODE_VALUES[k++] = c;
+		}
+	}
+	
 	private char code;
 	private String data;
 	
