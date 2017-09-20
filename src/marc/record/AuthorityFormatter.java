@@ -25,13 +25,15 @@ public class AuthorityFormatter extends RecordFormatter {
 	@Override
 	public void parse(Record record) {
 		// get heading
-		String[] headingTag = {"100", "110", "111", "130"};
+		String[] headingTag = {
+				"100", "110", "111", "130", "147", "148", "150", "151", "155", "162", "180", "181", "182", "185"
+		};
 		int t = 0;
 		String m = null;
 		String f = null;
 		while (m == null && t < headingTag.length){
 			m = record.getData(headingTag[t], 'a');
-			if (m != null && t == 0){
+			if (m != null && headingTag[t].equals("100")){
 				f = record.getData("378", 'q'); 
 			}
 			++t;

@@ -1,6 +1,10 @@
 package marc.record;
 
 public class HoldingsFormatter extends RecordFormatter {
+	private String location;
+	private String itemsHeld;
+	private String publicationPattern;
+	private String notes;
 
 	@Override
 	public void parse(Record record) {

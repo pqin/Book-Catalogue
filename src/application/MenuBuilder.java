@@ -1,11 +1,9 @@
 package application;
 
 import java.awt.event.ActionListener;
-import java.util.Locale;
 
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -47,35 +45,17 @@ public class MenuBuilder {
 		menubar.add(menu);
 		menu = null;
 	}
-	public void addMenu(String label, String[] option, ActionListener listener){
-		menu = new JMenu(label);
-		group = new ButtonGroup();
-		JRadioButtonMenuItem radioButton = null;
-		ButtonModel model = null;
-		final int initialSelection = 0;
-		for (int i = 0; i < option.length; ++i){
-			radioButton = new JRadioButtonMenuItem(option[i]);
-			radioButton.setActionCommand(option[i].toUpperCase(Locale.ENGLISH));
-			radioButton.addActionListener(listener);
-			if (i == initialSelection){
-				model = radioButton.getModel();
-			}
-			group.add(radioButton);
-			menu.add(radioButton);
-		}
-		group.setSelected(model, true);
-		group = null;
-		menubar.add(menu);
-		menu = null;
-	}
 	public JMenuBar getMenuBar(){
 		return menubar;
 	}
 	
-	public void addRadioButton(String label){
+	public void addRadioButton(String label, String command, ActionListener listener){
 		JRadioButtonMenuItem item = new JRadioButtonMenuItem(label);
+		item.setActionCommand(command);
+		item.addActionListener(listener);
 		if (group == null){
 			group = new ButtonGroup();
+			item.setSelected(true);
 		}
 		group.add(item);
 		if (menu != null){

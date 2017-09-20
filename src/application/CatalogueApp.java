@@ -10,7 +10,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -61,6 +63,7 @@ import marc.record.FormatterModel;
 import marc.record.HoldingsFormatter;
 import marc.record.Record;
 import marc.record.RecordFormatter;
+import marc.type.RecordType;
 
 public class CatalogueApp implements MarcComponent, ActionListener, RecordSelectionListener {
 	private ProgramMetaData metaData;
@@ -156,36 +159,31 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 	}
 	@Override
 	public void create(){
-		String[] viewFormatterKey = {
-				"Bibliographic",
-				"Authority",
-				"Holdings",
-				"Classification",
-				"Community"
-		};
-		RecordFormatter[] recordFormatter = {
-				new BibliographicFormatter(),
-				new AuthorityFormatter(),
-				new HoldingsFormatter(),
-				new ClassificationFormatter(),
-				new CommunityFormatter()
-		};
-		String k = null;
-		for (int i = 0; i < viewFormatterKey.length; ++i){
-			k = viewFormatterKey[i].toUpperCase(Locale.ENGLISH);
-			formatterModel.addEntry(k, recordFormatter[i]);
+		Map<RecordType, RecordFormatter> formatterMap = 
+				new EnumMap<RecordType, RecordFormatter>(RecordType.class);
+		formatterMap.put(RecordType.BIBLIOGRAPHIC, new BibliographicFormatter());
+		formatterMap.put(RecordType.AUTHORITY, new AuthorityFormatter());
+		formatterMap.put(RecordType.HOLDINGS, new HoldingsFormatter());
+		formatterMap.put(RecordType.CLASSIFICATION, new ClassificationFormatter());
+		formatterMap.put(RecordType.COMMUNITY, new CommunityFormatter());
+		Iterator<RecordType> it = formatterMap.keySet().iterator();
+		RecordType rt = null;
+		while (it.hasNext()){
+			rt = it.next();
+			formatterModel.addEntry(rt.getCommand(), formatterMap.get(rt));
 		}
 		formatterModel.addFormatterListener(catalogCard);
 		formatterModel.addFormatterListener(navSelector);
-		formatterModel.updateListeners(viewFormatterKey[0].toUpperCase(Locale.ENGLISH));
+		final RecordType startingType = RecordType.BIBLIOGRAPHIC;
+		formatterModel.updateListeners(startingType.getCommand());
 		
 		RecordTable recordTable = new RecordTable();
-		catalogCard.setFormatter(recordFormatter[0]);
+		catalogCard.setFormatter(formatterMap.get(startingType));
 		JTabbedPane tabs = new JTabbedPane();
 		tabs.insertTab("Catalog Card", null, catalogCard.getComponent(), "Catalog Card", 0);
 		tabs.insertTab("MARC", null, new JScrollPane(recordTable), "MARC", 1);
 		
-		JFrame owner = (JFrame) window.getComponent();
+		final JFrame owner = (JFrame) window.getComponent();
 		WindowBuilder builder = new WindowBuilder(owner);
 		builder.setSelector(navSelector.getComponent());
 		builder.setRecordDisplay(tabs);
@@ -212,15 +210,24 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		menuBuilder.addSeparator();
 		menuBuilder.addItems(searchAction);
 		menuBuilder.addMenu();
-		menuBuilder.addMenu("View", viewFormatterKey, this);
+		menuBuilder.createMenu("View");
+		RecordType[] viewItem = RecordType.values();
+		for (int i = 0; i < viewItem.length; ++i){
+			menuBuilder.addRadioButton(viewItem[i].getName(), viewItem[i].getCommand(), this);
+		}
+		menuBuilder.addMenu();
+		menuBuilder.createMenu("Tools");
+		menuBuilder.addItem(new AddRecordAction(data, owner));
 		RecordAction[] toolsAction = {
-				new AddRecordAction(data, owner),
 				new EditRecordAction(data, owner),
 				new ExtractRecordAction(data, fileManager, owner),
 				new ReplaceRecordAction(data, fileManager, owner),
 				new DeleteRecordAction(data, owner)
 		};
-		menuBuilder.addMenu("Tools", toolsAction);
+		for (int i = 0; i < toolsAction.length; ++i){
+			menuBuilder.addItem(toolsAction[i]);
+		}
+		menuBuilder.addMenu();
 		AbstractAction[] helpAction = {
 				new AboutProgramAction(owner)
 		};
@@ -243,7 +250,7 @@ public class CatalogueApp implements MarcComponent, ActionListener, RecordSelect
 		data.addCatalogueView(searchManager);
 		data.addRecordView(recordTable);
 		data.addRecordView(catalogCard);
-		for (int i = 1; i < toolsAction.length; ++i){
+		for (int i = 0; i < toolsAction.length; ++i){
 			data.addRecordView(toolsAction[i]);
 		}
 	}

@@ -56,6 +56,7 @@ public class BibliographicFormatter extends RecordFormatter {
 		ddc = record.getData("082", 'a');	// get Dewey Decimal classification number
 		callNumber = parseCallNumber(heading, ddc);
 		lccn = record.getData("010", 'a');	// get Library of Congress Catalog number
+		// TODO parse LCCN number
 		char[] isbnCode = {'a', 'q'};
 		isbn = formatFirst(record, "020", isbnCode, " ");
 		
@@ -100,7 +101,7 @@ public class BibliographicFormatter extends RecordFormatter {
 			tracing[i+tracingIndexOffset] = tmpTrace[i];
 		}
 		for (int i = 0; i < tracing.length; ++i){
-			tracing[i] = String.format("%s. %s", RomanNumeral.parse(i+1), tracing[i]);
+			tracing[i] = String.format("%s. %s", RomanNumeral.toRoman(i+1), tracing[i]);
 		}
 	}
 	private String parseCallNumber(String mainEntry, String dewey){
