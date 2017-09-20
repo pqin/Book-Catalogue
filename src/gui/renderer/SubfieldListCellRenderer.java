@@ -1,7 +1,7 @@
 /**
  * 
  */
-package gui;
+package gui.renderer;
 
 import java.awt.Component;
 import java.awt.Dimension;
