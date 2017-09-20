@@ -1,34 +1,32 @@
 package action;
 
-import java.awt.Component;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
-import gui.form.RecordForm;
-import marc.Catalogue;
-import marc.record.Record;
-import marc.record.RecordFactory;
-import marc.type.RecordType;
+import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 
-public class AddRecordAction extends RecordAction {
+import gui.wizard.RecordCreationWizard;
+import marc.Catalogue;
+
+public class AddRecordAction extends AbstractAction {
 	private static final long serialVersionUID = 1L;
 	
-	private RecordForm form;
+	private RecordCreationWizard form;
+	private Catalogue catalogue;
 
-	public AddRecordAction(Catalogue data, Component owner){
-		super("Add Record", data, owner);
-		form = new RecordForm();
+	public AddRecordAction(Catalogue data, Frame owner){
+		super("Add Record");
+		form = new RecordCreationWizard(owner, (String)getValue(NAME));
 		
-		formDialog.setContent(form.getComponent());
-		formDialog.create();
+		catalogue = data;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent ignored) {
-		Record record = RecordFactory.generate(RecordType.BIBLIOGRAPHIC);
-		form.setRecord(record);
-		int option = formDialog.showDialog();
-		if (option == 0){
-			catalogue.add(record);
+		int option = form.showDialog();
+		if (option == JOptionPane.OK_OPTION){
+			catalogue.add(form.getRecord());
 		}
 	}
 }
