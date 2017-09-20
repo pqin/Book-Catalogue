@@ -34,7 +34,7 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 	private FixedFieldForm leaderForm, resourceForm;
 	private DataFieldForm fieldForm;
 	private MarcDialog dialog;
-	private JButton addButton, removeButton, editButton, duplicateButton;
+	private JButton addButton, removeButton, editButton, duplicateButton, upButton, downButton;
 	
 	private Record record;
 	private AbstractRecordType type;
@@ -63,6 +63,8 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		removeButton = createButton("Remove");
 		editButton = createButton("Edit");
 		duplicateButton = createButton("Duplicate");
+		upButton = createButton("Move Up");
+		downButton = createButton("Move Down");
 	}
 	private JButton createButton(String text){
 		JButton button = new JButton(text);
@@ -87,9 +89,15 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		cons.weighty = 0.0;
 		cons.gridy = 2;
 		controlPanel.add(duplicateButton, cons);
-		cons.weighty = 1.0;
+		cons.weighty = 0.0;
 		cons.gridy = 3;
 		controlPanel.add(removeButton, cons);
+		cons.weighty = 0.0;
+		cons.gridy = 4;
+		controlPanel.add(upButton, cons);
+		cons.weighty = 1.0;
+		cons.gridy = 5;
+		controlPanel.add(downButton, cons);
 		
 		panel.setLayout(new BorderLayout());
 		JScrollPane sc = new JScrollPane(table);
@@ -116,11 +124,29 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 	protected void updateView(){
 		model.setRecord(record);
 		fieldForm.clearForm();
+		updateButtonState();
+	}
+	private void updateButtonState(){
+		final int row = table.getSelectedRow();
+		final boolean recordSelected = (row != -1);
+		String tag = null;
+		if (recordSelected){
+			Field f = record.getFields().get(table.convertRowIndexToModel(row));
+			tag = f.getTag();
+		} else {
+			tag = "";
+		}
 		
-		boolean recordSelected = (table.getSelectedRow() != -1);
-		removeButton.setEnabled(recordSelected);
 		editButton.setEnabled(recordSelected);
-		duplicateButton.setEnabled(recordSelected);
+		if (tag.equals(Leader.TAG) || tag.equals(FixedDataElement.TAG)){
+			removeButton.setEnabled(false);
+			duplicateButton.setEnabled(false);
+		} else {
+			removeButton.setEnabled(recordSelected);
+			duplicateButton.setEnabled(recordSelected);
+		}
+		upButton.setEnabled(recordSelected && row > 0);
+		downButton.setEnabled(recordSelected && row < table.getRowCount() - 1);
 	}
 	
 	private int showForm(JPanel form, String title){
@@ -208,30 +234,9 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		boolean ready = false;
-		int row = -1;
-		int i = -1;
-		Field f = null;
-		String tag = null;
 		if (!e.getValueIsAdjusting()){
 			if (e.getSource() == table.getSelectionModel()){
-				row = table.getSelectedRow();
-				ready = !(row == -1 || e.getValueIsAdjusting());
-				if (ready){
-					i = table.convertRowIndexToModel(row);
-					f = record.getFields().get(i);
-					tag = f.getTag();
-				} else {
-					tag = "";
-				}
-				if (tag.equals(Leader.TAG) || tag.equals(FixedDataElement.TAG)){
-					removeButton.setEnabled(false);
-					duplicateButton.setEnabled(false);
-				} else {
-					removeButton.setEnabled(ready);
-					duplicateButton.setEnabled(ready);
-				}
-				editButton.setEnabled(ready);
+				updateButtonState();
 			}
 		}
 	}
