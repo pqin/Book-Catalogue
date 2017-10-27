@@ -13,6 +13,7 @@ public class FormatManager {
 		format.add(new MarcBinary());
 		format.add(new MarcText());
 		format.add(new MarcXML());
+		format.add(new MarcMnemonic());
 	}
 	
 	public void addFormat(AbstractMarc arg0){

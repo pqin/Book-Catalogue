@@ -27,17 +27,19 @@ import marc.field.Subfield;
 import marc.record.Record;
 import marc.record.RecordBuilder;
 
-public class MarcText extends AbstractMarc {
+public class MarcMnemonic extends AbstractMarc {
 	private static final Charset IO_CHARSET = StandardCharsets.UTF_8;
-	private static final Pattern FIELD_REGEX = Pattern.compile("(LDR|\\d{3})([#\\d])([#\\d])");
-    private static final Pattern SUBFIELD_REGEX = Pattern.compile("\\$([a-z0-9])([^\\$\\r\\n]*)");
-    private static final char INDICATOR_BLANK_REPLACEMENT = 0x23;
-    private static final char FIELD_BLANK_REPLACEMENT = 0x23;
+	private static final Pattern TAG_REGEX = Pattern.compile("^=(LDR|\\d{3})  ");
+	private static final Pattern SUBFIELD_REGEX = Pattern.compile("\\$([a-z0-9])([^\\$\\r\\n]*)");
+	private static final int CONTROL_DATA_INDEX = 6;
+	private static final int INDICATOR_1_INDEX = 6;
+	private static final int INDICATOR_2_INDEX = 7;
+	private static final char BLANK_REPLACEMENT = '\\';
 	
-    @Override
+	@Override
 	public FileNameExtensionFilter getExtensionFilter() {
-    	String description = "Plain MARC";
-		String[] ext = {"txt"};
+		String description = "Mnemonic MARC";
+		String[] ext = {"mrk"};
 		String filterDesc = buildFilterDescription(description, ext);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(filterDesc, ext);
 		return filter;
@@ -47,8 +49,8 @@ public class MarcText extends AbstractMarc {
 	public ArrayList<Record> read(File file) throws FileNotFoundException, IOException {
 		BufferedReader in = null;
         String line = null;
-
-        Matcher m1 = null;	// match field pattern
+        
+        Matcher m1 = null;	// match tag pattern
         Matcher m2 = null;	// match subfield pattern
         
         ArrayList<Record> list = new ArrayList<Record>();
@@ -60,11 +62,9 @@ public class MarcText extends AbstractMarc {
         
         in = new BufferedReader(new InputStreamReader(new FileInputStream(file), IO_CHARSET));
         while ((line = in.readLine()) != null){
-            m1 = FIELD_REGEX.matcher(line);
-            if (m1.find()){
+        	m1 = TAG_REGEX.matcher(line);
+        	if (m1.find()){
             	tag = m1.group(1);
-            	ind1 = m1.group(2).charAt(0);
-            	ind2 = m1.group(3).charAt(0);
             	if (Leader.TAG.equals(tag)){
             		if (recordCount != list.size()){
             			record = builder.build();
@@ -74,23 +74,25 @@ public class MarcText extends AbstractMarc {
             		++recordCount;
             	}
             	builder.createField(tag);
-            	builder.setIndicator1((ind1 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind1);
-            	builder.setIndicator2((ind2 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind2);
-            	m2 = SUBFIELD_REGEX.matcher(line);
-            	while (m2.find()){
-            		data = m2.group(2);
+            	if (Leader.TAG.equals(tag) || Field.isControlTag(tag)){
+            		data = line.substring(CONTROL_DATA_INDEX);
             		if (Field.isFixedFieldTag(tag)){
-            			builder.setControlData(data.replace(FIELD_BLANK_REPLACEMENT, FixedField.BLANK));
-            			break;
-            		} else if (Field.isControlTag(tag)){
-            			builder.setControlData(data);
-            			break;
-            		} else {
+            			data = data.replace(BLANK_REPLACEMENT, FixedField.BLANK);
+            		}
+            		builder.setControlData(data);
+            	} else {
+            		ind1 = line.charAt(INDICATOR_1_INDEX);
+            		ind2 = line.charAt(INDICATOR_2_INDEX);
+            		builder.setIndicator1((ind1 == BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind1);
+            		builder.setIndicator2((ind2 == BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind2);
+            		m2 = SUBFIELD_REGEX.matcher(line);
+            		while (m2.find()){
+            			data = m2.group(2);
             			builder.addSubfield(m2.group(1).charAt(0), data);
             		}
             	}
             	builder.addField();
-            }
+        	}
         }
         in.close();
         // add data from last loop
@@ -100,7 +102,7 @@ public class MarcText extends AbstractMarc {
     	}
         return list;
 	}
-	
+
 	@Override
 	public void write(File file, List<Record> data) throws FileNotFoundException, IOException {
 		BufferedWriter out = null;
@@ -111,6 +113,7 @@ public class MarcText extends AbstractMarc {
 		String fieldData = null;
 		Subfield subfield = null;
 		Iterator<Record> it = null;
+		final char[] newline = { '\r', '\n'};
 		
 		out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), IO_CHARSET));
 		it = data.iterator();
@@ -118,23 +121,24 @@ public class MarcText extends AbstractMarc {
 			record = it.next();
 			for (Field f : record.getFields()){
 				tag = f.getTag();
-				ind1 = f.getIndicator1();
-				ind2 = f.getIndicator2();
-				ind1 = (ind1 == Field.BLANK_INDICATOR) ? INDICATOR_BLANK_REPLACEMENT : ind1;
-				ind2 = (ind2 == Field.BLANK_INDICATOR) ? INDICATOR_BLANK_REPLACEMENT : ind2;
+				out.write('=');
 				out.write(tag);
-				out.write(ind1);
-				out.write(ind2);
+				out.write(' ');
+				out.write(' ');
 				if (Field.isFixedFieldTag(tag)){
 					fieldData = f.getFieldString();
-					fieldData = fieldData.replace(FixedField.BLANK, FIELD_BLANK_REPLACEMENT);
-					out.write("$a");
+					fieldData = fieldData.replace(FixedField.BLANK, BLANK_REPLACEMENT);
 					out.write(fieldData);
 				} else if (Field.isControlTag(tag)){
 					fieldData = f.getFieldString();
-					out.write("$a");
 					out.write(fieldData);
 				} else {
+					ind1 = f.getIndicator1();
+					ind2 = f.getIndicator2();
+					ind1 = (ind1 == Field.BLANK_INDICATOR) ? BLANK_REPLACEMENT : ind1;
+					ind2 = (ind2 == Field.BLANK_INDICATOR) ? BLANK_REPLACEMENT : ind2;
+					out.write(ind1);
+					out.write(ind2);
 					for (int s = 0; s < f.getDataCount(); ++s){
 						subfield = ((DataField) f).getSubfield(s);
 						out.write('$');
@@ -142,10 +146,11 @@ public class MarcText extends AbstractMarc {
 						out.write(subfield.getData());
 					}
 				}
-				out.newLine();
+				out.write(newline);
 			}
-			out.newLine();
+			out.write(newline);
 		}
 		out.close();
 	}
+
 }
