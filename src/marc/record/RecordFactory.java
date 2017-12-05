@@ -7,7 +7,8 @@ import java.time.ZoneOffset;
 import marc.RecordTypeFactory;
 import marc.field.FixedDataElement;
 import marc.field.Leader;
-import marc.type.AbstractRecordType;
+import marc.type.ConfigType;
+import marc.type.Format;
 import marc.type.RecordType;
 
 public final class RecordFactory {
@@ -15,8 +16,9 @@ public final class RecordFactory {
 	
 	public static final Record generate(RecordType type){
 		Leader leader = getLeader(type);
-		AbstractRecordType t = RecordTypeFactory.getMaterialConfig(leader);
-		FixedDataElement dataElement = getFixedDataElement(t);
+		Format format = RecordTypeFactory.getFormat(leader);
+		ConfigType config = RecordTypeFactory.getConfigType(format, leader, FixedDataElement.TAG);
+		FixedDataElement dataElement = getFixedDataElement(config);
 		
 		Record record = new Record();
 		record.setLeader(leader);
@@ -50,8 +52,8 @@ public final class RecordFactory {
 		return leader;
 	}
 	
-	private static FixedDataElement getFixedDataElement(AbstractRecordType type){
-		FixedDataElement dataElement = new FixedDataElement(type.getConfigLength());
+	private static FixedDataElement getFixedDataElement(ConfigType config){
+		FixedDataElement dataElement = new FixedDataElement(config.getLength());
 		return dataElement;
 	}
 }

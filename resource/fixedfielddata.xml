@@ -1,0 +1,1593 @@
+<?xml version="1.0"?>
+<data>
+    <format name="Bibliographic">
+        <type_code>a</type_code>
+        <type_code>c</type_code>
+        <type_code>d</type_code>
+        <type_code>e</type_code>
+        <type_code>f</type_code>
+        <type_code>g</type_code>
+        <type_code>i</type_code>
+        <type_code>j</type_code>
+        <type_code>k</type_code>
+        <type_code>m</type_code>
+        <type_code>o</type_code>
+        <type_code>p</type_code>
+        <type_code>r</type_code>
+        <type_code>t</type_code>
+        <field tag="LDR" length="24" name="Bibliographic" short_form="Biblio">
+            <fixed_datum index="5" length="1">
+                <label>Status</label>
+                <description>Record Status</description>
+                <code value="a">Increase in encoding level</code>
+                <code value="c">Corrected or revised</code>
+                <code value="d">Deleted</code>
+                <code value="n">New</code>
+                <code value="p">Increase in encoding level from prepublication</code>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Type</label>
+                <description>Record Type</description>
+                <code value="a">Language material</code>
+                <code value="c">Notated music</code>
+                <code value="d">Manuscript notated music</code>
+                <code value="e">Cartographic material</code>
+                <code value="f">Manuscript cartographic material</code>
+                <code value="g">Projected medium</code>
+                <code value="i">Nonmusical sound recording</code>
+                <code value="j">Musical sound recording</code>
+                <code value="k">2-D nonprojectable graphic</code>
+                <code value="m">Computer file</code>
+                <code value="o">Kit</code>
+                <code value="p">Mixed materials</code>
+                <code value="r">3-D artifact or naturally occurring object</code>
+                <code value="t">Manuscript language material</code>
+            </fixed_datum>
+            <fixed_datum index="7" length="1">
+                <label>BLevel</label>
+                <description>Bibliographic Level</description>
+                <code value="a">Monographic component part</code>
+                <code value="b">Serial component part</code>
+                <code value="c">Collection</code>
+                <code value="d">Subunit</code>
+                <code value="i">Integrating resource</code>
+                <code value="m">Monograph/item</code>
+                <code value="s">Serial</code>
+            </fixed_datum>
+            <fixed_datum index="8" length="1">
+                <label>Ctrl</label>
+                <description>Control Type</description>
+                <code value=" "></code>
+                <code value="a">Archival</code>
+            </fixed_datum>
+            <fixed_datum index="9" length="1">
+                <label>Encoding</label>
+                <description>Character Coding Scheme</description>
+                <code value=" ">MARC-8</code>
+                <code value="a">UTF-8</code>
+            </fixed_datum>
+            <fixed_datum index="17" length="1">
+                <label>ELvl</label>
+                <description>Encoding Level</description>
+                <code value="1">Full level, material not examined</code>
+                <code value="2">Less-than-full level, material not examined</code>
+                <code value="3">Abbreviated level</code>
+                <code value="4">Core level</code>
+                <code value="5">Partial (preliminary) level</code>
+                <code value="7">Minimal level</code>
+                <code value="8">Prepublication level</code>
+                <code value="u">Unknown</code>
+                <code value="z">N/A</code>
+            </fixed_datum>
+            <fixed_datum index="18" length="1">
+                <label>Desc</label>
+                <description>Descriptive Cataloging Form</description>
+                <code value="a">AACR 2</code>
+                <code value="c">ISBD punctuation omitted</code>
+                <code value="i">ISBD punctuation included</code>
+                <code value="n">non-ISBD punctuation omitted</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="19" length="1">
+                <label>Link</label>
+                <description>Multipart Resource Record Level</description>
+                <code value=" ">Not specified or N/A</code>
+                <code value="a">Set</code>
+                <code value="b">Part with independent title</code>
+                <code value="c">Part with dependent title</code>
+            </fixed_datum>
+        </field>
+        <common_field tag="008" length="40" name="Bibliographic" short_form="Biblio">
+            <fixed_datum index="0" length="6">
+                <label>Entered</label>
+                <description>Date Entered</description>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>DtSt</label>
+                <description>Type of Date/Publication Status</description>
+                <code value="b">No dates given; B.C.E. date involved</code>
+                <code value="c">Continuing resource currently published</code>
+                <code value="d">Continuing resource ceased publication</code>
+                <code value="e">Detailed date</code>
+                <code value="i">Inclusive dates of collection</code>
+                <code value="k">Range of years of bulk of collection</code>
+                <code value="m">Multiple dates</code>
+                <code value="n">Dates unknown</code>
+                <code value="p">Date of distribution/release/issue and production/recording session when different</code>
+                <code value="q">Questionable date</code>
+                <code value="r">Reprint/reissue date and original date</code>
+                <code value="s">Single known date/probable date</code>
+                <code value="t">Publication date and copyright date</code>
+                <code value="u">Continuing resource status unknown</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="7" length="4">
+                <label>Date1</label>
+                <description>Date 1</description>
+            </fixed_datum>
+            <fixed_datum index="11" length="4">
+                <label>Date2</label>
+                <description>Date 2</description>
+            </fixed_datum>
+            <fixed_datum index="15" length="3">
+                <label>Ctry</label>
+                <description>Place of Publication/Production/Execution.</description>
+            </fixed_datum>
+            <fixed_datum index="35" length="3">
+                <label>Lang</label>
+                <description>Language</description>
+            </fixed_datum>
+            <fixed_datum index="38" length="1">
+                <label>MRec</label>
+                <description>Modified Record</description>
+                <code value=" ">Not modified</code>
+                <code value="d">Dashed-on information omitted</code>
+                <code value="o">Completely romanized/printed cards romanized</code>
+                <code value="r">Completely romanized/printed cards in script</code>
+                <code value="s">Shortened</code>
+                <code value="x">Missing characters</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="39" length="1">
+                <label>Srce</label>
+                <description>Cataloging Source</description>
+                <code value=" ">National bibliographic agency</code>
+                <code value="c">Cooperative cataloging program</code>
+                <code value="d">Other</code>
+                <code value="u">Unknown</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </common_field>
+        <field tag="008" name="Book" short_form="BK" parent="Bibliographic">
+            <identifier tag="LDR" index="6">aa</identifier>
+            <identifier tag="LDR" index="6">ac</identifier>
+            <identifier tag="LDR" index="6">ad</identifier>
+            <identifier tag="LDR" index="6">am</identifier>
+            <identifier tag="LDR" index="6">t</identifier>
+            <fixed_datum index="18" length="4">
+                <label>Ills</label>
+                <description>Illustrations</description>
+                <code value=" ">No illustrations</code>
+                <code value="a">Illustrations</code>
+                <code value="b">Maps</code>
+                <code value="c">Portraits</code>
+                <code value="d">Charts</code>
+                <code value="e">Plans</code>
+                <code value="f">Plates</code>
+                <code value="g">Music</code>
+                <code value="h">Facsimiles</code>
+                <code value="i">Coats of arms</code>
+                <code value="j">Genealogical tables</code>
+                <code value="k">Forms</code>
+                <code value="l">Samples</code>
+                <code value="m">Phonodisc, phonowire, etc</code>
+                <code value="o">Photographs</code>
+                <code value="p">Illuminations</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="22" length="1">
+                <label>Audn</label>
+                <description>Target Audience</description>
+                <code value=" ">Unknown or not specified</code>
+                <code value="a">Preschool</code>
+                <code value="b">Primary</code>
+                <code value="c">Pre-adolescent</code>
+                <code value="d">Adolescent</code>
+                <code value="e">Adult</code>
+                <code value="f">Specialized</code>
+                <code value="g">General</code>
+                <code value="j">Juvenile</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="23" length="1">
+                <label>Form</label>
+                <description>Form of Item</description>
+                <code value=" ">None of the following</code>
+                <code value="a">Microfilm</code>
+                <code value="b">Microfiche</code>
+                <code value="c">Microopaque</code>
+                <code value="d">Large print</code>
+                <code value="f">Braille</code>
+                <code value="o">Online</code>
+                <code value="q">Direct electronic</code>
+                <code value="r">Regular print reproduction</code>
+                <code value="s">Electronic</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="24" length="4">
+                <label>Cont</label>
+                <description>Nature of Contents</description>
+                <code value=" ">No specified nature of contents</code>
+                <code value="a">Abstracts/summaries</code>
+                <code value="b">Bibliographics</code>
+                <code value="c">Catalogs</code>
+                <code value="d">Dictionaries</code>
+                <code value="e">Encyclopedias</code>
+                <code value="f">Handbooks</code>
+                <code value="g">Legal articles</code>
+                <code value="i">Indexes</code>
+                <code value="j">Patent document</code>
+                <code value="k">Discographies</code>
+                <code value="l">Legislation</code>
+                <code value="m">Theses</code>
+                <code value="n">Surveys of literature in a subject area</code>
+                <code value="o">Reviews</code>
+                <code value="p">Programmed texts</code>
+                <code value="q">Filmographies</code>
+                <code value="r">Directories</code>
+                <code value="s">Statistics</code>
+                <code value="t">Technical reports</code>
+                <code value="u">Standards/specifications</code>
+                <code value="v">Legal cases and case notes</code>
+                <code value="w">Law reports and digests</code>
+                <code value="y">Yearbooks</code>
+                <code value="z">Treaties</code>
+                <code value="2">Offprints</code>
+                <code value="5">Calendars</code>
+                <code value="6">Comics/graphic novels</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="28" length="1">
+                <label>GPub</label>
+                <description>Government Publication</description>
+                <code value=" ">Not a government publication</code>
+                <code value="a">Autonomous or semi-autonomous component</code>
+                <code value="c">Multilocal</code>
+                <code value="f">Federal/national</code>
+                <code value="i">International intergovernmental</code>
+                <code value="l">Local</code>
+                <code value="m">Multistate</code>
+                <code value="o">Level undetermined</code>
+                <code value="s">State, provincial, territorial, dependent, etc</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="29" length="1">
+                <label>Conf</label>
+                <description>Conference Publication</description>
+                <code value="0">Not a conference publication</code>
+                <code value="1">Conference publication</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="30" length="1">
+                <label>Fest</label>
+                <description>Festschrift</description>
+                <code value="0">Not a festschrift</code>
+                <code value="1">Festschrift</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="31" length="1">
+                <label>Indx</label>
+                <description>Index</description>
+                <code value="0">No index</code>
+                <code value="1">Index present</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="33" length="1">
+                <label>LitF</label>
+                <description>Literary Form</description>
+                <code value="0">Not fiction (not further specified)</code>
+                <code value="1">Fiction (not further specified)</code>
+                <code value="d">Dramas</code>
+                <code value="e">Essays</code>
+                <code value="f">Novels</code>
+                <code value="h">Humor, satire, etc</code>
+                <code value="i">Letters</code>
+                <code value="j">Short stories</code>
+                <code value="m">Mixed forms</code>
+                <code value="p">Poetry</code>
+                <code value="s">Speeches</code>
+                <code value="u">Unknown</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="34" length="1">
+                <label>Biog</label>
+                <description>Biography</description>
+                <code value=" ">No biographical material</code>
+                <code value="a">Autobiography</code>
+                <code value="b">Individual biography</code>
+                <code value="c">Collective biography</code>
+                <code value="d">Contains biographical information</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" name="Computer File" short_form="CF" parent="Bibliographic">
+            <identifier tag="LDR" index="6">m</identifier>
+            <fixed_datum index="22" length="1">
+                <label>Audn</label>
+                <description>Target Audience</description>
+                <code value=" ">Unknown or not specified</code>
+                <code value="a">Preschool</code>
+                <code value="b">Primary</code>
+                <code value="c">Pre-adolescent</code>
+                <code value="d">Adolescent</code>
+                <code value="e">Adult</code>
+                <code value="f">Specialized</code>
+                <code value="g">General</code>
+                <code value="j">Juvenile</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="23" length="1">
+                <label>Form</label>
+                <description>Form of Item</description>
+                <code value=" ">Unknown or not specified</code>
+                <code value="o">Online</code>
+                <code value="q">Direct electronic</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="26" length="1">
+                <label>File</label>
+                <description>Type of Computer File</description>
+                <code value="a">Numeric data</code>
+                <code value="b">Computer program</code>
+                <code value="c">Representational</code>
+                <code value="d">Document</code>
+                <code value="e">Bibliographic data</code>
+                <code value="f">Font</code>
+                <code value="g">Game</code>
+                <code value="h">Sound</code>
+                <code value="i">Interactive multimedia</code>
+                <code value="j">Online system or service</code>
+                <code value="m">Combination</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="28" length="1">
+                <label>GPub</label>
+                <description>Government Publication</description>
+                <code value=" ">Not a government publication</code>
+                <code value="a">Autonomous or semi-autonomous component</code>
+                <code value="c">Multilocal</code>
+                <code value="f">Federal/national</code>
+                <code value="i">International intergovernmental</code>
+                <code value="l">Local</code>
+                <code value="m">Multistate</code>
+                <code value="o">Level undetermined</code>
+                <code value="s">State, provincial, territorial, dependent, etc</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" name="Map" short_form="MP" parent="Bibliographic">
+            <identifier tag="LDR" index="6">e</identifier>
+            <identifier tag="LDR" index="6">f</identifier>
+            <fixed_datum index="18" length="4">
+                <label>Relf</label>
+                <description>Relief</description>
+                <code value=" ">No relief shown</code>
+                <code value="a">Contours</code>
+                <code value="b">Shading</code>
+                <code value="c">Gradient and bathymetric tints</code>
+                <code value="d">Hachures</code>
+                <code value="e">Bathymetry/soundings</code>
+                <code value="f">Form lines</code>
+                <code value="g">Spot heights</code>
+                <code value="i">Pictorially</code>
+                <code value="j">Land forms</code>
+                <code value="k">Bathymetry/isolines</code>
+                <code value="m">Rock drawings</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="22" length="2">
+                <label>Proj</label>
+                <description>Projection</description>
+            </fixed_datum>
+            <fixed_datum index="25" length="1">
+                <label>CrTp</label>
+                <description>Type of Cartographic Material</description>
+                <code value="a">Single map</code>
+                <code value="b">Map series</code>
+                <code value="c">Map serial</code>
+                <code value="d">Globe</code>
+                <code value="e">Atlas</code>
+                <code value="f">Separate supplement to another work</code>
+                <code value="g">Bound as part of another work</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="28" length="1">
+                <label>GPub</label>
+                <description>Government Publication</description>
+                <code value=" ">Not a government publication</code>
+                <code value="a">Autonomous or semi-autonomous component</code>
+                <code value="c">Multilocal</code>
+                <code value="f">Federal/national</code>
+                <code value="i">International intergovernmental</code>
+                <code value="l">Local</code>
+                <code value="m">Multistate</code>
+                <code value="o">Government publication-level undetermined</code>
+                <code value="s">State, provincial, territorial, dependent, etc.</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="29" length="1">
+                <label>Form</label>
+                <description>Form of Item</description>
+                <code value=" ">None of the following</code>
+                <code value="a">Microfilm</code>
+                <code value="b">Microfiche</code>
+                <code value="c">Microopaque</code>
+                <code value="d">Large print</code>
+                <code value="f">Braille</code>
+                <code value="o">Online</code>
+                <code value="q">Direct electronic</code>
+                <code value="r">Regular print reproduction</code>
+                <code value="s">Electronic</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="31" length="1">
+                <label>Indx</label>
+                <description>Index</description>
+                <code value="0">No index</code>
+                <code value="1">Index present</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="33" length="2">
+                <label>SpFm</label>
+                <description>Special Format Characteristics</description>
+                <code value=" ">No specified special format characteristics</code>
+                <code value="e">Manuscript</code>
+                <code value="j">Picture card, post card</code>
+                <code value="k">Calendar</code>
+                <code value="l">Puzzle</code>
+                <code value="n">Game</code>
+                <code value="o">Wall map</code>
+                <code value="p">Playing cards</code>
+                <code value="r">Loose-leaf</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" name="Music" short_form="MU" parent="Bibliographic">
+            <identifier tag="LDR" index="6">c</identifier>
+            <identifier tag="LDR" index="6">d</identifier>
+            <identifier tag="LDR" index="6">i</identifier>
+            <identifier tag="LDR" index="6">j</identifier>
+            <fixed_datum index="18" length="2">
+                <label>Comp</label>
+                <description>Form of Composition</description>
+            </fixed_datum>
+            <fixed_datum index="20" length="1">
+                <label>FMus</label>
+                <description>Format of Music</description>
+                <code value="a">Full score</code>
+                <code value="b">Miniature or study score</code>
+                <code value="c">Accompaniment reduced for keyboard</code>
+                <code value="d">Voice score with accompaniment omitted</code>
+                <code value="e">Condensed score or piano-conductor score</code>
+                <code value="g">Close score</code>
+                <code value="h">Chorus score</code>
+                <code value="i">Condensed score</code>
+                <code value="j">Performer-conductor part</code>
+                <code value="k">Vocal score</code>
+                <code value="l">Score</code>
+                <code value="m">Multiple score formats</code>
+                <code value="n">Not applicable</code>
+                <code value="p">Piano score</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="21" length="1">
+                <label>Part</label>
+                <description>Music Parts</description>
+                <code value=" ">No parts in hand or not specified</code>
+                <code value="d">Instrumental and vocal parts</code>
+                <code value="e">Instrumental parts</code>
+                <code value="f">Vocal parts</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="22" length="1">
+                <label>Audn</label>
+                <description>Target Audience</description>
+                <code value=" ">Unknown or not specified</code>
+                <code value="a">Preschool</code>
+                <code value="b">Primary</code>
+                <code value="c">Pre-adolescent</code>
+                <code value="d">Adolescent</code>
+                <code value="e">Adult</code>
+                <code value="f">Specialized</code>
+                <code value="g">General</code>
+                <code value="j">Juvenile</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="23" length="1">
+                <label>Form</label>
+                <description>Form of Item</description>
+                <code value=" ">None of the following</code>
+                <code value="a">Microfilm</code>
+                <code value="b">Microfiche</code>
+                <code value="c">Microopaque</code>
+                <code value="d">Large print</code>
+                <code value="f">Braille</code>
+                <code value="o">Online</code>
+                <code value="q">Direct electronic</code>
+                <code value="r">Regular print reproduction</code>
+                <code value="s">Electronic</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="24" length="6">
+                <label>AccM</label>
+                <description>Accompanying Matter</description>
+                <code value=" ">No accompanying matter</code>
+                <code value="a">Discography</code>
+                <code value="b">Bibliography</code>
+                <code value="c">Thematic index</code>
+                <code value="d">Libretto or text</code>
+                <code value="e">Biography of composer or author</code>
+                <code value="f">Biography of performer or history of ensemble</code>
+                <code value="g">Technical and/or historical information on instruments</code>
+                <code value="h">Technical information on music</code>
+                <code value="i">Historical information</code>
+                <code value="k">Ethnological information</code>
+                <code value="r">Instructional materials</code>
+                <code value="s">Music</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="30" length="2">
+                <label>LTxt</label>
+                <description>Literary Text for Sound Recordings</description>
+                <code value=" ">Item is a music sound recording</code>
+                <code value="a">Autobiography</code>
+                <code value="b">Biography</code>
+                <code value="c">Conference proceedings</code>
+                <code value="d">Drama</code>
+                <code value="e">Essays</code>
+                <code value="f">Fiction</code>
+                <code value="g">Reporting</code>
+                <code value="h">History</code>
+                <code value="i">Instruction</code>
+                <code value="j">Language instruction</code>
+                <code value="k">Comedy</code>
+                <code value="l">Lectures, speeches</code>
+                <code value="m">Memoirs</code>
+                <code value="n">N/A</code>
+                <code value="o">Folktales</code>
+                <code value="p">Poetry</code>
+                <code value="r">Rehearsals</code>
+                <code value="s">Sounds</code>
+                <code value="t">Interviews</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="33" length="1">
+                <label>TrAr</label>
+                <description>Transposition and Arrangement</description>
+                <code value=" ">Not arrangement or transposition or not specified</code>
+                <code value="a">Transposition</code>
+                <code value="b">Arrangement</code>
+                <code value="c">Both transposed and arranged</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" name="Continuing Resource" short_form="CR" parent="Bibliographic">
+            <identifier tag="LDR" index="6">ab</identifier>
+            <identifier tag="LDR" index="6">ai</identifier>
+            <identifier tag="LDR" index="6">as</identifier>
+            <fixed_datum index="18" length="1">
+                <label>Freq</label>
+                <description>Frequency</description>
+                <code value=" ">No determinable frequency</code>
+                <code value="a">Annual</code>
+                <code value="b">Bimonthly</code>
+                <code value="c">Semiweekly</code>
+                <code value="d">Daily</code>
+                <code value="e">Biweekly</code>
+                <code value="f">Semiannual</code>
+                <code value="g">Biennial</code>
+                <code value="h">Triennial</code>
+                <code value="i">Three times a week</code>
+                <code value="j">Three times a month</code>
+                <code value="k">Continuously updated</code>
+                <code value="m">Monthly</code>
+                <code value="q">Quarterly</code>
+                <code value="s">Semimonthly</code>
+                <code value="t">Three times a year</code>
+                <code value="u">Unknown</code>
+                <code value="w">Weekly</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="19" length="1">
+                <label>Regl</label>
+                <description>Regularity</description>
+                <code value="n">Normalized irregular</code>
+                <code value="r">Regular</code>
+                <code value="u">Unknown</code>
+                <code value="x">Completely irregular</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="21" length="1">
+                <label>SrTp</label>
+                <description>Type of Continuing Resource</description>
+                <code value=" ">None of the following</code>
+                <code value="d">Updating database</code>
+                <code value="l">Updating loose-leaf</code>
+                <code value="m">Monographic series</code>
+                <code value="n">Newspaper</code>
+                <code value="p">Periodical</code>
+                <code value="w">Updating Web site</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="22" length="1">
+                <label>Orig</label>
+                <description>Form of Original Item</description>
+                <code value=" ">None of the following</code>
+                <code value="a">Microfilm</code>
+                <code value="b">Microfiche</code>
+                <code value="c">Microopaque</code>
+                <code value="d">Large print</code>
+                <code value="e">Newspaper format</code>
+                <code value="f">Braille</code>
+                <code value="o">Online</code>
+                <code value="q">Direct electronic</code>
+                <code value="s">Electronic</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="23" length="1">
+                <label>Form</label>
+                <description>Form of Item</description>
+                <code value=" ">None of the following</code>
+                <code value="a">Microfilm</code>
+                <code value="b">Microfiche</code>
+                <code value="c">Microopaque</code>
+                <code value="d">Large print</code>
+                <code value="f">Braille</code>
+                <code value="o">Online</code>
+                <code value="q">Direct electronic</code>
+                <code value="r">Regular print reproduction</code>
+                <code value="s">Electronic</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="24" length="1">
+                <label>EntW</label>
+                <description>Nature of Entire Work</description>
+                <code value=" ">Not specified</code>
+                <code value="a">Abstracts/summaries</code>
+                <code value="b">Bibliographics</code>
+                <code value="c">Catalogs</code>
+                <code value="d">Dictionaries</code>
+                <code value="e">Encyclopedias</code>
+                <code value="f">Handbooks</code>
+                <code value="g">Legal articles</code>
+                <code value="h">Biographies</code>
+                <code value="i">Indexes</code>
+                <code value="k">Discographies</code>
+                <code value="l">Legislation</code>
+                <code value="m">Theses</code>
+                <code value="n">Surveys of literature in a subject area</code>
+                <code value="o">Reviews</code>
+                <code value="p">Programmed texts</code>
+                <code value="q">Filmographies</code>
+                <code value="r">Directories</code>
+                <code value="s">Statistics</code>
+                <code value="t">Technical reports</code>
+                <code value="u">Standards/specifications</code>
+                <code value="v">Legal cases and case notes</code>
+                <code value="w">Law reports and digests</code>
+                <code value="y">Yearbooks</code>
+                <code value="z">Treaties</code>
+                <code value="5">Calendars</code>
+                <code value="6">Comics/graphic novels</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="25" length="3">
+                <label>Cont</label>
+                <description>Nature of Contents</description>
+                <code value=" ">Not specified</code>
+                <code value="a">Abstracts/summaries</code>
+                <code value="b">Bibliographics</code>
+                <code value="c">Catalogs</code>
+                <code value="d">Dictionaries</code>
+                <code value="e">Encyclopedias</code>
+                <code value="f">Handbooks</code>
+                <code value="g">Legal articles</code>
+                <code value="h">Biographies</code>
+                <code value="i">Indexes</code>
+                <code value="k">Discographies</code>
+                <code value="l">Legislation</code>
+                <code value="m">Theses</code>
+                <code value="n">Surveys of literature in a subject area</code>
+                <code value="o">Reviews</code>
+                <code value="p">Programmed texts</code>
+                <code value="q">Filmographies</code>
+                <code value="r">Directories</code>
+                <code value="s">Statistics</code>
+                <code value="t">Technical reports</code>
+                <code value="u">Standards/specifications</code>
+                <code value="v">Legal cases and case notes</code>
+                <code value="w">Law reports and digests</code>
+                <code value="y">Yearbooks</code>
+                <code value="z">Treaties</code>
+                <code value="5">Calendars</code>
+                <code value="6">Comics/graphic novels</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="28" length="1">
+                <label>GPub</label>
+                <description>Government Publication</description>
+                <code value=" ">Not a government publication</code>
+                <code value="a">Autonomous or semi-autonomous component</code>
+                <code value="c">Multilocal</code>
+                <code value="f">Federal/national</code>
+                <code value="i">International intergovernmental</code>
+                <code value="l">Local</code>
+                <code value="m">Multistate</code>
+                <code value="o">Level undetermined</code>
+                <code value="s">State, provincial, territorial, dependent, etc</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="29" length="1">
+                <label>Conf</label>
+                <description>Conference Publication</description>
+                <code value="0">Not a conference publication</code>
+                <code value="1">Conference publication</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="33" length="1">
+                <label>Alph</label>
+                <description>Original Alphabet/Script of Title</description>
+                <code value=" ">No alphabet or script given/No key title</code>
+                <code value="a">Basic Roman</code>
+                <code value="b">Extended Roman</code>
+                <code value="c">Cyrillic</code>
+                <code value="d">Japanese</code>
+                <code value="e">Chinese</code>
+                <code value="f">Arabic</code>
+                <code value="g">Greek</code>
+                <code value="h">Hebrew</code>
+                <code value="i">Thai</code>
+                <code value="j">Devenagari</code>
+                <code value="k">Korean</code>
+                <code value="l">Tamil</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="34" length="1">
+                <label>S/L</label>
+                <description>Entry Convention</description>
+                <code value="0">Successive entry</code>
+                <code value="1">Latest entry</code>
+                <code value="2">Integrated entry</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" name="Visual Material" short_form="VM" parent="Bibliographic">
+            <identifier tag="LDR" index="6">g</identifier>
+            <identifier tag="LDR" index="6">k</identifier>
+            <identifier tag="LDR" index="6">o</identifier>
+            <identifier tag="LDR" index="6">r</identifier>
+            <fixed_datum index="18" length="3">
+                <label>Time</label>
+                <description>Running Time</description>
+            </fixed_datum>
+            <fixed_datum index="22" length="1">
+                <label>Audn</label>
+                <description>Target Audience</description>
+                <code value=" ">Unknown or not specified</code>
+                <code value="a">Preschool</code>
+                <code value="b">Primary</code>
+                <code value="c">Pre-adolescent</code>
+                <code value="d">Adolescent</code>
+                <code value="e">Adult</code>
+                <code value="f">Specialized</code>
+                <code value="g">General</code>
+                <code value="j">Juvenile</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="28" length="1">
+                <label>GPub</label>
+                <description>Government Publication</description>
+                <code value=" ">Not a government publication</code>
+                <code value="a">Autonomous or semi-autonomous component</code>
+                <code value="c">Multilocal</code>
+                <code value="f">Federal/national</code>
+                <code value="i">International intergovernmental</code>
+                <code value="l">Local</code>
+                <code value="m">Multistate</code>
+                <code value="o">Government publication-level undetermined</code>
+                <code value="s">State, provincial, territorial, dependent, etc.</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="29" length="1">
+                <label>Form</label>
+                <description>Form of Item</description>
+                <code value=" ">None of the following</code>
+                <code value="a">Microfilm</code>
+                <code value="b">Microfiche</code>
+                <code value="c">Microopaque</code>
+                <code value="d">Large print</code>
+                <code value="f">Braille</code>
+                <code value="o">Online</code>
+                <code value="q">Direct electronic</code>
+                <code value="r">Regular print reproduction</code>
+                <code value="s">Electronic</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="33" length="1">
+                <label>TMat</label>
+                <description>Type of Visual Material</description>
+                <code value="a">Art original</code>
+                <code value="b">Kit</code>
+                <code value="c">Art reproduction</code>
+                <code value="d">Diorama</code>
+                <code value="f">Filmstrip</code>
+                <code value="g">Game</code>
+                <code value="i">Picture</code>
+                <code value="k">Graphic</code>
+                <code value="l">Technical drawing</code>
+                <code value="m">Motion picture</code>
+                <code value="n">Chart</code>
+                <code value="o">Flash card</code>
+                <code value="p">Microscope slide</code>
+                <code value="q">Model</code>
+                <code value="r">Realia</code>
+                <code value="s">Slide</code>
+                <code value="t">Transparency</code>
+                <code value="v">Videorecording</code>
+                <code value="w">Toy</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="34" length="1">
+                <label>Tech</label>
+                <description>Technique</description>
+                <code value="a">Animation</code>
+                <code value="c">Animation and live action</code>
+                <code value="l">Live action</code>
+                <code value="n">Not applicable</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" name="Mixed Material" short_form="MX" parent="Bibliographic">
+            <identifier tag="LDR" index="6">p</identifier>
+            <fixed_datum index="23" length="1">
+                <label>Form</label>
+                <description>Form of Item</description>
+                <code value=" ">None of the following</code>
+                <code value="a">Microfilm</code>
+                <code value="b">Microfiche</code>
+                <code value="c">Microopaque</code>
+                <code value="d">Large print</code>
+                <code value="f">Braille</code>
+                <code value="o">Online</code>
+                <code value="q">Direct electronic</code>
+                <code value="r">Regular print reproduction</code>
+                <code value="s">Electronic</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+    </format>
+    <format name="Authority">
+        <type_code>z</type_code>
+        <field tag="LDR" length="24" name="Authority" short_form="Auth">
+            <fixed_datum index="5" length="1">
+                <label>Status</label>
+                <description>Record Status</description>
+                <code value="a">Increase in encoding level</code>
+                <code value="c">Corrected or revised</code>
+                <code value="d">Deleted</code>
+                <code value="n">New</code>
+                <code value="o">Obsolete</code>
+                <code value="s">Deleted; heading split into two or more headings</code>
+                <code value="x">Deleted; heading replaced by another heading</code>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Type</label>
+                <description>Record Type</description>
+                <code value="z">Authority data</code>
+            </fixed_datum>
+            <fixed_datum index="9" length="1">
+                <label>Encoding</label>
+                <description>Character Coding Scheme</description>
+                <code value=" ">MARC-8</code>
+                <code value="a">UTF-8</code>
+            </fixed_datum>
+            <fixed_datum index="17" length="1">
+                <label>ELvl</label>
+                <description>Encoding Level</description>
+                <code value="n">Complete authority record</code>
+                <code value="o">Incomplete authority record</code>
+            </fixed_datum>
+            <fixed_datum index="18" length="1">
+                <label>Punc</label>
+                <description>Punctuation Policy</description>
+                <code value=" ">No information provided</code>
+                <code value="c">Punctuation omitted</code>
+                <code value="i">Punctuation included</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" length="40" name="Authority" short_form="Auth">
+            <fixed_datum index="0" length="6">
+                <label>Entered</label>
+                <description>Date Entered</description>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Geo Subd</label>
+                <description>Direct/Indirect Geographic Subdivision</description>
+                <code value=" ">Not subdivided geographically</code>
+                <code value="d">Subdivided geographically-direct</code>
+                <code value="i">Subdivided geographically-indirect</code>
+                <code value="n">N/A</code>
+                <code value="|">No attempt to code </code>
+            </fixed_datum>
+            <fixed_datum index="7" length="1">
+                <label>Roman</label>
+                <description>Romanization Scheme</description>
+                <code value="a">International standard</code>
+                <code value="b">National standard</code>
+                <code value="c">National library association standard</code>
+                <code value="d">National library or bibliographic agency standard</code>
+                <code value="e">Local standard</code>
+                <code value="f">Standard of unknown origin</code>
+                <code value="g">Conventional romanization or conventional form of name in language of cataloging agency</code>
+                <code value="n">N/A</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="8" length="1">
+                <label>Lang</label>
+                <description>Language of Catalog</description>
+                <code value=" ">No information provided</code>
+                <code value="b">English and French</code>
+                <code value="e">English only</code>
+                <code value="f">French only</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="9" length="1">
+                <label>Auth/Ref</label>
+                <description>Kind of Record</description>
+                <code value="a">Established heading</code>
+                <code value="b">Untraced reference</code>
+                <code value="c">Traced reference</code>
+                <code value="d">Subdivision</code>
+                <code value="e">Node label</code>
+                <code value="f">Established heading and subdivision</code>
+                <code value="g">Reference and subdivision</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="10" length="1">
+                <label>Rules</label>
+                <description>Descriptive Cataloging Rules</description>
+                <code value="a">Earlier rules</code>
+                <code value="b">AACR 1</code>
+                <code value="c">AACR 2</code>
+                <code value="d">AACR 2 compatible heading</code>
+                <code value="n">N/A</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="11" length="1">
+                <label>Sys/Thes</label>
+                <description>Subject Heading System/Thesaurus</description>
+                <code value="a">Library of Congress Subject Headings</code>
+                <code value="b">LC subject headings for children's literature</code>
+                <code value="c">Medical Subject Headings</code>
+                <code value="d">National Agricultural Library subject authority file</code>
+                <code value="k">Canadian Subject Headings</code>
+                <code value="n">N/A</code>
+                <code value="r">Art and Architecture Thesaurus</code>
+                <code value="s">Sears List of Subject Heading</code>
+                <code value="v">Répertoire de vedettes-matière</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="12" length="1">
+                <label>Ser Type</label>
+                <description>Type of Series</description>
+                <code value="a">Monographic series</code>
+                <code value="b">Multipart item</code>
+                <code value="c">Series-like phrase</code>
+                <code value="n">N/A</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="13" length="1">
+                <label>Ser Num</label>
+                <description>Numbered/Unnumbered Series</description>
+                <code value="a">Numbered</code>
+                <code value="b">Unnumbered</code>
+                <code value="c">Numbering varies</code>
+                <code value="n">N/A</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="14" length="1">
+                <label>Name Use</label>
+                <description>Heading Use - Main/Added Entry</description>
+                <code value="a">Appropriate</code>
+                <code value="b">Not appropriate</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="15" length="1">
+                <label>Subj Use</label>
+                <description>Heading Use - Subject Added Entry</description>
+                <code value="a">Appropriate</code>
+                <code value="b">Not appropriate</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="16" length="1">
+                <label>Ser Use</label>
+                <description>Heading Use - Series Added Entry</description>
+                <code value="a">Appropriate</code>
+                <code value="b">Not appropriate</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="17" length="1">
+                <label>Subd Type</label>
+                <description>Type of Subject Subdivision</description>
+                <code value="a">Topical</code>
+                <code value="b">Form</code>
+                <code value="c">Chronological</code>
+                <code value="d">Geographic</code>
+                <code value="e">Language</code>
+                <code value="n">N/A</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="28" length="1">
+                <label>Govt Agn</label>
+                <description>Type of Government Agency</description>
+                <code value=" ">Not a government agency</code>
+                <code value="a">Autonomous or semi-autonomous component</code>
+                <code value="c">Multilocal</code>
+                <code value="f">Federal/national</code>
+                <code value="i">International intergovernmental</code>
+                <code value="l">Local</code>
+                <code value="m">Multistate</code>
+                <code value="o">Government agency-type undetermined</code>
+                <code value="s">State, provincial, territorial, dependent, etc.</code>
+                <code value="u">Unknown if heading is government agency</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="29" length="1">
+                <label>Ref Status</label>
+                <description>Reference Evaluation</description>
+                <code value="a">Tracings are consistent with the heading</code>
+                <code value="b">Tracings are not necessarily consistent with the heading</code>
+                <code value="n">N/A</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="31" length="1">
+                <label>Upd Status</label>
+                <description>Record Update in Process</description>
+                <code value="a">Record can be used</code>
+                <code value="b">Record is being updated</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="32" length="1">
+                <label>Name</label>
+                <description>Undifferentiated Personal Name</description>
+                <code value="a">Differentiated personal name</code>
+                <code value="b">Undifferentiated personal name</code>
+                <code value="n">N/A</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="33" length="1">
+                <label>Auth Status</label>
+                <description>Level of Establishment</description>
+                <code value="a">Fully established</code>
+                <code value="b">Memorandum</code>
+                <code value="c">Provisional</code>
+                <code value="d">Preliminary</code>
+                <code value="n">N/A</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="38" length="1">
+                <label>MRec</label>
+                <description>Modified Record</description>
+                <code value=" ">Not modified</code>
+                <code value="s">Shortened</code>
+                <code value="x">Missing characters</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+            <fixed_datum index="39" length="1">
+                <label>Srce</label>
+                <description>Cataloging Source</description>
+                <code value=" ">National bibliographic agency</code>
+                <code value="c">Cooperative cataloging program</code>
+                <code value="d">Other</code>
+                <code value="u">Unknown</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+    </format>
+    <format name="Holdings">
+        <type_code>u</type_code>
+        <type_code>v</type_code>
+        <type_code>x</type_code>
+        <type_code>y</type_code>
+        <field tag="LDR" length="24" name="Holdings" short_form="Hold">
+            <fixed_datum index="5" length="1">
+                <label>Status</label>
+                <description>Record Status</description>
+                <code value="c">Corrected or revised</code>
+                <code value="d">Deleted</code>
+                <code value="n">New</code>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Type</label>
+                <description>Record Type</description>
+                <code value="u">Unknown</code>
+                <code value="v">Multipart item holdings</code>
+                <code value="x">Single-part item holdings</code>
+                <code value="y">Serial item holdings</code>
+            </fixed_datum>
+            <fixed_datum index="9" length="1">
+                <label>Encoding</label>
+                <description>Character Coding Scheme</description>
+                <code value=" ">MARC-8</code>
+                <code value="a">UTF-8</code>
+            </fixed_datum>
+            <fixed_datum index="17" length="1">
+                <label>ELvl</label>
+                <description>Encoding Level</description>
+                <code value="1">Holdings level 1</code>
+                <code value="2">Holdings level 2</code>
+                <code value="3">Holdings level 3</code>
+                <code value="4">Holdings level 4</code>
+                <code value="5">Holdings level 4 with piece designation</code>
+                <code value="m">Mixed level</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other level</code>
+            </fixed_datum>
+            <fixed_datum index="18" length="1">
+                <label>Item Info</label>
+                <description>Item Information in Record</description>
+                <code value="i">Item information</code>
+                <code value="n">No item information</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" length="27" name="Holdings" short_form="Hold">
+            <fixed_datum index="0" length="6">
+                <label>Entered</label>
+                <description>Date Entered</description>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Acq Stat</label>
+                <description>Receipt or Acquisition Status</description>
+                <code value="0">Unknown</code>
+                <code value="1">Other receipt or acquisition status</code>
+                <code value="2">Received and complete or ceased</code>
+                <code value="3">On order</code>
+                <code value="4">Currently received</code>
+                <code value="5">Not currently received</code>
+            </fixed_datum>
+            <fixed_datum index="7" length="1">
+                <label>Acq Meth</label>
+                <description>Method of Acquisition</description>
+                <code value="c">Cooperative or consortial purchase</code>
+                <code value="d">Deposit</code>
+                <code value="e">Exchange</code>
+                <code value="f">Free</code>
+                <code value="g">Gift</code>
+                <code value="l">Legal deposit</code>
+                <code value="m">Membership</code>
+                <code value="n">Non-library purchase</code>
+                <code value="p">Purchase</code>
+                <code value="q">Lease</code>
+                <code value="u">Unknown</code>
+                <code value="z">Other method of acquisition</code>
+            </fixed_datum>
+            <fixed_datum index="8" length="4">
+                <label>Can Date</label>
+                <description>Expected Acquisition End Date</description>
+            </fixed_datum>
+            <fixed_datum index="12" length="1">
+                <label>Gen Retn</label>
+                <description>General Retention Policy</description>
+                <code value="0">Unknown</code>
+                <code value="1">Other general retention policy</code>
+                <code value="2">Retained except as replaced by updates</code>
+                <code value="3">Sample issue retained</code>
+                <code value="4">Retained until replaced by microform</code>
+                <code value="5">Retained until replaced by cumulation, replacement volume, or revision</code>
+                <code value="6">Retained for a limited period</code>
+                <code value="7">Not retained</code>
+                <code value="8">Permanently retained</code>
+            </fixed_datum>
+            <fixed_datum index="13" length="3">
+                <label>Sp Retn</label>
+                <description>Specific Retention Policy</description>
+            </fixed_datum>
+            <fixed_datum index="16" length="1">
+                <label>Complete</label>
+                <description>Completeness</description>
+                <code value="0">Other</code>
+                <code value="1">Complete</code>
+                <code value="2">Incomplete</code>
+                <code value="3">Scattered</code>
+                <code value="4">N/A</code>
+            </fixed_datum>
+            <fixed_datum index="17" length="3">
+                <label>Copies</label>
+                <description>Number of Copies Reported</description>
+            </fixed_datum>
+            <fixed_datum index="20" length="1">
+                <label>Lending</label>
+                <description>Lending Policy</description>
+                <code value="a">Will lend</code>
+                <code value="b">Will not lend</code>
+                <code value="c">Will lend hard copy only</code>
+                <code value="l">Limited lending policy</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="21" length="1">
+                <label>Repr</label>
+                <description>Reproduction Policy</description>
+                <code value="a">Will reproduce</code>
+                <code value="b">Will not reproduce</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="22" length="3">
+                <label>Lang</label>
+                <description>Language</description>
+            </fixed_datum>
+            <fixed_datum index="25" length="1">
+                <label>Composit</label>
+                <description>Separate/Composite Copy Report</description>
+                <code value="0">Separate copy report</code>
+                <code value="1">Composite copy report</code>
+            </fixed_datum>
+            <fixed_datum index="26" length="6">
+                <label>Updated</label>
+                <description>Date of Report</description>
+            </fixed_datum>
+        </field>
+    </format>
+    <format name="Classification">
+        <type_code>w</type_code>
+        <field tag="LDR" length="24" name="Classification" short_form="Class">
+            <fixed_datum index="5" length="1">
+                <label>Status</label>
+                <description>Record Status</description>
+                <code value="a">Increase in encoding level</code>
+                <code value="c">Corrected or revised</code>
+                <code value="d">Deleted</code>
+                <code value="n">New</code>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Type</label>
+                <description>Record Type</description>
+                <code value="w">Classification data</code>
+            </fixed_datum>
+            <fixed_datum index="9" length="1">
+                <label>Encoding</label>
+                <description>Character Coding Scheme</description>
+                <code value=" ">MARC-8</code>
+                <code value="a">UTF-8</code>
+            </fixed_datum>
+            <fixed_datum index="17" length="1">
+                <label>ELvl</label>
+                <description>Encoding Level</description>
+                <code value="n">Complete classification record</code>
+                <code value="o">Incomplete classification record</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" length="14" name="Classification" short_form="Class">
+            <fixed_datum index="0" length="6">
+                <label>Entered</label>
+                <description>Date Entered</description>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Kind</label>
+                <description>Kind of Record</description>
+                <code value="a">Schedule record</code>
+                <code value="b">Table record</code>
+                <code value="c">Index term record</code>
+            </fixed_datum>
+            <fixed_datum index="7" length="1">
+                <label>Num Type</label>
+                <description>Type of Number</description>
+                <code value="a">Single number</code>
+                <code value="b">Defined number span</code>
+                <code value="c">Summary number span</code>
+                <code value="n">N/A</code>
+            </fixed_datum>
+            <fixed_datum index="8" length="1">
+                <label>Valid</label>
+                <description>Classification Validity</description>
+                <code value="a">Valid</code>
+                <code value="b">First number of span invalid</code>
+                <code value="c">Last number of span invalid</code>
+                <code value="d">Completely invalid</code>
+                <code value="e">Obsolete</code>
+                <code value="n">N/A</code>
+            </fixed_datum>
+            <fixed_datum index="9" length="1">
+                <label>Dsg</label>
+                <description>Standard/Optional Designation</description>
+                <code value="a">Standard</code>
+                <code value="b">Optional</code>
+                <code value="n">N/A</code>
+            </fixed_datum>
+            <fixed_datum index="10" length="1">
+                <label>Upd Prog</label>
+                <description>Record Update in Progress</description>
+                <code value="a">Record can be used</code>
+                <code value="b">Record is being updated</code>
+            </fixed_datum>
+            <fixed_datum index="11" length="1">
+                <label>Est Lvl</label>
+                <description>Level of Establishment</description>
+                <code value="a">Fully established</code>
+                <code value="c">Provisional</code>
+            </fixed_datum>
+            <fixed_datum index="12" length="1">
+                <label>Syn Ind</label>
+                <description>Synthesized Number Indication</description>
+                <code value="a">Not synthesized</code>
+                <code value="b">Synthesized</code>
+                <code value="n">N/A</code>
+            </fixed_datum>
+            <fixed_datum index="13" length="1">
+                <label>DispCtrl</label>
+                <description>Display Controller</description>
+                <code value="a">Displayed in standard schedules or tables</code>
+                <code value="b">Extended display</code>
+            </fixed_datum>
+        </field>
+    </format>
+    <format name="Community">
+        <type_code>q</type_code>
+        <field tag="LDR" length="24" name="Community" short_form="Comm">
+            <fixed_datum index="5" length="1">
+                <label>Status</label>
+                <description>Record Status</description>
+                <code value="c">Corrected or revised</code>
+                <code value="d">Deleted</code>
+                <code value="n">New</code>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Type</label>
+                <description>Record Type</description>
+                <code value="q">Community information</code>
+            </fixed_datum>
+            <fixed_datum index="7" length="1">
+                <label>Kind</label>
+                <description>Kind of Data</description>
+                <code value="n">Individual</code>
+                <code value="o">Organization</code>
+                <code value="p">Program or service</code>
+                <code value="q">Event</code>
+                <code value="z">Other</code>
+            </fixed_datum>
+            <fixed_datum index="9" length="1">
+                <label>Encoding</label>
+                <description>Character Coding Scheme</description>
+                <code value=" ">MARC-8</code>
+                <code value="a">UTF-8</code>
+            </fixed_datum>
+        </field>
+        <field tag="008" length="13" name="Community" short_form="Comm">
+            <fixed_datum index="0" length="6">
+                <label>Entered</label>
+                <description>Date Entered</description>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Vol Opp</label>
+                <description>Volunteer Opportunities</description>
+                <code value="a">No volunteer opportunities</code>
+                <code value="b">Volunteer opportunities</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="7" length="1">
+                <label>Vol Pvd</label>
+                <description>Volunteers Provided</description>
+                <code value="a">No volunteers provided</code>
+                <code value="b">Volunteers provided</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="8" length="1">
+                <label>Child Arr</label>
+                <description>Child Care Arrangements</description>
+                <code value="a">No child care arrangements</code>
+                <code value="b">Child care arrangements</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="9" length="1">
+                <label>Spk Bur</label>
+                <description>Speakers Bureau</description>
+                <code value="a">No speakers bureau</code>
+                <code value="b">Speakers bureau</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="10" length="1">
+                <label>Supp Grp</label>
+                <description>Mutual Support Groups</description>
+                <code value="a">No mutual support groups</code>
+                <code value="b">Mutual support groups</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="11" length="1">
+                <label>MeetRm/Fac</label>
+                <description>Meeting Rooms and Facilities Available</description>
+                <code value="a">No meeting rooms and facilities</code>
+                <code value="b">Meeting rooms and facilities</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="12" length="3">
+                <label>Lang</label>
+                <description>Language</description>
+            </fixed_datum>
+        </field>
+    </format>
+
+    <!-- START OF 007 FIELD (PHYSICAL DESCRIPTION) SECTION -->
+    <materials>
+        <field tag="007" length="8" name="Physical Description">
+            <type_format name="Bibliographic" />
+            <type_format name="Holdings" />
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="a">Map</code>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="2" name="Physical Description">
+            <type_format name="Bibliographic" />
+            <type_format name="Holdings" />
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="t">Text</code>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="2" name="Physical Description">
+            <type_format name="Bibliographic" />
+            <type_format name="Holdings" />
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="z">Unspecified</code>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="11" name="Physical Description">
+            <type_format name="Community" />
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="e">Disabled</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>Ramp</label>
+                <description>Stairway Ramps</description>
+                <code value="a">No ramps</code>
+                <code value="b">Entrance and internal ramps</code>
+                <code value="c">Entrance ramp only - multiple floors</code>
+                <code value="d">Entrance ramp only - single floor</code>
+                <code value="e">Internal ramps only</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="2" length="1">
+                <label>Doors</label>
+                <description>Doors</description>
+                <code value="a">No wide or offset-hinge doors</code>
+                <code value="b">Wide or offset-hinge doors</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="3" length="1">
+                <label>Furn</label>
+                <description>Furniture, equipment, display racks</description>
+                <code value="a">Unaccessible furniture, equipment, display racks</code>
+                <code value="b">Accessible furniture, equipment, display racks</code>
+                <code value="c">No furniture, equipment, display racks</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="4" length="1">
+                <label>Restrm</label>
+                <description>Restrooms</description>
+                <code value="a">No special restroom accommodations or grab bars</code>
+                <code value="b">Special restroom accommodations and grab bars</code>
+                <code value="c">Special restroom accommodations only</code>
+                <code value="d">Grab bars only</code>
+                <code value="e">No restrooms</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="5" length="1">
+                <label>Elev</label>
+                <description>Elevators</description>
+                <code value="a">No special elevators or control buttons</code>
+                <code value="b">Special elevators and control buttons</code>
+                <code value="c">Special elevators only</code>
+                <code value="d">Special control buttons only</code>
+                <code value="e">No elevators</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="6" length="1">
+                <label>Tel</label>
+                <description>Telephones</description>
+                <code value="a">No lowered telephones or handset amplifiers</code>
+                <code value="b">Lowered telephones and handset amplifiers</code>
+                <code value="c">Lowered telephones only</code>
+                <code value="d">Handset amplifiers only</code>
+                <code value="e">No telephones</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="7" length="1">
+                <label>EmLgt</label>
+                <description>Flashing emergency lights</description>
+                <code value="a">No flashing emergency lights</code>
+                <code value="b">Flashing emergency lights</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="8" length="1">
+                <label>SgLang</label>
+                <description>Sign language</description>
+                <code value="a">No sign language</code>
+                <code value="b">Sign language</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="9" length="1">
+                <label>Subt</label>
+                <description>Subtitles and/or supertitles</description>
+                <code value="a">No subtitles or supertitles</code>
+                <code value="b">Subtitles and supertitles</code>
+                <code value="c">Subtitles only</code>
+                <code value="d">Supertitles only</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+            <fixed_datum index="10" length="1">
+                <label>Park</label>
+                <description>Parking</description>
+                <code value="a">No handicapped accessible parking available</code>
+                <code value="b">Handicapped accessible parking available with high clearance for special vehicles</code>
+                <code value="c">Handicapped accessible parking available with low clearance only</code>
+                <code value="n">N/A</code>
+                <code value="u">Unknown</code>
+            </fixed_datum>
+        </field>
+    </materials>
+</data>

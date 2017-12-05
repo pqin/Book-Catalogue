@@ -26,33 +26,37 @@ import marc.field.Field;
 import marc.field.FixedDataElement;
 import marc.field.Leader;
 import marc.record.Record;
-import marc.type.AbstractRecordType;
+import marc.type.ConfigType;
+import marc.type.Format;
 
-public final class RecordForm extends RecordPanel implements ActionListener, ListSelectionListener {
+public final class RecordEditor extends RecordPanel implements ActionListener, ListSelectionListener {
 	private RecordTableModel model;
 	private RecordTable table;
-	private FixedFieldForm leaderForm, resourceForm;
-	private DataFieldForm fieldForm;
+	private FixedFieldEditor leaderForm, resourceForm;
+	private DataFieldEditor fieldForm;
 	private MarcDialog dialog;
 	private JButton addButton, removeButton, editButton, duplicateButton, upButton, downButton;
 	
 	private Record record;
-	private AbstractRecordType type;
+	private Format format;
 
-	public RecordForm(){
+	public RecordEditor(){
 		super();
 	}
 	
 	protected void initialize(){
 		record = new Record();
-		type = RecordTypeFactory.getMaterialConfig(record.getLeader());
+		final Leader leader = record.getLeader();
+		format = RecordTypeFactory.getFormat(leader);
+		ConfigType configLDR = RecordTypeFactory.getConfigType(format, leader, Leader.TAG);
+		ConfigType config008 = RecordTypeFactory.getConfigType(format, leader, FixedDataElement.TAG);
 		
 		model = new RecordTableModel();
 		table = new RecordTable(model);
 		table.getSelectionModel().addListSelectionListener(this);
-		leaderForm = new FixedFieldForm(type.getTypeMap(), type.getTypeLength(), true);
-		resourceForm = new FixedFieldForm(type.getConfigMap(), type.getConfigLength(), true);
-		fieldForm = new DataFieldForm();
+		leaderForm = new FixedFieldEditor(configLDR.getMap(), configLDR.getLength(), true);
+		resourceForm = new FixedFieldEditor(config008.getMap(), config008.getLength(), true);
+		fieldForm = new DataFieldEditor();
 		
 		dialog = new FormDialog(this.getComponent());
 		String[] options = {"OK", "Cancel"};
@@ -111,13 +115,13 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 
 	public void setRecord(Record r){
 		record = r;
-		type = RecordTypeFactory.getMaterialConfig(record.getLeader());
+		format = RecordTypeFactory.getFormat(record.getLeader());
 		updateView();
 	}
 
 	public void clearForm(){
 		record = new Record();
-		type = RecordTypeFactory.getMaterialConfig(record.getLeader());
+		format = RecordTypeFactory.getFormat(record.getLeader());
 		updateView();
 	}
 	
@@ -164,7 +168,7 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 		Field f = null;
 		if (e.getSource() == addButton){
 			fieldForm.setDataField(new DataField());
-			int option = showForm(fieldForm, "Add Record");
+			int option = showForm(fieldForm, "Add Field");
 			if (option == JOptionPane.OK_OPTION){
 				i = record.addSortedField((DataField) fieldForm.getDataField());
 				model.fireTableRowsInserted(i, i);
@@ -199,20 +203,22 @@ public final class RecordForm extends RecordPanel implements ActionListener, Lis
 			Field data = null;
 			int option = JOptionPane.CANCEL_OPTION;
 			if (tag.equals(Leader.TAG)){
-				type = RecordTypeFactory.getMaterialConfig(record.getLeader());
-				leaderForm.setMask(type.getTypeMap());
+				Leader leader = record.getLeader();
+				ConfigType config = RecordTypeFactory.getConfigType(format, leader, tag);
+				leaderForm.setMask(config.getMap());
 				leaderForm.setFixedField(record.getLeader());
-				option = showForm(leaderForm, "Edit Record");
+				option = showForm(leaderForm, "Edit Field");
 				data = leaderForm.getFixedField();
 			} else if (tag.equals(FixedDataElement.TAG)){
-				type = RecordTypeFactory.getMaterialConfig(record.getLeader());
-				resourceForm.setMask(type.getConfigMap());
+				Leader leader = record.getLeader();
+				ConfigType config = RecordTypeFactory.getConfigType(format, leader, tag);
+				resourceForm.setMask(config.getMap());
 				resourceForm.setFixedField(record.getFixedDataElement());
-				option = showForm(resourceForm, "Edit Record");
+				option = showForm(resourceForm, "Edit Field");
 				data = resourceForm.getFixedField();
 			} else {
 				fieldForm.setDataField((DataField)f);
-				option = showForm(fieldForm, "Edit Record");
+				option = showForm(fieldForm, "Edit Field");
 				data = fieldForm.getDataField();
 			}
 			if (option == JOptionPane.OK_OPTION){

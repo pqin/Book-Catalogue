@@ -25,6 +25,9 @@ public class ConfigType {
 	}
 
 	public final FixedDatum[] getMap() {
+		if (map == null){
+			map = new FixedDatum[0];
+		}
 		return map;
 	}
 	public final void setMap(List<FixedDatum> m){
@@ -35,5 +38,13 @@ public class ConfigType {
 			map = m.toArray(map);
 			Arrays.sort(map);
 		}
+	}
+	public final void setMap(FixedDatum[] m){
+		if (m == null){
+			map = new FixedDatum[0];
+		} else {
+			map = Arrays.copyOf(m, m.length);
+		}
+		Arrays.sort(map);
 	}
 }
