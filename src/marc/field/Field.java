@@ -1,13 +1,22 @@
 package marc.field;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class Field implements Comparable<Field> {
-	public static final String UNKNOWN_TAG = "???";
+	public static final int TAG_LENGTH = 3;
+	public static final String UNKNOWN_TAG;
+	private static final Pattern DATA_TAG_REGEX = Pattern.compile(String.format("[0-9]{%d}", TAG_LENGTH));
+	
 	public static final char BLANK_INDICATOR = 0x20;
 	public static final char[] INDICATOR_VALUES;
 	static {
-		INDICATOR_VALUES = new char[1 + 10 + 26];
+		// Compute UNKNOWN_TAG value
+		char[] u = new char[TAG_LENGTH];
+		Arrays.fill(u, '?');
+		UNKNOWN_TAG = new String(u);
+		// Compute valid indicator values.
+		INDICATOR_VALUES = new char[1 + 10 + 26];	// BLANK + DIGITS + ALPHABET
 		int k = 0;
 		INDICATOR_VALUES[k++] = BLANK_INDICATOR;
 		for (char c = '0'; c <= '9'; ++c){
@@ -34,6 +43,25 @@ public class Field implements Comparable<Field> {
 	
 	public final boolean hasTag(String value){
 		return tag.equals(value);
+	}
+	public static final FieldType getFieldType(String t){
+		FieldType type = FieldType.UNKNOWN;
+		if (t != null && t.length() == TAG_LENGTH){
+			if (DATA_TAG_REGEX.matcher(t).matches()){
+				if (t.startsWith("00")){
+					boolean isFixed = false;
+					isFixed |= "006".equals(t);
+					isFixed |= "007".equals(t);
+					isFixed |= "008".equals(t);
+					type = isFixed ? FieldType.FIXED_FIELD : FieldType.CONTROL_FIELD;
+				} else {
+					type = FieldType.DATA_FIELD;
+				}
+			} else if (Leader.TAG.equals(t)){
+				type = FieldType.FIXED_FIELD;
+			}
+		}
+		return type;
 	}
 	public static final boolean isControlTag(String t){
 		boolean status = (t == null) ? false : t.startsWith("00");

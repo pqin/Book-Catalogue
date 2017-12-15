@@ -37,7 +37,8 @@ public class FileManager implements MarcComponent {
 		fileChooser = new JFileChooser();
 		File file = fileChooser.getSelectedFile();
 		if (file == null){
-			fileChooser.setSelectedFile(new File(""));
+			file = new File("");
+			fileChooser.setSelectedFile(file);
 		}
 		
 		formatManager = new FormatManager();

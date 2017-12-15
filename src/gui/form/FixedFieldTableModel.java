@@ -2,7 +2,6 @@ package gui.form;
 
 import javax.swing.table.AbstractTableModel;
 
-import marc.field.Field;
 import marc.field.FixedDatum;
 import marc.field.FixedField;
 
@@ -14,6 +13,8 @@ public class FixedFieldTableModel extends AbstractTableModel {
 	private static final int ROW_NUM = 4;
 	private static final int COL_NUM = 6;
 	private static final int INDEX_MAX = ROW_NUM * COL_NUM;
+	private static final int MASK_INDEX = 0;
+	private static final int DATA_INDEX = 1;
 	private static final int[][] indexLookup;
 	private static final int[] columnLookup;
 	
@@ -31,31 +32,34 @@ public class FixedFieldTableModel extends AbstractTableModel {
 	}
 	
 	private boolean editable;
-	private String[][] cellLabel, cellValue;
+	private String[][][] data;
 	private FixedField field;
 	private FixedDatum[] map;
 
-	public FixedFieldTableModel(final int length, boolean edit){
+	public FixedFieldTableModel(boolean editable){
 		super();
 		
-		editable = edit;
-		field = new FixedField(Field.UNKNOWN_TAG, length);
+		this.editable = editable;
+		field = new FixedField();
 		map = new FixedDatum[0];
 		
-		cellLabel = new String[ROW_NUM][COL_NUM];
-		cellValue = new String[ROW_NUM][COL_NUM];
+		data = new String[ROW_NUM][COL_NUM][2];
 		int r, c;
 		for (r = 0; r < ROW_NUM; ++r){
 			for (c = 0; c < COL_NUM; ++c){
-				cellLabel[r][c] = "";
-				cellValue[r][c] = "";
+				data[r][c][MASK_INDEX] = "";
+				data[r][c][DATA_INDEX] = null;
 			}
 		}
 	}
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		return String.class;
+		if (columnIndex % 2 == 0){
+			return FixedDatum.class;
+		} else {
+			return String.class;
+		}
 	}
 
 	@Override
@@ -78,80 +82,109 @@ public class FixedFieldTableModel extends AbstractTableModel {
 		if (columnIndex % 2 == 0){
 			return false;
 		} else {
-			return editable;
+			int i = (rowIndex * COL_NUM) + columnLookup[columnIndex];
+			if (i < map.length){
+				return (map[i].isEditable() & editable);
+			} else {
+				return false;
+			}
 		}
 	}
 	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		int c = columnLookup[columnIndex];
-		String value = null;
-		if (columnIndex % 2 == 0){
-			value = cellLabel[rowIndex][c];
+		final int c = columnLookup[columnIndex];
+		final int m = columnIndex % 2;
+		final int i = (rowIndex * COL_NUM) + c;
+		String value = data[rowIndex][c][m];
+		if (m == MASK_INDEX && i < map.length){
+			return map[i];
+		} else if (m == DATA_INDEX && value != null){
+			return value.replace(FixedField.BLANK, BLANK_REPLACEMENT);
 		} else {
-			value = cellValue[rowIndex][c].replace(FixedField.BLANK, BLANK_REPLACEMENT);
+			return null;
 		}
-		return value;
 	}
 
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		int c = columnLookup[columnIndex];
-		String s = (String) value;
-		if (editable){
-			if (columnIndex % 2 == 0){
-				cellLabel[rowIndex][c] = s;
-			} else {
-				cellValue[rowIndex][c] = s.replace(BLANK_REPLACEMENT, FixedField.BLANK);
+		if (value != null){
+			int c = columnLookup[columnIndex];
+			String s = (String) value;
+			int m = columnIndex % 2;
+			if (m == DATA_INDEX){
+				s = s.replace(BLANK_REPLACEMENT, FixedField.BLANK);
 			}
+			data[rowIndex][c][m] = s;
+			fireTableCellUpdated(rowIndex, columnIndex);
 		}
-		fireTableDataChanged();
 	}
 	
-	private char[] getValue(int index){
-		int r = indexLookup[index][ROW_INDEX];
-		int c = indexLookup[index][COL_INDEX];
-		char[] value = cellValue[r][c].toCharArray();
-		return value;
+	public FixedDatum getFixedDatum(int rowIndex, int columnIndex){
+		int i = (rowIndex * COL_NUM) + columnLookup[columnIndex];
+		if (i < map.length){
+			return map[i];
+		} else {
+			return null;
+		}
 	}
 	
-	private void update(final boolean updateMask, final boolean updateData) {
+	private void updateMask(){
 		int r, c;
 		for (int i = 0; i < map.length; ++i){
 			r = indexLookup[i][ROW_INDEX];
 			c = indexLookup[i][COL_INDEX];
-			if (updateMask){
-				cellLabel[r][c] = map[i].getLabel();
-			}
-			if (updateData){
-				cellValue[r][c] = String.valueOf(field.getData(map[i]));
-			}
+			data[r][c][MASK_INDEX] = map[i].getLabel();
 		}
-		for (int i = map.length; i < INDEX_MAX; ++i){
+	}
+	private void updateData(){
+		int r, c;
+		for (int i = 0; i < map.length; ++i){
 			r = indexLookup[i][ROW_INDEX];
 			c = indexLookup[i][COL_INDEX];
-			cellLabel[r][c] = "";
-			cellValue[r][c] = "";
+			data[r][c][DATA_INDEX] = String.valueOf(field.getData(map[i]));
 		}
-		fireTableDataChanged();
 	}
 
 	public void setMask(final FixedDatum[] mask){
 		map = mask;
-		update(true, true);
+		updateMask();
+		updateData();
+		int r, c;
+		for (int i = map.length; i < INDEX_MAX; ++i){
+			r = indexLookup[i][ROW_INDEX];
+			c = indexLookup[i][COL_INDEX];
+			data[r][c][MASK_INDEX] = "";
+			data[r][c][DATA_INDEX] = null;
+		}
+		fireTableDataChanged();
 	}
 	public void setFieldData(FixedField data){
 		field = data;		
-		update(false, true);
+		updateData();
+		fireTableDataChanged();
 	}
 	public void clear(){
 		field.clear();
-		update(false, true);
+		updateData();
+		fireTableDataChanged();
 	}
 
 	public FixedField getField(){
+		/*
+		final FixedDatum maxDatum = map[map.length - 1];
+		int maxFieldLength = maxDatum.getIndex() + maxDatum.getLength();
+		if (((FixedField)field).getFieldLength() != maxFieldLength){
+			char[] blankData = new char[maxFieldLength];
+			Arrays.fill(blankData, FixedField.BLANK);
+			field.setFieldData(blankData);
+		}
+		*/
+		int r, c;
 		for (int i = 0; i < map.length; ++i){
-			field.setData(getValue(i), map[i]);
+			r = indexLookup[i][ROW_INDEX];
+			c = indexLookup[i][COL_INDEX];
+			field.setData(data[r][c][DATA_INDEX].toCharArray(), map[i]);
 		}
 		return field;
 	}

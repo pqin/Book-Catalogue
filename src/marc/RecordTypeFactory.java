@@ -12,6 +12,7 @@ import marc.field.Leader;
 import marc.type.ConfigType;
 import marc.type.FixedDataParser;
 import marc.type.Format;
+import marc.type.RecordType;
 
 public final class RecordTypeFactory {
 	private static Map<Character, Format> map = loadMap(new File("resource/fixedfielddata.xml"));
@@ -35,6 +36,22 @@ public final class RecordTypeFactory {
 		return output;
 	}
 	
+	public static final RecordType getRecordType(Leader leader){
+		RecordType recordType = null;
+		final char type = leader.getData(Leader.TYPE, 1)[0];
+		Format format = map.get(type);
+		if (format != null){
+			String formatName = format.getName();
+			for (RecordType t : RecordType.values()){
+				if (formatName.equals(t.getName())){
+					recordType = t;
+					break;
+				}
+			}
+		}
+		return recordType;
+	}
+	
 	public static final Format getFormat(Leader leader){
 		final char type = leader.getData(Leader.TYPE, 1)[0];
 		Format format = map.get(type);
@@ -50,9 +67,14 @@ public final class RecordTypeFactory {
 			config = new ConfigType("", 0);
 		} else {
 			char[] type = leader.getData(Leader.TYPE, 2);
-			int i = (type[0] == 'a') ? 1 : 0;
-			String key = String.valueOf(type[i]);
-			config = format.getConfiguration(tag, Leader.TYPE, key);
+			String key = null;
+			int i = 0;
+			// TODO implement as Format method
+			while (config == null && i < type.length){
+				key = String.copyValueOf(type, 0, i+1);
+				config = format.getConfiguration(tag, Leader.TYPE, key);
+				++i;
+			}
 			if (config == null){
 				config = new ConfigType("", 0);
 			}

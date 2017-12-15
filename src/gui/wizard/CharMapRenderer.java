@@ -20,11 +20,14 @@ class CharMapRenderer extends JLabel implements ListCellRenderer<Character> {
 	public Component getListCellRendererComponent(JList<? extends Character> list, Character value, int index,
 			boolean isSelected, boolean cellHasFocus) {
 		if (value == null){
-			value = FixedField.BLANK;
+			setText(null);
+		} else {
+			char key = (value == FixedField.BLANK) ? '#' : value;
+			CharMapComboBoxModel model = (CharMapComboBoxModel) list.getModel();
+			String text = String.format("%c - %s", key, model.getLabel(value));
+			setText(text);
+			setToolTipText(text);
 		}
-		char key = (value == FixedField.BLANK) ? '#' : value;
-		CharMapComboBoxModel model = (CharMapComboBoxModel) list.getModel();
-		setText(String.format("%c - %s", key, model.getLabel(value)));
 		setFont(list.getFont());
 		if (isSelected){
 			setForeground(list.getSelectionForeground());

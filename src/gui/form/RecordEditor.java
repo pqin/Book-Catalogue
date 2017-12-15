@@ -16,10 +16,12 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import application.MarcComponent;
 import gui.FormDialog;
 import gui.MarcDialog;
 import gui.table.RecordTable;
 import gui.table.RecordTableModel;
+import gui.wizard.FieldCreationWizard;
 import marc.RecordTypeFactory;
 import marc.field.DataField;
 import marc.field.Field;
@@ -32,8 +34,8 @@ import marc.type.Format;
 public final class RecordEditor extends RecordPanel implements ActionListener, ListSelectionListener {
 	private RecordTableModel model;
 	private RecordTable table;
-	private FixedFieldEditor leaderForm, resourceForm;
-	private DataFieldEditor fieldForm;
+	private AbstractFieldEditor fixedFieldForm, controlFieldForm, dataFieldForm;
+	private FieldCreationWizard wizard;
 	private MarcDialog dialog;
 	private JButton addButton, removeButton, editButton, duplicateButton, upButton, downButton;
 	
@@ -48,15 +50,13 @@ public final class RecordEditor extends RecordPanel implements ActionListener, L
 		record = new Record();
 		final Leader leader = record.getLeader();
 		format = RecordTypeFactory.getFormat(leader);
-		ConfigType configLDR = RecordTypeFactory.getConfigType(format, leader, Leader.TAG);
-		ConfigType config008 = RecordTypeFactory.getConfigType(format, leader, FixedDataElement.TAG);
 		
 		model = new RecordTableModel();
 		table = new RecordTable(model);
 		table.getSelectionModel().addListSelectionListener(this);
-		leaderForm = new FixedFieldEditor(configLDR.getMap(), configLDR.getLength(), true);
-		resourceForm = new FixedFieldEditor(config008.getMap(), config008.getLength(), true);
-		fieldForm = new DataFieldEditor();
+		fixedFieldForm = new FixedFieldEditor(true);
+		controlFieldForm = new ControlFieldEditor();
+		dataFieldForm = new DataFieldEditor();
 		
 		dialog = new FormDialog(this.getComponent());
 		String[] options = {"OK", "Cancel"};
@@ -69,6 +69,8 @@ public final class RecordEditor extends RecordPanel implements ActionListener, L
 		duplicateButton = createButton("Duplicate");
 		upButton = createButton("Move Up");
 		downButton = createButton("Move Down");
+		
+		wizard = new FieldCreationWizard(null, "Add Field");
 	}
 	private JButton createButton(String text){
 		JButton button = new JButton(text);
@@ -127,7 +129,9 @@ public final class RecordEditor extends RecordPanel implements ActionListener, L
 	
 	protected void updateView(){
 		model.setRecord(record);
-		fieldForm.clearForm();
+		fixedFieldForm.clearForm();
+		controlFieldForm.clearForm();
+		dataFieldForm.clearForm();
 		updateButtonState();
 	}
 	private void updateButtonState(){
@@ -153,11 +157,21 @@ public final class RecordEditor extends RecordPanel implements ActionListener, L
 		downButton.setEnabled(recordSelected && row < table.getRowCount() - 1);
 	}
 	
-	private int showForm(JPanel form, String title){
+	private int showForm(MarcComponent form, String title){
 		dialog.setTitle(title);
-		dialog.setContent(form);
+		dialog.setContent(form.getComponent());
 		int option = dialog.showDialog();
 		return option;
+	}
+	
+	private Field editField(AbstractFieldEditor editor, Field f){
+		editor.setField(f);
+		int option = showForm(editor, "Edit Field");
+		if (option == JOptionPane.OK_OPTION){
+			return editor.getField();
+		} else {
+			return null;
+		}
 	}
 	
 	@Override
@@ -167,10 +181,12 @@ public final class RecordEditor extends RecordPanel implements ActionListener, L
 		List<Field> field = record.getFields();
 		Field f = null;
 		if (e.getSource() == addButton){
-			fieldForm.setDataField(new DataField());
-			int option = showForm(fieldForm, "Add Field");
+			int option = wizard.showDialog();
 			if (option == JOptionPane.OK_OPTION){
-				i = record.addSortedField((DataField) fieldForm.getDataField());
+				f = wizard.getField();
+				i = record.addSortedField(f);
+			}
+			if (i != -1){
 				model.fireTableRowsInserted(i, i);
 				row = table.convertRowIndexToView(i);
 				table.setRowSelectionInterval(row, row);
@@ -187,7 +203,7 @@ public final class RecordEditor extends RecordPanel implements ActionListener, L
 					JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE
 			);
 			if (option == JOptionPane.OK_OPTION){
-				record.removeField((DataField) field.remove(i));
+				record.removeField(field.remove(i));
 				model.fireTableRowsDeleted(i, i);
 				row = table.convertRowIndexToView(i);
 				if (row >= -1 && row < table.getRowCount()){
@@ -201,27 +217,29 @@ public final class RecordEditor extends RecordPanel implements ActionListener, L
 			f = field.get(i);
 			String tag = f.getTag();
 			Field data = null;
-			int option = JOptionPane.CANCEL_OPTION;
-			if (tag.equals(Leader.TAG)){
+			switch (Field.getFieldType(tag)){
+			case FIXED_FIELD:
 				Leader leader = record.getLeader();
 				ConfigType config = RecordTypeFactory.getConfigType(format, leader, tag);
-				leaderForm.setMask(config.getMap());
-				leaderForm.setFixedField(record.getLeader());
-				option = showForm(leaderForm, "Edit Field");
-				data = leaderForm.getFixedField();
-			} else if (tag.equals(FixedDataElement.TAG)){
-				Leader leader = record.getLeader();
-				ConfigType config = RecordTypeFactory.getConfigType(format, leader, tag);
-				resourceForm.setMask(config.getMap());
-				resourceForm.setFixedField(record.getFixedDataElement());
-				option = showForm(resourceForm, "Edit Field");
-				data = resourceForm.getFixedField();
-			} else {
-				fieldForm.setDataField((DataField)f);
-				option = showForm(fieldForm, "Edit Field");
-				data = fieldForm.getDataField();
+				if (config.getLength() == 0){
+					data = editField(controlFieldForm, f);
+				} else {
+					((FixedFieldEditor) fixedFieldForm).setConfig(config);
+					data = editField(fixedFieldForm, f);
+				}
+				break;
+			case CONTROL_FIELD:
+				data = editField(controlFieldForm, f);
+				break;
+			case DATA_FIELD:
+				data = editField(dataFieldForm, f);
+				break;
+			case UNKNOWN:
+				break;
+			default:
+				break;
 			}
-			if (option == JOptionPane.OK_OPTION){
+			if (data != null){
 				field.set(i, data);
 				model.fireTableRowsUpdated(row, row);
 			}

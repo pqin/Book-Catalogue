@@ -185,6 +185,31 @@ public final class Record implements Serializable {
 		}
 		return f;
 	}
+	public List<Field> getFieldStartingWith(String tag){
+		ArrayList<Field> f = new ArrayList<Field>();
+		Field tmp = null;
+		Iterator<? extends Field> it = null;
+		if (tag != null){
+			if (Leader.TAG.startsWith(tag)){
+				f.add(leader);
+			} else if (FixedDataElement.TAG.startsWith(tag)){
+				f.add(dataElement);
+			} else if (Field.isControlTag(tag)){
+				it = controlField.iterator();
+			} else {
+				it = dataField.iterator();
+			}
+			if (it != null){
+				while (it.hasNext()){
+					tmp = it.next();
+					if (tmp.getTag().startsWith(tag)){
+						f.add(tmp);
+					}
+				}
+			}
+		}
+		return f;
+	}
 	
 	private List<ControlField> getControlField(String tag){
 		ArrayList<ControlField> f = new ArrayList<ControlField>();
@@ -258,18 +283,43 @@ public final class Record implements Serializable {
 	public void addField(DataField f){
 		dataField.add(f);
 	}
-	public int addSortedField(DataField f){
-		dataField.add(f);
-		Collections.sort(dataField);
-		int index = dataField.indexOf(f);
+	public int addSortedField(Field f){
+		int index = -1;
+		switch (Field.getFieldType(f.getTag())){
+		case CONTROL_FIELD:
+		case FIXED_FIELD:
+			controlField.add((ControlField) f);
+			Collections.sort(controlField);
+			index = controlField.indexOf(f);
+			break;
+		case DATA_FIELD:
+			dataField.add((DataField) f);
+			Collections.sort(dataField);
+			index = dataField.indexOf(f);
+			break;
+		default:
+			break;
+		}
 		if (index >= 0){
-			index += 2;	// include offset for Leader and Resource
+			if (f.compareTo(leader) > 0){
+				++index;
+			}
+			if (f.compareTo(dataElement) > 0){
+				++index;
+			}
+			if (!Field.isControlTag(f.getTag())){
+				index += controlField.size();
+			}
 		}
 		return index;
 	}
 	
-	public void removeField(DataField f){
-		dataField.remove(f);
+	public void removeField(Field field){
+		if (field.isControlField()){
+			controlField.remove(field);
+		} else {
+			dataField.remove(field);
+		}
 	}
 	
 	public String getData(String tag, char code){

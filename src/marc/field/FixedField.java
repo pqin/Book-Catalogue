@@ -9,7 +9,6 @@ public class FixedField extends ControlField {
 	public FixedField(){
 		super();
 		data = new char[0];
-		Arrays.fill(data, BLANK);
 	}
 	public FixedField(final int length){
 		super();

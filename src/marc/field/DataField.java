@@ -1,6 +1,7 @@
 package marc.field;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,14 +51,6 @@ public final class DataField extends Field {
 		return buf.toString();
 	}
 	
-	public Subfield getSubfield(int index){
-		Subfield s = null;
-		if (index >= 0 && index < subfield.size()){
-			s = subfield.get(index);
-		}
-		return s;
-	}
-	
 	public void setAllSubfields(String value){
 		String[] token = value.split("\\$");
 		String tmp = null;
@@ -95,6 +88,26 @@ public final class DataField extends Field {
 		}
 	}
 	
+	public Subfield getSubfield(int index){
+		Subfield s = null;
+		if (index >= 0 && index < subfield.size()){
+			s = subfield.get(index);
+		}
+		return s;
+	}
+	public Subfield[] getSubfields(char code){
+		ArrayList<Subfield> list = new ArrayList<Subfield>();
+		Subfield s = null;
+		for (int i = 0; i < subfield.size(); ++i){
+			s = subfield.get(i);
+			if (s.getCode() == code){
+				list.add(s);
+			}
+		}
+		Subfield[] matches = new Subfield[list.size()];
+		matches = list.toArray(matches);
+		return matches;
+	}
 	public ArrayList<Integer> getSubfieldIndices(char code){
 		ArrayList<Integer> indices = new ArrayList<Integer>();
 		Subfield s = null;
@@ -105,6 +118,31 @@ public final class DataField extends Field {
 			}
 		}
 		return indices;
+	}
+	public String getFirstSubfieldData(char code){
+		String data = null;
+		Subfield s;
+		for (int i = 0; i < subfield.size(); ++i){
+			s = subfield.get(i);
+			if (s.getCode() == code){
+				data = s.getData();
+				break;
+			}
+		}
+		return data;
+	}
+	public String[] getSubfieldData(char code){
+		List<Subfield> list = new ArrayList<Subfield>();
+		Subfield s;
+		for (int i = 0; i < subfield.size(); ++i){
+			s = subfield.get(i);
+			if (s.getCode() == code){
+				list.add(s);
+			}
+		}
+		String[] data = new String[list.size()];
+		data = list.toArray(data);
+		return data;
 	}
 	
 	@Override

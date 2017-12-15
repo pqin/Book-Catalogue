@@ -13,6 +13,10 @@ public class ControlField extends Field {
 		super();
 		data = new char[0];
 	}
+	public ControlField(String tag){
+		super(tag, Field.BLANK_INDICATOR, Field.BLANK_INDICATOR);
+		data = new char[0];
+	}
 	public ControlField(int length){
 		super();
 		data = new char[length];
@@ -31,6 +35,9 @@ public class ControlField extends Field {
 	@Override
 	public int getDataCount(){
 		return 1;
+	}
+	public final int getFieldLength(){
+		return ((data == null) ? 0 : data.length);
 	}
 	@Override
 	public char[] getFieldData(){

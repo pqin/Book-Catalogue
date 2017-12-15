@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -21,8 +20,9 @@ import marc.field.DataField;
 import marc.field.Field;
 import marc.field.Subfield;
 
-public class DataFieldForm extends JPanel implements ActionListener, ListSelectionListener {
-	private static final long serialVersionUID = 1L;
+public class DataFieldEditor extends AbstractFieldEditor implements ActionListener, ListSelectionListener {
+	private static final int TEXT_ROWS = 5;
+	private static final int TEXT_COLUMNS = 3;
 	
 	private JTextField tagField;
 	private CharSpinner[] indicatorField;
@@ -32,18 +32,25 @@ public class DataFieldForm extends JPanel implements ActionListener, ListSelecti
 	private JButton addButton, removeButton, upButton, downButton, saveButton;
 	
 	private DefaultListModel<Subfield> subfieldListModel;
-	private DataField data;
 	
-	public DataFieldForm(){
+	public DataFieldEditor(){
 		super();
 		
-		final int columns = 3;
-		final int rows = 5;
-		tagField = new JTextField(columns);
+		layoutComponents();
+		clearForm();
+	}
+	private JButton buildButton(String text, ActionListener listener){
+		JButton button = new JButton(text);
+		button.addActionListener(listener);
+		return button;
+	}
+	
+	private void layoutComponents(){
+		tagField = new JTextField(TEXT_COLUMNS);
 		indicatorField = new CharSpinner[2];
 		for (int i = 0; i < indicatorField.length; ++i){
 			indicatorField[i] = new CharSpinner(Field.INDICATOR_VALUES);
-			indicatorField[i].setColumns(columns);
+			indicatorField[i].setColumns(TEXT_COLUMNS);
 		}
 		
 		subfieldListModel = new DefaultListModel<Subfield>();
@@ -59,24 +66,12 @@ public class DataFieldForm extends JPanel implements ActionListener, ListSelecti
 		saveButton = buildButton("Save", this);
 		
 		codeField = new CharSpinner(Subfield.CODE_VALUES);
-		codeField.setColumns(columns);
-		dataField = new JTextArea(rows, columns * 4);
+		codeField.setColumns(TEXT_COLUMNS);
+		dataField = new JTextArea(TEXT_ROWS, TEXT_COLUMNS);
 		dataField.setLineWrap(true);
 		dataField.setWrapStyleWord(true);
 		
-		layoutComponents();
-		
-		data = null;
-		clearForm();
-	}
-	private JButton buildButton(String text, ActionListener listener){
-		JButton button = new JButton(text);
-		button.addActionListener(listener);
-		return button;
-	}
-	
-	private void layoutComponents(){
-		setLayout(new GridBagLayout());
+		panel.setLayout(new GridBagLayout());
 		GridBagConstraints cons = new GridBagConstraints();
 		cons.anchor = GridBagConstraints.NORTHWEST;
 
@@ -84,11 +79,11 @@ public class DataFieldForm extends JPanel implements ActionListener, ListSelecti
 		cons.weightx = 0.0;
 		cons.gridy = 0;
 		cons.gridx = 0;
-		add(tagField, cons);
+		panel.add(tagField, cons);
 		cons.gridx = 1;
-		add(indicatorField[0], cons);
+		panel.add(indicatorField[0], cons);
 		cons.gridx = 2;
-		add(indicatorField[1], cons);
+		panel.add(indicatorField[1], cons);
 		
 		cons.fill = GridBagConstraints.HORIZONTAL;
 		cons.gridwidth = 3;
@@ -96,7 +91,7 @@ public class DataFieldForm extends JPanel implements ActionListener, ListSelecti
 		cons.weightx = 1.0;
 		cons.gridy = 1;
 		cons.gridx = 0;
-		add(new JScrollPane(subfieldList), cons);
+		panel.add(new JScrollPane(subfieldList), cons);
 		
 		cons.fill = GridBagConstraints.HORIZONTAL;
 		cons.gridwidth = 1;
@@ -104,76 +99,36 @@ public class DataFieldForm extends JPanel implements ActionListener, ListSelecti
 		cons.weightx = 0.0;
 		cons.gridy = 1;
 		cons.gridx = 3;
-		add(addButton, cons);
+		panel.add(addButton, cons);
 		cons.gridy = 2;
 		cons.gridx = 3;
-		add(removeButton, cons);
+		panel.add(removeButton, cons);
 		cons.gridy = 3;
 		cons.gridx = 3;
-		add(upButton, cons);
+		panel.add(upButton, cons);
 		cons.gridy = 4;
 		cons.gridx = 3;
-		add(downButton, cons);
+		panel.add(downButton, cons);
 		
 		cons.fill = GridBagConstraints.NONE;
 		cons.weightx = 0.0;
 		cons.gridy = 5;
 		cons.gridx = 0;
-		add(codeField, cons);
+		panel.add(codeField, cons);
 		cons.fill = GridBagConstraints.BOTH;
 		cons.weightx = 1.0;
 		cons.weighty = 1.0;
 		cons.gridwidth = 2;
 		cons.gridy = 5;
 		cons.gridx = 1;
-		add(new JScrollPane(dataField), cons);
+		panel.add(new JScrollPane(dataField), cons);
 		cons.fill = GridBagConstraints.HORIZONTAL;
 		cons.weightx = 0.0;
 		cons.weighty = 0.0;
 		cons.gridwidth = 1;
 		cons.gridy = 5;
 		cons.gridx = 3;
-		add(saveButton, cons);
-	}
-	
-	public void setDataField(DataField f){
-		data = f;
-		
-		clearForm();
-		if (data != null){
-			tagField.setText(f.getTag());
-			indicatorField[0].setValue(f.getIndicator1());
-			indicatorField[1].setValue(f.getIndicator2());
-			for (int i = 0; i < f.getDataCount(); ++i){
-				subfieldListModel.addElement(f.getSubfield(i));
-			}
-		}
-	}
-	public DataField getDataField(){
-		data.setTag(tagField.getText());
-		data.setIndicator1((char) indicatorField[0].getValue());
-		data.setIndicator2((char) indicatorField[1].getValue());
-		
-		Subfield[] tmp = new Subfield[subfieldListModel.size()];
-		for (int i = 0; i < tmp.length; ++i){
-			tmp[i] = subfieldListModel.get(i);
-		}
-		data.setAllSubfields(tmp);
-		return data;
-	}
-	
-	public void clearForm(){
-		tagField.setText(null);
-		indicatorField[0].setValue(Field.BLANK_INDICATOR);
-		indicatorField[1].setValue(Field.BLANK_INDICATOR);
-		subfieldListModel.clear();
-		codeField.setValue('a');
-		dataField.setText(null);
-		addButton.setEnabled(true);
-		removeButton.setEnabled(false);
-		upButton.setEnabled(false);
-		downButton.setEnabled(false);
-		saveButton.setEnabled(false);
+		panel.add(saveButton, cons);
 	}
 	
 	private void saveSubfield(final int index){
@@ -189,18 +144,6 @@ public class DataFieldForm extends JPanel implements ActionListener, ListSelecti
 		subfieldListModel.set(index1, value2);
 		subfieldListModel.set(index2, value1);
 		subfieldList.setSelectedIndex(index2);
-	}
-	
-	@Override
-	public void setEnabled(boolean enabled){
-		super.setEnabled(enabled);
-		
-		tagField.setEnabled(enabled);
-		indicatorField[0].setEnabled(enabled);
-		indicatorField[1].setEnabled(enabled);
-		subfieldList.setEnabled(enabled);
-		codeField.setEnabled(enabled);
-		dataField.setEnabled(enabled);
 	}
 
 	@Override
@@ -253,6 +196,8 @@ public class DataFieldForm extends JPanel implements ActionListener, ListSelecti
 		Subfield subfield = null;
 		if (e.getSource() == subfieldList){
 			ready = !(subfieldList.isSelectionEmpty() || e.getValueIsAdjusting());
+			codeField.setEnabled(ready);
+			dataField.setEnabled(ready);
 			removeButton.setEnabled(ready);
 			saveButton.setEnabled(ready);
 			if (ready){
@@ -278,5 +223,49 @@ public class DataFieldForm extends JPanel implements ActionListener, ListSelecti
 				downButton.setEnabled(ready && false);
 			}
 		}
+	}
+
+	@Override
+	public Field getField() {
+		field.setTag(tagField.getText());
+		field.setIndicator1((char) indicatorField[0].getValue());
+		field.setIndicator2((char) indicatorField[1].getValue());
+		
+		Subfield[] tmp = new Subfield[subfieldListModel.size()];
+		for (int i = 0; i < tmp.length; ++i){
+			tmp[i] = subfieldListModel.get(i);
+		}
+		((DataField) field).setAllSubfields(tmp);
+		return field;
+	}
+	@Override
+	public void setField(Field f) {
+		DataField data = (DataField) f;
+		field = data;
+		clearForm();
+		if (field != null){
+			tagField.setText(f.getTag());
+			indicatorField[0].setValue(f.getIndicator1());
+			indicatorField[1].setValue(f.getIndicator2());
+			for (int i = 0; i < f.getDataCount(); ++i){
+				subfieldListModel.addElement(data.getSubfield(i));
+			}
+		}
+	}
+	@Override
+	public void clearForm(){
+		tagField.setText(null);
+		indicatorField[0].setValue(Field.BLANK_INDICATOR);
+		indicatorField[1].setValue(Field.BLANK_INDICATOR);
+		subfieldListModel.clear();
+		codeField.setValue('a');
+		dataField.setText(null);
+		codeField.setEnabled(false);
+		dataField.setEnabled(false);
+		addButton.setEnabled(true);
+		removeButton.setEnabled(false);
+		upButton.setEnabled(false);
+		downButton.setEnabled(false);
+		saveButton.setEnabled(false);
 	}
 }
