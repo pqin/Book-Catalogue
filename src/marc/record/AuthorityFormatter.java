@@ -1,6 +1,11 @@
 package marc.record;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import marc.field.DataField;
+import marc.field.Field;
 
 public class AuthorityFormatter extends RecordFormatter {
 	private static final String[] indent;
@@ -25,18 +30,17 @@ public class AuthorityFormatter extends RecordFormatter {
 	@Override
 	public void parse(Record record) {
 		// get heading
-		String[] headingTag = {
-				"100", "110", "111", "130", "147", "148", "150", "151", "155", "162", "180", "181", "182", "185"
-		};
-		int t = 0;
+		List<Field> headingField = record.getFieldStartingWith("1");
+		Iterator<Field> itHeadingField = headingField.iterator();
+		DataField h;
 		String m = null;
 		String f = null;
-		while (m == null && t < headingTag.length){
-			m = record.getData(headingTag[t], 'a');
-			if (m != null && headingTag[t].equals("100")){
+		while (m == null && itHeadingField.hasNext()){
+			h = (DataField) itHeadingField.next();
+			m = h.getFirstSubfieldData('a');
+			if (m != null && h.getTag().equals("100")){
 				f = record.getData("378", 'q'); 
 			}
-			++t;
 		}
 		heading = (m == null) ? "" : m;
 		fullName = (f == null) ? "" : f;
@@ -52,29 +56,29 @@ public class AuthorityFormatter extends RecordFormatter {
 
 	@Override
 	public String getContent() {
-		StringBuilder b = new StringBuilder();
-		b.append(heading);
+		StringBuilder buf = new StringBuilder();
+		buf.append(heading);
 		if (fullName != null && !fullName.isEmpty()){
-			b.append(", (");
-			b.append(fullName);
-			b.append(')');
+			buf.append(", (");
+			buf.append(fullName);
+			buf.append(')');
 		}
-		b.append('\n');
+		buf.append('\n');
 		for (int i = 0; i < tracingSeeAlso.length; ++i){
-			b.append(indent[0]);
-			appendLn(b, tracingSeeAlso[i]);
-			b.append(indent[1]);
-			b.append("see also: ");
-			appendLn(b, heading);
+			buf.append(indent[0]);
+			appendLn(buf, tracingSeeAlso[i]);
+			buf.append(indent[1]);
+			buf.append("see also: ");
+			appendLn(buf, heading);
 		}
 		for (int i = 0; i < tracingSeeFrom.length; ++i){
-			b.append(indent[0]);
-			appendLn(b, tracingSeeFrom[i]);
-			b.append(indent[1]);
-			b.append("see: ");
-			appendLn(b, heading);
+			buf.append(indent[0]);
+			appendLn(buf, tracingSeeFrom[i]);
+			buf.append(indent[1]);
+			buf.append("see: ");
+			appendLn(buf, heading);
 		}
-		return b.toString();
+		return buf.toString();
 	}
 
 }

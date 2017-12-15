@@ -61,14 +61,15 @@ public abstract class RecordFormatter {
 		Subfield s = null;
 		char subfieldCode = '?';
 		String subfieldData = null;
-		for (int i = 0; i < subLength; ++i){
-			s = field.getSubfield(i);
-			subfieldCode = s.getCode();
-			subfieldData = s.getData();
-			subData[i] = null;
-			for (int c = 0; c < code.length; ++c){
+		int k = 0;
+		for (int c = 0; c < code.length; ++c){
+			for (int i = 0; i < subLength; ++i){
+				s = field.getSubfield(i);
+				subfieldCode = s.getCode();
+				subfieldData = s.getData();
 				if (code[c] == subfieldCode && subfieldData != null){
-					subData[i] = subfieldData;
+					subData[k] = subfieldData;
+					++k;
 				}
 			}
 		}
@@ -78,7 +79,7 @@ public abstract class RecordFormatter {
 		StringBuilder b = new StringBuilder();
 		for (int i = 0; i < subData.length; ++i){
 			if (subData[i] != null){
-				if (i > 0){
+				if (i > 0 && subData[i-1] != null){
 					b.append(delimiter);
 				}
 				b.append(subData[i]);

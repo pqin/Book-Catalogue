@@ -66,7 +66,7 @@ public class BibliographicFormatter extends RecordFormatter {
 		edition = record.getData("250", 'a');
 		
 		char[] seriesCode = {'a', 'v'};
-		series = formatFirst(record, "190", seriesCode, " ");
+		series = formatFirst(record, "490", seriesCode, " ");
 		if (series != null && series.length() > 0){
 			series = "(" + series + ")";
 		}
@@ -236,37 +236,37 @@ public class BibliographicFormatter extends RecordFormatter {
 	
 	@Override
 	public String getContent(){
-		StringBuilder b = new StringBuilder();
-		appendLn(b, heading);
-		append(b, title);
+		StringBuilder buf = new StringBuilder();
+		appendLn(buf, heading);
+		append(buf, title);
 		if (edition != null && !edition.isEmpty()){
-			append(b, ". -- ");
-			append(b, edition);
+			append(buf, ". -- ");
+			append(buf, edition);
 		}
-		b.append('\n');
-		appendLn(b, imprint);
-		appendLn(b, description);
-		appendLn(b, series);
-		b.append('\n');
+		buf.append('\n');
+		appendLn(buf, imprint);
+		appendLn(buf, description);
+		appendLn(buf, series);
+		buf.append('\n');
 		
-		appendLn(b, summary);
-		appendLn(b, notes);
-		appendLn(b, "ISBN", isbn);
-		b.append('\n');
+		appendLn(buf, summary);
+		appendLn(buf, notes);
+		appendLn(buf, "ISBN", isbn);
+		buf.append('\n');
 		
-		appendLn(b, topic);
-		appendLn(b, tracing);
+		appendLn(buf, topic);
+		appendLn(buf, tracing);
 		
 		if (lccn != null && ddc != null){
-			append(b, lccn);
-			append(b, "    ");
-			append(b, ddc);
+			append(buf, lccn);
+			append(buf, "    ");
+			append(buf, ddc);
 		} else if (lccn != null){
-			appendLn(b, lccn);
+			appendLn(buf, lccn);
 		} else if (ddc != null){
-			appendLn(b, ddc);
+			appendLn(buf, ddc);
 		}
 		
-		return b.toString();
+		return buf.toString();
 	}
 }

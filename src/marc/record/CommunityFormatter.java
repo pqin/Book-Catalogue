@@ -1,16 +1,12 @@
 package marc.record;
 
 public class CommunityFormatter extends RecordFormatter {
-
+	// TODO implement Formatter
 	@Override
-	public void parse(Record record) {
-		// TODO Auto-generated method stub
-
-	}
+	public void parse(Record record) {}
 
 	@Override
 	public String getContent() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
