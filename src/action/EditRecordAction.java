@@ -3,17 +3,17 @@ package action;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 
-import gui.form.RecordForm;
+import gui.form.RecordEditor;
 import marc.Catalogue;
 import marc.record.Record;
 
 public class EditRecordAction extends RecordAction {
 	private static final long serialVersionUID = 1L;
-	private RecordForm form;
+	private RecordEditor form;
 
 	public EditRecordAction(Catalogue data, Component owner){
 		super("Edit Record", data, owner);
-		form = new RecordForm();
+		form = new RecordEditor();
 		
 		formDialog.setContent(form.getComponent());
 		formDialog.create();
