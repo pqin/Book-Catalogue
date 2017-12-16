@@ -21,15 +21,15 @@ public final class Record implements Serializable {
 	private int length;
 	private Leader leader;
 	private FixedDataElement dataElement;
-	private ArrayList<ControlField> controlField;
-	private ArrayList<DataField> dataField;
+	private ArrayList<Field> fields;
 	
 	public Record(){
 		length = 0;
+		
 		leader = new Leader();
 		dataElement = new FixedDataElement();
-		controlField = new ArrayList<ControlField>();
-		dataField = new ArrayList<DataField>();
+		fields = new ArrayList<Field>();
+		fields.add(dataElement);
 	}
 	
 	public void setLength(int recordLength){
@@ -53,14 +53,12 @@ public final class Record implements Serializable {
 		return ctrlNum;
 	}
 	public String getMainEntry(){
-		String[] tags = {"100", "110", "111", "130"};
-		int t = 0;
-		String m = null;
-		while (m == null && t < tags.length){
-			m = getData(tags[t], 'a');
-			++t;
+		Iterator<Field> field = getFieldStartingWith("1").iterator();
+		String entry = null;
+		while (entry == null && field.hasNext()){
+			entry = ((DataField) field.next()).getFirstSubfieldData('a');
 		}
-		return m;
+		return entry;
 	}
 	
 	public String getTitle(){
@@ -122,36 +120,47 @@ public final class Record implements Serializable {
 		dataElement.setFieldData(value.getFieldData());
 	}
 	public int getFieldCount(){
-		int count = controlField.size() + dataField.size() + 2;
-		return count;
+		return (1 + fields.size());
 	}
 	public List<Field> getFields(){
 		ArrayList<Field> tmp = new ArrayList<Field>();
 		tmp.add(leader);
-		tmp.add(dataElement);
-		tmp.addAll(controlField);
-		tmp.addAll(dataField);
+		tmp.addAll(fields);
 		Collections.sort(tmp);
 		return tmp;
 	}
+	public Field getField(int index){
+		if (index == 0){
+			return leader;
+		} else if (index >= 1 && index < fields.size() + 1){
+			return fields.get(index - 1);
+		} else {
+			return null;
+		}
+	}
+	public void setField(int index, Field field){
+		if (index == 0){
+			leader = (Leader) field;
+		} else if (index >= 1 && index < fields.size() + 1){
+			fields.set(index - 1, field);
+		} else {
+			throw new IndexOutOfBoundsException(
+					String.format("Index %d not in bounds[%d, %d]%n", index, 0, getFieldCount()));
+		}
+	}
 	public List<Field> getField(String tag){
 		ArrayList<Field> f = new ArrayList<Field>();
-		Field tmp = null;
-		Iterator<? extends Field> it = null;
 		if (tag != null){
 			if (Leader.TAG.equals(tag)){
 				f.add(leader);
 			} else if (FixedDataElement.TAG.equals(tag)){
 				f.add(dataElement);
-			} else if (Field.isControlTag(tag)){
-				it = controlField.iterator();
 			} else {
-				it = dataField.iterator();
-			}
-			if (it != null){
+				Field tmp = null;
+				Iterator<? extends Field> it = fields.iterator();
 				while (it.hasNext()){
 					tmp = it.next();
-					if (tmp.getTag().equals(tag)){
+					if (tmp.hasTag(tag)){
 						f.add(tmp);
 					}
 				}
@@ -161,22 +170,17 @@ public final class Record implements Serializable {
 	}
 	public Field getFirstMatchingField(String tag){
 		Field f = null;
-		Field tmp = null;
-		Iterator<? extends Field> it = null;
 		if (tag != null){
 			if (Leader.TAG.equals(tag)){
 				return leader;
 			} else if (FixedDataElement.TAG.equals(tag)){
 				return dataElement;
-			} else if (Field.isControlTag(tag)){
-				it = controlField.iterator();
 			} else {
-				it = dataField.iterator();
-			}
-			if (it != null){
+				Field tmp = null;
+				Iterator<? extends Field> it = fields.iterator();
 				while (it.hasNext()){
 					tmp = it.next();
-					if (tmp.getTag().equals(tag)){
+					if (tmp.hasTag(tag)){
 						f = tmp;
 						break;
 					}
@@ -187,19 +191,12 @@ public final class Record implements Serializable {
 	}
 	public List<Field> getFieldStartingWith(String tag){
 		ArrayList<Field> f = new ArrayList<Field>();
-		Field tmp = null;
-		Iterator<? extends Field> it = null;
 		if (tag != null){
 			if (Leader.TAG.startsWith(tag)){
 				f.add(leader);
-			} else if (FixedDataElement.TAG.startsWith(tag)){
-				f.add(dataElement);
-			} else if (Field.isControlTag(tag)){
-				it = controlField.iterator();
 			} else {
-				it = dataField.iterator();
-			}
-			if (it != null){
+				Field tmp = null;
+				Iterator<? extends Field> it = fields.iterator();
 				while (it.hasNext()){
 					tmp = it.next();
 					if (tmp.getTag().startsWith(tag)){
@@ -210,28 +207,62 @@ public final class Record implements Serializable {
 		}
 		return f;
 	}
-	
-	private List<ControlField> getControlField(String tag){
-		ArrayList<ControlField> f = new ArrayList<ControlField>();
-		Iterator<ControlField> it = controlField.iterator();
-		ControlField tmp = null;
-		while (it.hasNext()){
-			tmp = it.next();
-			if (tmp.getTag().equals(tag)){
-				f.add(tmp);
-			}
+	public int indexOf(Field field){
+		if (leader.equals(field)){
+			return 0;
 		}
-		return f;
+		int i = fields.indexOf(field);
+		if (i >= 0 && i < fields.size()){
+			++i;
+		}
+		return i;
 	}
 	
-	private List<DataField> getDataField(String tag){
-		ArrayList<DataField> f = new ArrayList<DataField>();
-		Iterator<DataField> it = dataField.iterator();
-		DataField tmp = null;
+	private List<ControlField> getControlFields(){
+		ArrayList<ControlField> list = new ArrayList<ControlField>();
+		Iterator<Field> it = fields.iterator();
+		Field tmp = null;
+		while (it.hasNext()){
+			tmp = it.next();
+			if (tmp.isControlField()){
+				list.add((ControlField) tmp);
+			}
+		}
+		return list;
+	}
+	private List<ControlField> getControlField(String tag){
+		ArrayList<ControlField> list = new ArrayList<ControlField>();
+		Iterator<Field> it = fields.iterator();
+		Field tmp = null;
 		while (it.hasNext()){
 			tmp = it.next();
 			if (tmp.getTag().equals(tag)){
-				f.add(tmp);
+				list.add((ControlField) tmp);
+			}
+		}
+		return list;
+	}
+	
+	private List<DataField> getDataFields(){
+		ArrayList<DataField> list = new ArrayList<DataField>();
+		Iterator<Field> it = fields.iterator();
+		Field tmp = null;
+		while (it.hasNext()){
+			tmp = it.next();
+			if (!tmp.isControlField()){
+				list.add((DataField) tmp);
+			}
+		}
+		return list;
+	}
+	private List<DataField> getDataField(String tag){
+		ArrayList<DataField> f = new ArrayList<DataField>();
+		Iterator<Field> it = fields.iterator();
+		Field tmp = null;
+		while (it.hasNext()){
+			tmp = it.next();
+			if (tmp.getTag().equals(tag)){
+				f.add((DataField) tmp);
 			}
 		}
 		return f;
@@ -277,49 +308,16 @@ public final class Record implements Serializable {
 		return b.toString();
 	}
 	
-	public void addField(ControlField f){
-		controlField.add(f);
+	public void addField(Field field){
+		fields.add(field);
 	}
-	public void addField(DataField f){
-		dataField.add(f);
-	}
-	public int addSortedField(Field f){
-		int index = -1;
-		switch (Field.getFieldType(f.getTag())){
-		case CONTROL_FIELD:
-		case FIXED_FIELD:
-			controlField.add((ControlField) f);
-			Collections.sort(controlField);
-			index = controlField.indexOf(f);
-			break;
-		case DATA_FIELD:
-			dataField.add((DataField) f);
-			Collections.sort(dataField);
-			index = dataField.indexOf(f);
-			break;
-		default:
-			break;
-		}
-		if (index >= 0){
-			if (f.compareTo(leader) > 0){
-				++index;
-			}
-			if (f.compareTo(dataElement) > 0){
-				++index;
-			}
-			if (!Field.isControlTag(f.getTag())){
-				index += controlField.size();
-			}
-		}
-		return index;
+	public void addSortedField(Field field){
+		fields.add(field);
+		Collections.sort(fields);
 	}
 	
 	public void removeField(Field field){
-		if (field.isControlField()){
-			controlField.remove(field);
-		} else {
-			dataField.remove(field);
-		}
+		fields.remove(field);
 	}
 	
 	public String getData(String tag, char code){
@@ -345,7 +343,7 @@ public final class Record implements Serializable {
 	public boolean contains(Pattern query, String tag){
 		List<DataField> field = null;
 		if (tag == null || tag.isEmpty()){
-			field = dataField;
+			field = getDataFields();
 		} else {
 			field = getDataField(tag);
 		}
@@ -361,7 +359,7 @@ public final class Record implements Serializable {
 	}
 	
 	public void sortFields(){
-		Collections.sort(dataField);
+		Collections.sort(fields);
 	}
 	
 	public Record copy(){
@@ -369,13 +367,10 @@ public final class Record implements Serializable {
 		copy.length = this.length;
 		copy.leader = this.leader.copy();
 		copy.dataElement = this.dataElement.copy();
-		Iterator<ControlField> c = controlField.iterator();
-		while (c.hasNext()){
-			copy.addField(c.next().copy());
-		}
-		Iterator<DataField> d = dataField.iterator();
-		while (d.hasNext()){
-			copy.addField(d.next().copy());
+		copy.fields.clear();
+		Iterator<Field> f = fields.iterator();
+		while (f.hasNext()){
+			copy.addField(f.next().copy());
 		}
 		return copy;
 	}
@@ -386,11 +381,10 @@ public final class Record implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((controlField == null) ? 0 : controlField.hashCode());
-		result = prime * result + ((dataElement == null) ? 0 : dataElement.hashCode());
-		result = prime * result + ((dataField == null) ? 0 : dataField.hashCode());
-		result = prime * result + ((leader == null) ? 0 : leader.hashCode());
 		result = prime * result + length;
+		result = prime * result + ((leader == null) ? 0 : leader.hashCode());
+		result = prime * result + ((dataElement == null) ? 0 : dataElement.hashCode());
+		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
 		return result;
 	}
 
@@ -409,25 +403,7 @@ public final class Record implements Serializable {
 			return false;
 		}
 		Record other = (Record) obj;
-		if (controlField == null) {
-			if (other.controlField != null) {
-				return false;
-			}
-		} else if (!controlField.equals(other.controlField)) {
-			return false;
-		}
-		if (dataElement == null) {
-			if (other.dataElement != null) {
-				return false;
-			}
-		} else if (!dataElement.equals(other.dataElement)) {
-			return false;
-		}
-		if (dataField == null) {
-			if (other.dataField != null) {
-				return false;
-			}
-		} else if (!dataField.equals(other.dataField)) {
+		if (length != other.length) {
 			return false;
 		}
 		if (leader == null) {
@@ -437,7 +413,18 @@ public final class Record implements Serializable {
 		} else if (!leader.equals(other.leader)) {
 			return false;
 		}
-		if (length != other.length) {
+		if (dataElement == null) {
+			if (other.dataElement != null) {
+				return false;
+			}
+		} else if (!dataElement.equals(other.dataElement)) {
+			return false;
+		}
+		if (fields == null) {
+			if (other.fields != null) {
+				return false;
+			}
+		} else if (!fields.equals(other.fields)) {
 			return false;
 		}
 		return true;

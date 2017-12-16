@@ -45,6 +45,10 @@ public final class FixedDataElement extends FixedField {
 		return false;
 	}
 	@Override
+	public final boolean isRemoveable(){
+		return false;
+	}
+	@Override
 	public final void clear(){
 		LocalDate tmp = getEntryDate();
 		super.clear();

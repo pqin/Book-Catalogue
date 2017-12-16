@@ -21,6 +21,38 @@ public final class DataField extends Field {
 		subfield = new ArrayList<Subfield>();
 	}
 	
+	@Override
+	public int getDataCount(){
+		return subfield.size();
+	}
+	@Override
+	public char[] getFieldData(){
+		return getFieldString().toCharArray();
+	}
+	@Override
+	public String getFieldString(){
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < subfield.size(); ++i){
+			buf.append(subfield.get(i).toString());
+		}
+		return buf.toString();
+	}
+	@Override
+	public void setFieldData(char[] value){
+		String[] token = String.valueOf(value).split("\\$");
+		String tmp = null;
+		Subfield sub = null;
+		
+		subfield.clear();
+		for (int i = 0; i < token.length; ++i){
+			tmp = token[i].trim();
+			if (!tmp.isEmpty()){
+				sub = new Subfield(token[i].charAt(0), token[i].substring(1));
+				subfield.add(sub);
+			}
+		}
+	}
+	
 	public void addSubfield(char code, String data){
 		if (!Character.isLetterOrDigit(code)){
 			code = '?';
@@ -38,34 +70,6 @@ public final class DataField extends Field {
 			subfield.remove(index);
 		}
 	}
-	@Override
-	public int getDataCount(){
-		return subfield.size();
-	}
-	@Override
-	public String getFieldString(){
-		StringBuilder buf = new StringBuilder();
-		for (int i = 0; i < subfield.size(); ++i){
-			buf.append(subfield.get(i).toString());
-		}
-		return buf.toString();
-	}
-	
-	public void setAllSubfields(String value){
-		String[] token = value.split("\\$");
-		String tmp = null;
-		Subfield sub = null;
-		
-		subfield.clear();
-		for (int i = 0; i < token.length; ++i){
-			tmp = token[i].trim();
-			if (!tmp.isEmpty()){
-				sub = new Subfield(token[i].charAt(0), token[i].substring(1));
-				subfield.add(sub);
-			}
-		}
-	}
-	
 	public void setAllSubfields(Subfield[] value){
 		if (value == null){
 			value = new Subfield[0];

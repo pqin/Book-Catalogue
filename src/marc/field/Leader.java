@@ -58,7 +58,11 @@ public final class Leader extends FixedField {
 	}
 	
 	@Override
-	public boolean isRepeatable(){
+	public final boolean isRepeatable(){
+		return false;
+	}
+	@Override
+	public final boolean isRemoveable(){
 		return false;
 	}
 	@Override

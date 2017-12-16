@@ -86,6 +86,9 @@ public class Field implements Comparable<Field> {
 	public boolean isRepeatable(){
 		return true;
 	}
+	public boolean isRemoveable(){
+		return true;
+	}
 	
 	public String getTag(){
 		return tag;
@@ -168,12 +171,6 @@ public class Field implements Comparable<Field> {
 			return false;
 		}
 		Field other = (Field) obj;
-		if (indicator1 != other.indicator1) {
-			return false;
-		}
-		if (indicator2 != other.indicator2) {
-			return false;
-		}
 		if (tag == null) {
 			if (other.tag != null) {
 				return false;
@@ -181,7 +178,16 @@ public class Field implements Comparable<Field> {
 		} else if (!tag.equals(other.tag)) {
 			return false;
 		}
+		if (indicator1 != other.indicator1) {
+			return false;
+		}
+		if (indicator2 != other.indicator2) {
+			return false;
+		}
 		return true;
+	}
+	public Field copy(){
+		return null;
 	}
 	public String toString(){
 		StringBuilder buf = new StringBuilder();
