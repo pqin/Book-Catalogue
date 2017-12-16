@@ -1,6 +1,8 @@
-package marc.record;
+package marc.formatter;
 
-public class CommunityFormatter extends RecordFormatter {
+import marc.record.Record;
+
+public class ClassificationFormatter extends RecordFormatter {
 	// TODO implement Formatter
 	@Override
 	public void parse(Record record) {}

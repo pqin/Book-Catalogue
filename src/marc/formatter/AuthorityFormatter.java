@@ -1,4 +1,4 @@
-package marc.record;
+package marc.formatter;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -6,6 +6,7 @@ import java.util.List;
 
 import marc.field.DataField;
 import marc.field.Field;
+import marc.record.Record;
 
 public class AuthorityFormatter extends RecordFormatter {
 	private static final String[] indent;

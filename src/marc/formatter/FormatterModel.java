@@ -1,4 +1,4 @@
-package marc.record;
+package marc.formatter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

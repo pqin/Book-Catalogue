@@ -1,4 +1,4 @@
-package marc.record;
+package marc.formatter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +10,7 @@ import gui.form.RomanNumeral;
 import marc.field.DataField;
 import marc.field.Field;
 import marc.field.Subfield;
+import marc.record.Record;
 
 public class BibliographicFormatter extends RecordFormatter {
 	private static final Pattern FICTION_REGEX = Pattern.compile("^\\[([a-zA-Z]+)\\]$");

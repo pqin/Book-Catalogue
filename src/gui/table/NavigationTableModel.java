@@ -10,9 +10,9 @@ import javax.swing.table.AbstractTableModel;
 
 import gui.FormatterListener;
 import marc.Catalogue;
-import marc.record.BibliographicFormatter;
+import marc.formatter.BibliographicFormatter;
+import marc.formatter.RecordFormatter;
 import marc.record.Record;
-import marc.record.RecordFormatter;
 
 
 public class NavigationTableModel extends AbstractTableModel implements FormatterListener {

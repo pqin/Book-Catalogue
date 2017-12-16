@@ -1,6 +1,6 @@
 package gui;
 
-import marc.record.RecordFormatter;
+import marc.formatter.RecordFormatter;
 
 public interface FormatterListener {
 	/**

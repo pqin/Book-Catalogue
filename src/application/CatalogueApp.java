@@ -55,14 +55,14 @@ import gui.table.RecordTable;
 import marc.Catalogue;
 import marc.format.AbstractMarc;
 import marc.format.MarcBinary;
-import marc.record.AuthorityFormatter;
-import marc.record.BibliographicFormatter;
-import marc.record.ClassificationFormatter;
-import marc.record.CommunityFormatter;
-import marc.record.FormatterModel;
-import marc.record.HoldingsFormatter;
+import marc.formatter.AuthorityFormatter;
+import marc.formatter.BibliographicFormatter;
+import marc.formatter.ClassificationFormatter;
+import marc.formatter.CommunityFormatter;
+import marc.formatter.FormatterModel;
+import marc.formatter.HoldingsFormatter;
+import marc.formatter.RecordFormatter;
 import marc.record.Record;
-import marc.record.RecordFormatter;
 import marc.type.RecordType;
 
 public class CatalogueApp implements MarcComponent, ActionListener, RecordSelectionListener {

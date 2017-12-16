@@ -1,10 +1,11 @@
-package marc.record;
+package marc.formatter;
 
 import java.util.List;
 
 import marc.field.DataField;
 import marc.field.Field;
 import marc.field.Subfield;
+import marc.record.Record;
 
 public abstract class RecordFormatter {
 	protected String heading, title, filingTitle;
