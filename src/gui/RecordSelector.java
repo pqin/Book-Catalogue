@@ -25,7 +25,7 @@ import gui.table.NavigationTableModel;
 import gui.table.RecordSearchFilter;
 import gui.table.TitleRenderer;
 import marc.Catalogue;
-import marc.record.RecordFormatter;
+import marc.formatter.RecordFormatter;
 
 public class RecordSelector implements MarcComponent, CatalogueView, ListSelectionListener, FormatterListener {
 	private static String STATUS_FORMAT = "Record: %d / %d";

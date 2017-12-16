@@ -18,11 +18,18 @@ import marc.field.FixedDatum;
 import marc.field.FixedField;
 import marc.type.ConfigType;
 
-public class FixedFieldEditor extends AbstractFieldEditor {
+public final class FixedFieldEditor extends AbstractFieldEditor {
 	private JLabel nameField;
 	private FixedFieldTableModel model;
-	private final boolean editable;
+	private boolean editable;
 
+	public FixedFieldEditor(){
+		super();
+		
+		editable = true;
+		model = new FixedFieldTableModel(editable);
+		layoutComponents();
+	}
 	public FixedFieldEditor(final boolean editable){
 		super();
 		
@@ -76,6 +83,10 @@ public class FixedFieldEditor extends AbstractFieldEditor {
 	
 	public boolean isEditable(){
 		return editable;
+	}
+	public void setEditable(boolean editable){
+		 this.editable = editable;
+		 model.setEditable(editable);
 	}
 
 	public void setConfig(ConfigType config){

@@ -14,10 +14,10 @@ public class FieldCreationWizard extends AbstractWizard {
 	public FieldCreationWizard(Frame owner, String title){
 		super(owner, title, new FieldWizardModel());
 		
-		tagEditor = new WizardTagEditor("TAG");
-		WizardFieldEditor controlPanel = new WizardFieldEditor("CONTROL", new ControlFieldEditor());
-		WizardFieldEditor fixedPanel = new WizardFieldEditor("FIXED", new FixedFieldEditor(true));
-		WizardFieldEditor dataPanel = new WizardFieldEditor("DATA", new DataFieldEditor());
+		tagEditor = new WizardTagEditor(FieldWizardModel.PANEL_ID_TAG);
+		WizardFieldEditor controlPanel = new WizardFieldEditor(FieldWizardModel.PANEL_ID_CONTROL, new ControlFieldEditor());
+		WizardFieldEditor fixedPanel = new WizardFieldEditor(FieldWizardModel.PANEL_ID_FIXED, new FixedFieldEditor());
+		WizardFieldEditor dataPanel = new WizardFieldEditor(FieldWizardModel.PANEL_ID_DATA, new DataFieldEditor());
 		
 		WizardModel model = getModel();
 		model.registerFirstPanel(tagEditor);
@@ -25,12 +25,12 @@ public class FieldCreationWizard extends AbstractWizard {
 		model.registerPanel(fixedPanel);
 		model.registerPanel(dataPanel);
 		
-		tagEditor.setNextID(FieldType.CONTROL_FIELD, "CONTROL");
-		tagEditor.setNextID(FieldType.FIXED_FIELD, "FIXED");
-		tagEditor.setNextID(FieldType.DATA_FIELD, "DATA");
-		model.registerParent("CONTROL", "TAG");
-		model.registerParent("FIXED", "TAG");
-		model.registerParent("DATA", "TAG");
+		tagEditor.setNextID(FieldType.CONTROL_FIELD, FieldWizardModel.PANEL_ID_CONTROL);
+		tagEditor.setNextID(FieldType.FIXED_FIELD, FieldWizardModel.PANEL_ID_FIXED);
+		tagEditor.setNextID(FieldType.DATA_FIELD, FieldWizardModel.PANEL_ID_DATA);
+		model.registerParent(FieldWizardModel.PANEL_ID_CONTROL, FieldWizardModel.PANEL_ID_TAG);
+		model.registerParent(FieldWizardModel.PANEL_ID_FIXED, FieldWizardModel.PANEL_ID_TAG);
+		model.registerParent(FieldWizardModel.PANEL_ID_DATA, FieldWizardModel.PANEL_ID_TAG);
 	}
 	
 	public final Field getField(){

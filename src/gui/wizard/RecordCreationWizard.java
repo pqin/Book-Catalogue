@@ -14,8 +14,8 @@ public class RecordCreationWizard extends AbstractWizard {
 				
 		formatEditor = new RecordFormatPanel();
 		WizardFieldEditor panel1 = new WizardFieldEditor(RecordWizardModel.PANEL_ID_TYPE, formatEditor);
-		WizardFieldEditor panel2 = new WizardFieldEditor(RecordWizardModel.PANEL_ID_LDR, new FixedFieldEditor(true));
-		WizardFieldEditor panel3 = new WizardFieldEditor(RecordWizardModel.PANEL_ID_008, new FixedFieldEditor(true));
+		WizardFieldEditor panel2 = new WizardFieldEditor(RecordWizardModel.PANEL_ID_LDR, new FixedFieldEditor());
+		WizardFieldEditor panel3 = new WizardFieldEditor(RecordWizardModel.PANEL_ID_008, new FixedFieldEditor());
 
 		WizardModel model = getModel();
 		model.registerFirstPanel(panel1);

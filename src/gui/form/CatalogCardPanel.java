@@ -11,8 +11,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import gui.FormatterListener;
-import marc.record.BibliographicFormatter;
-import marc.record.RecordFormatter;
+import marc.formatter.BibliographicFormatter;
+import marc.formatter.RecordFormatter;
 
 /**
  * @author Peter

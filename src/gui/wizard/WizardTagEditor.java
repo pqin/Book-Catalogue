@@ -1,6 +1,5 @@
 package gui.wizard;
 
-import java.awt.Dimension;
 import java.util.EnumMap;
 import java.util.Map;
 

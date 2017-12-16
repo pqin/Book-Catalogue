@@ -14,20 +14,27 @@ import marc.record.Record;
  */
 public class RecordTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
+	private static final int TAG = 0;
+	private static final int IND1 = 1;
+	private static final int IND2 = 2;
+	private static final int DATA = 3;
 	
 	private String[] header;
-	private Record data;
+	private Record record;
 	
 	public RecordTableModel(){
 		super();
 		
-		String[] columnNames = {"Tag", "Ind1", "Ind2", "Data"};
-		header = columnNames;
-		data = null;
+		header = new String[4];
+		header[TAG] = "Tag";
+		header[IND1] = "Ind1";
+		header[IND2] = "Ind2";
+		header[DATA] = "Data";
+		record = null;
 	}
 	
-	public void setRecord(Record record){
-		data = record;
+	public void setRecord(Record r){
+		record = r;
 		fireTableDataChanged();
 	}
 	
@@ -43,21 +50,21 @@ public class RecordTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object value = null;
 		Field[] field = null;
-		if (data == null){
+		if (record == null){
 			return null;
 		} else {
-			field = data.getFields().toArray(new Field[0]);
+			field = record.getFields().toArray(new Field[0]);
 			switch (columnIndex){
-			case 0:
+			case TAG:
 				value = field[rowIndex].getTag();
 				break;
-			case 1:
+			case IND1:
 				value = field[rowIndex].getIndicator1();
 				break;
-			case 2:
+			case IND2:
 				value = field[rowIndex].getIndicator2();
 				break;
-			case 3:
+			case DATA:
 				value = field[rowIndex].getFieldString();
 				break;
 			default:
@@ -74,7 +81,7 @@ public class RecordTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		int rows = (data == null) ? 0 : data.getFieldCount();
+		int rows = (record == null) ? 0 : record.getFieldCount();
 		return rows;
 	}
 }

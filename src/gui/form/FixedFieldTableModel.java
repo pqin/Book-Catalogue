@@ -90,7 +90,10 @@ public class FixedFieldTableModel extends AbstractTableModel {
 			}
 		}
 	}
-	
+	public void setEditable(boolean editable){
+		this.editable = editable;
+	}
+
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		final int c = columnLookup[columnIndex];
