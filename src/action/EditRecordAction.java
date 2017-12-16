@@ -1,6 +1,7 @@
 package action;
 
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
 import gui.form.RecordEditor;
@@ -13,7 +14,7 @@ public class EditRecordAction extends RecordAction {
 
 	public EditRecordAction(Catalogue data, Component owner){
 		super("Edit Record", data, owner);
-		form = new RecordEditor();
+		form = new RecordEditor((Frame) owner);
 		
 		formDialog.setContent(form.getComponent());
 		formDialog.create();
