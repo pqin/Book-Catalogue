@@ -15,11 +15,22 @@ public class CopyFieldAction extends FieldAction {
 	}
 
 	@Override
+	public void enableForIndex(int i){
+		setIndex(i);
+		Field field = getField();
+		if (field == null){
+			setEnabled(false);
+		} else {
+			setEnabled(field.isRepeatable());
+		}
+	}
+	
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		Field original = getField();
 		Field copy = original.copy();
 		record.addSortedField(copy);
-		int i = record.indexOf(copy);
+		int i = record.lastIndexOf(copy);
 		
 		AbstractTableModel model = (AbstractTableModel) table.getModel();
 		model.fireTableRowsInserted(i, i);

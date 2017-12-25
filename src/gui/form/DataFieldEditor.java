@@ -47,7 +47,7 @@ public class DataFieldEditor extends AbstractFieldEditor implements ActionListen
 	
 	private void layoutComponents(){
 		tagField = new JTextField(TEXT_COLUMNS);
-		indicatorField = new CharSpinner[2];
+		indicatorField = new CharSpinner[Field.INDICATOR_COUNT];
 		for (int i = 0; i < indicatorField.length; ++i){
 			indicatorField[i] = new CharSpinner(Field.INDICATOR_VALUES);
 			indicatorField[i].setColumns(TEXT_COLUMNS);
@@ -228,8 +228,9 @@ public class DataFieldEditor extends AbstractFieldEditor implements ActionListen
 	@Override
 	public Field getField() {
 		field.setTag(tagField.getText());
-		field.setIndicator1((char) indicatorField[0].getValue());
-		field.setIndicator2((char) indicatorField[1].getValue());
+		for (int i = 0; i < indicatorField.length; ++i){
+			field.setIndicator(i, (char) indicatorField[i].getValue());
+		}
 		
 		Subfield[] tmp = new Subfield[subfieldListModel.size()];
 		for (int i = 0; i < tmp.length; ++i){
@@ -245,8 +246,9 @@ public class DataFieldEditor extends AbstractFieldEditor implements ActionListen
 		clearForm();
 		if (field != null){
 			tagField.setText(f.getTag());
-			indicatorField[0].setValue(f.getIndicator1());
-			indicatorField[1].setValue(f.getIndicator2());
+			for (int i = 0; i < indicatorField.length; ++i){
+				indicatorField[i].setValue(field.getIndicator(i));
+			}
 			for (int i = 0; i < f.getDataCount(); ++i){
 				subfieldListModel.addElement(data.getSubfield(i));
 			}

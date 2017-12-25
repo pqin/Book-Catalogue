@@ -25,19 +25,27 @@ public class RemoveFieldAction extends FieldAction {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		int row = table.getSelectedRow();
-		int i = table.convertRowIndexToModel(row);
-		Field f = field.get(i);
-		
+	public void enableForIndex(int i){
+		setIndex(i);
+		Field field = getField();
+		if (field == null){
+			setEnabled(false);
+		} else {
+			setEnabled(field.isRemoveable());
+		}
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent arg0) {		
 		dialog.setTitle(getTitle());
 		dialog.setContent(message);
 		int option = dialog.showDialog();
 		if (option == JOptionPane.OK_OPTION){
-			record.removeField(field.remove(i));
+			record.removeField(getField());
 			AbstractTableModel model = (AbstractTableModel) table.getModel();
+			int i = getIndex();
+			int row = table.convertRowIndexToView(i);
 			model.fireTableRowsDeleted(i, i);
-			row = table.convertRowIndexToView(i);
 			if (row >= -1 && row < table.getRowCount()){
 				table.setRowSelectionInterval(row, row);
 			}

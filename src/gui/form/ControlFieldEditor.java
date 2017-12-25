@@ -1,8 +1,5 @@
 package gui.form;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;

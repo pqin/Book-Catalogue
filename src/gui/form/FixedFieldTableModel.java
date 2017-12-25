@@ -4,6 +4,7 @@ import javax.swing.table.AbstractTableModel;
 
 import marc.field.FixedDatum;
 import marc.field.FixedField;
+import marc.type.ConfigType;
 
 public class FixedFieldTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
@@ -33,15 +34,15 @@ public class FixedFieldTableModel extends AbstractTableModel {
 	
 	private boolean editable;
 	private String[][][] data;
-	private FixedField field;
 	private FixedDatum[] map;
+	private FixedField field;
 
 	public FixedFieldTableModel(boolean editable){
 		super();
 		
 		this.editable = editable;
-		field = new FixedField();
 		map = new FixedDatum[0];
+		field = new FixedField();
 		
 		data = new String[ROW_NUM][COL_NUM][2];
 		int r, c;
@@ -149,8 +150,8 @@ public class FixedFieldTableModel extends AbstractTableModel {
 		}
 	}
 
-	public void setMask(final FixedDatum[] mask){
-		map = mask;
+	public void setMask(final ConfigType config){
+		map = config.getMap();
 		updateMask();
 		updateData();
 		int r, c;
@@ -174,15 +175,6 @@ public class FixedFieldTableModel extends AbstractTableModel {
 	}
 
 	public FixedField getField(){
-		/*
-		final FixedDatum maxDatum = map[map.length - 1];
-		int maxFieldLength = maxDatum.getIndex() + maxDatum.getLength();
-		if (((FixedField)field).getFieldLength() != maxFieldLength){
-			char[] blankData = new char[maxFieldLength];
-			Arrays.fill(blankData, FixedField.BLANK);
-			field.setFieldData(blankData);
-		}
-		*/
 		int r, c;
 		for (int i = 0; i < map.length; ++i){
 			r = indexLookup[i][ROW_INDEX];

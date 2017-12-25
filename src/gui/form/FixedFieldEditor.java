@@ -42,7 +42,7 @@ public final class FixedFieldEditor extends AbstractFieldEditor {
 		
 		this.editable = editable;
 		model = new FixedFieldTableModel(editable);
-		model.setMask(config.getMap());
+		model.setMask(config);
 		layoutComponents();
 	}
 	
@@ -91,7 +91,7 @@ public final class FixedFieldEditor extends AbstractFieldEditor {
 
 	public void setConfig(ConfigType config){
 		nameField.setText(config.getName());
-		model.setMask(config.getMap());
+		model.setMask(config);
 	}
 	
 	@Override

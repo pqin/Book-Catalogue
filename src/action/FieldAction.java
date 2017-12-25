@@ -1,7 +1,5 @@
 package action;
 
-import java.util.List;
-
 import javax.swing.AbstractAction;
 import javax.swing.JTable;
 
@@ -14,17 +12,16 @@ public abstract class FieldAction extends AbstractAction {
 	private String title;
 	protected JTable table;
 	protected Record record;
-	protected List<Field> field;
 	private int index;
+	
 
 	protected FieldAction(String name, JTable table){
 		super(name);
 		
 		title = name + " Field";
-		
 		this.table = table;
+		
 		record = null;
-		field = null;
 		index = -1;
 	}
 	
@@ -34,16 +31,12 @@ public abstract class FieldAction extends AbstractAction {
 	
 	public void setRecord(Record r){
 		record = r;
-		if (record == null){
-			field = null;
-		} else {
-			field = record.getFields();
-		}
+		index = -1;
 	}
 	public final void setIndex(int i){
-		if (field == null){
+		if (record == null){
 			index = -1;
-		} else if (i >= 0 && i < field.size()){
+		} else if (i >= 0 && i < record.getFieldCount()){
 			index = i;
 		} else {
 			index = -1;
@@ -52,11 +45,15 @@ public abstract class FieldAction extends AbstractAction {
 	protected final int getIndex(){
 		return index;
 	}
+	public void enableForIndex(int i){
+		setIndex(i);
+		setEnabled(false);
+	}
 	public final Field getField(){
-		if (field == null || field.isEmpty()){
+		if (record == null || index == -1){
 			return null;
-		} else if (index >= 0 && index < field.size()){
-			return field.get(index);
+		} else if (index >= 0 && index < record.getFieldCount()){
+			return record.getField(index);
 		} else {
 			return null;
 		}

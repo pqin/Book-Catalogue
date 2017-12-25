@@ -15,9 +15,9 @@ import marc.record.Record;
 public class RecordTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	private static final int TAG = 0;
-	private static final int IND1 = 1;
-	private static final int IND2 = 2;
-	private static final int DATA = 3;
+	private static final int INDICATOR_START = 1;
+	private static final int INDICATOR_END = (INDICATOR_START + Field.INDICATOR_COUNT) - 1;
+	private static final int DATA = INDICATOR_END + 1;
 	
 	private String[] header;
 	private Record record;
@@ -25,10 +25,11 @@ public class RecordTableModel extends AbstractTableModel {
 	public RecordTableModel(){
 		super();
 		
-		header = new String[4];
+		header = new String[DATA + 1];
 		header[TAG] = "Tag";
-		header[IND1] = "Ind1";
-		header[IND2] = "Ind2";
+		for (int i = 0; i < Field.INDICATOR_COUNT; ++i){
+			header[i + INDICATOR_START] = String.format("Ind%d", i + 1);
+		}
 		header[DATA] = "Data";
 		record = null;
 	}
@@ -54,21 +55,12 @@ public class RecordTableModel extends AbstractTableModel {
 			return null;
 		} else {
 			field = record.getFields().toArray(new Field[0]);
-			switch (columnIndex){
-			case TAG:
+			if (columnIndex == TAG){
 				value = field[rowIndex].getTag();
-				break;
-			case IND1:
-				value = field[rowIndex].getIndicator1();
-				break;
-			case IND2:
-				value = field[rowIndex].getIndicator2();
-				break;
-			case DATA:
+			} else if (columnIndex >= INDICATOR_START && columnIndex <= INDICATOR_END){
+				value = field[rowIndex].getIndicator(columnIndex - INDICATOR_START);
+			} else if (columnIndex == DATA){
 				value = field[rowIndex].getFieldString();
-				break;
-			default:
-				break;
 			}
 			return value;
 		}

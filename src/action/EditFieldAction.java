@@ -13,7 +13,6 @@ import gui.form.DataFieldEditor;
 import gui.form.FixedFieldEditor;
 import marc.RecordTypeFactory;
 import marc.field.Field;
-import marc.field.Leader;
 import marc.record.Record;
 import marc.type.ConfigType;
 import marc.type.Format;
@@ -44,21 +43,22 @@ public final class EditFieldAction extends FieldAction {
 			format = RecordTypeFactory.getFormat(record.getLeader());
 		}
 	}
+	@Override
+	public void enableForIndex(int i){
+		setIndex(i);
+		setEnabled(getField() != null);
+	}
+	
 	private Field editField(AbstractFieldEditor editor, Field field){
-		Field original = field.copy();
-		editor.clearForm();
-		editor.setField(field);
+		//editor.clearForm();
+		editor.setField(field.copy());
 		dialog.setTitle(getTitle());
 		dialog.setContent(editor.getComponent());
 		int option = dialog.showDialog();
 		if (option == JOptionPane.OK_OPTION){
 			return editor.getField();
 		} else {
-			field.setTag(original.getTag());
-			field.setIndicator1(original.getIndicator1());
-			field.setIndicator2(original.getIndicator2());
-			field.setFieldData(original.getFieldData());
-			return null;
+			return field;
 		}
 	}
 	@Override
@@ -70,8 +70,7 @@ public final class EditFieldAction extends FieldAction {
 		Field data = null;
 		switch (Field.getFieldType(tag)){
 		case FIXED_FIELD:
-			Leader leader = record.getLeader();
-			ConfigType config = RecordTypeFactory.getConfigType(format, leader, tag);
+			ConfigType config = RecordTypeFactory.getConfigType(format, record, f);
 			if (config.getLength() == 0){
 				data = editField(controlFieldForm, f);
 			} else {
@@ -90,20 +89,18 @@ public final class EditFieldAction extends FieldAction {
 		default:
 			break;
 		}
-		if (data != null){
-			field.set(oldIndex, data);
-			field.sort(null);
-			int newIndex = field.indexOf(data);
-			int newRow = table.convertRowIndexToView(newIndex);
-			
-			AbstractTableModel model = (AbstractTableModel) table.getModel();
-			if (oldRow <= newRow){
-				model.fireTableRowsUpdated(oldRow, newRow);
-			} else {
-				model.fireTableRowsUpdated(newRow, oldRow);
-			}
-			table.setRowSelectionInterval(newRow, newRow);
+		record.setField(oldIndex, data);
+		record.sortFields();
+		int newIndex = record.firstIndexOf(data);
+		int newRow = table.convertRowIndexToView(newIndex);
+		
+		AbstractTableModel model = (AbstractTableModel) table.getModel();
+		if (oldRow <= newRow){
+			model.fireTableRowsUpdated(oldRow, newRow);
+		} else {
+			model.fireTableRowsUpdated(newRow, oldRow);
 		}
+		table.setRowSelectionInterval(newRow, newRow);
 	}
 
 }
