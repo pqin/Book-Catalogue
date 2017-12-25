@@ -20,6 +20,17 @@ import marc.field.FixedDatum;
 public class FixedDataParser {
 	private static final int RADIX = 10;
 	
+	private class Identifier {
+		private String tag, value;
+		int index;
+		
+		public Identifier(String tag, int index, String value){
+			this.tag = tag;
+			this.index = index;
+			this.value = value;
+		}
+	};
+	
 	public FixedDataParser(){
 		
 	}
@@ -58,17 +69,18 @@ public class FixedDataParser {
 	    Map<Character, Format> formatList = new HashMap<Character, Format>();
 	    Format format = null;
 	    List<Character> formatCode = new ArrayList<Character>();
+	    List<String> materialParent = new ArrayList<String>();
 	    
 	    List<ConfigType> parentConfigList = new ArrayList<ConfigType>();
 	    ConfigType parentConfig = null;
 	    ConfigType config = null;
 	    String refTag = null;
 	    int refIndex = -1;
-	    List<String> fieldID = new ArrayList<String>();
+	    List<Identifier> fieldID = new ArrayList<Identifier>();
 	    
 	    List<FixedDatum> fMap = new ArrayList<FixedDatum>();
 	    FixedDatum fixedDatum = null;
-	    Map<Character, String> codeMap = new HashMap<Character, String>();
+	    Map<Character, String> codeMap = new HashMap<Character, String>();  
 	    
 	    try {
 			in = new FileInputStream(file);
@@ -79,6 +91,7 @@ public class FixedDataParser {
 					localName = reader.getLocalName();
 					switch (localName){
 					case "format":
+					case "material":
 						formatName = null;
 						formatCode.clear();
 						for (int i = 0; i < reader.getAttributeCount(); ++i){
@@ -144,6 +157,7 @@ public class FixedDataParser {
 									FixedDatum[] parentMap = parentConfig.getMap();
 									for (int i = 0; i < parentMap.length; ++i){
 										fMap.add(parentMap[i]);
+										
 									}
 								} else {
 									System.out.printf("Parent '%s' not defined.%n", parentName);
@@ -207,6 +221,17 @@ public class FixedDataParser {
 							}
 						}
 						break;
+					case "type_format":
+						for (int i = 0; i < reader.getAttributeCount(); ++i){
+							switch (reader.getAttributeLocalName(i)){
+							case "name":
+								materialParent.add(reader.getAttributeValue(i));
+								break;
+							default:
+								break;
+							}
+						}
+						break;
 					default:
 						break;
 					}
@@ -241,22 +266,21 @@ public class FixedDataParser {
 							config.setMap(fMap);
 							if (fieldID.isEmpty()){
 								// use 'type_code' of parent Format if no 'field_identifier' defined
-								for (int i = 0; i < formatCode.size(); ++i){
-									format.addConfiguration(tag, 6, formatCode.get(i), config);
+								for (char code : formatCode){
+									format.addConfiguration(tag, code, config);
 								}
 							} else {
 								// use 'field_identifier' if defined
-								for (int i = 0; i < fieldID.size(); ++i){
-									format.addConfiguration(tag, 6, fieldID.get(i), config);
+								for (Identifier id : fieldID){
+									format.addConfiguration(id.tag, id.index, tag, id.value, config);
 								}
 							}
 						}
 						break;
 					case "identifier":
 						if (refTag != null && refIndex >= 0){
-							// TODO
+							fieldID.add(new Identifier(refTag, refIndex, content));
 						}
-						fieldID.add(content);
 						break;
 					case "fixed_datum":
 						if (length > 0 && index >= 0 && index < config.getLength()){
@@ -280,6 +304,23 @@ public class FixedDataParser {
 						codeMeaning = content;
 						if (codeValue != null && codeMeaning != null){
 							codeMap.put(codeValue.charAt(0), codeMeaning);
+						}
+						break;
+					case "material":
+						if (format != null){
+							Iterator<Character> it = formatList.keySet().iterator();
+							char c;
+							Format fmt = null;
+							while (it.hasNext()){
+								c = it.next();
+								fmt = formatList.get(c);
+								for (String m : materialParent){
+									if (fmt.getName().equals(m)){
+										fmt.addConfiguration(format);
+									}
+								}
+							}
+							format = null;
 						}
 						break;
 					default:

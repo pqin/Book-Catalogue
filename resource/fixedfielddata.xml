@@ -1175,7 +1175,7 @@
                 <code value="n">No item information</code>
             </fixed_datum>
         </field>
-        <field tag="008" length="27" name="Holdings" short_form="Hold">
+        <field tag="008" length="32" name="Holdings" short_form="Hold">
             <fixed_datum index="0" length="6">
                 <label>Entered</label>
                 <description>Date Entered</description>
@@ -1396,7 +1396,7 @@
                 <code value="a">UTF-8</code>
             </fixed_datum>
         </field>
-        <field tag="008" length="13" name="Community" short_form="Comm">
+        <field tag="008" length="15" name="Community" short_form="Comm">
             <fixed_datum index="0" length="6">
                 <label>Entered</label>
                 <description>Date Entered</description>
@@ -1454,39 +1454,8 @@
                 <description>Language</description>
             </fixed_datum>
         </field>
-    </format>
-
-    <!-- START OF 007 FIELD (PHYSICAL DESCRIPTION) SECTION -->
-    <materials>
-        <field tag="007" length="8" name="Physical Description">
-            <type_format name="Bibliographic" />
-            <type_format name="Holdings" />
-            <fixed_datum index="0" length="1">
-                <label>Category</label>
-                <description>Category</description>
-                <code value="a">Map</code>
-            </fixed_datum>
-        </field>
-        <field tag="007" length="2" name="Physical Description">
-            <type_format name="Bibliographic" />
-            <type_format name="Holdings" />
-            <fixed_datum index="0" length="1">
-                <label>Category</label>
-                <description>Category</description>
-                <code value="t">Text</code>
-            </fixed_datum>
-        </field>
-        <field tag="007" length="2" name="Physical Description">
-            <type_format name="Bibliographic" />
-            <type_format name="Holdings" />
-            <fixed_datum index="0" length="1">
-                <label>Category</label>
-                <description>Category</description>
-                <code value="z">Unspecified</code>
-            </fixed_datum>
-        </field>
         <field tag="007" length="11" name="Physical Description">
-            <type_format name="Community" />
+            <identifier tag="007" index="0">e</identifier>
             <fixed_datum index="0" length="1">
                 <label>Category</label>
                 <description>Category</description>
@@ -1589,5 +1558,54 @@
                 <code value="u">Unknown</code>
             </fixed_datum>
         </field>
-    </materials>
+    </format>
+
+    <!-- START OF 007 FIELD (PHYSICAL DESCRIPTION) SECTION -->
+    <material name="Physical Description">
+        <type_format name="Bibliographic" />
+        <type_format name="Holdings" />
+        <field tag="007" length="8" name="Physical Description">
+            <identifier tag="007" index="0">a</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="a">Map</code>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="2" name="Physical Description">
+            <identifier tag="007" index="0">t</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="t">Text</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+                <code value="a">Regular print</code>
+                <code value="b">Large print</code>
+                <code value="c">Braille</code>
+                <code value="d">Loose-leaf</code>
+                <code value="u">Unspecified</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="2" name="Physical Description">
+            <identifier tag="007" index="0">z</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="z">Unspecified</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+                <code value="m">Multiple physical forms</code>
+                <code value="u">Unspecified</code>
+                <code value="z">Other</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+    </material>
 </data>

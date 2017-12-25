@@ -44,7 +44,7 @@ public class ConfigType {
 			map = new FixedDatum[0];
 		} else {
 			map = Arrays.copyOf(m, m.length);
+			Arrays.sort(map);
 		}
-		Arrays.sort(map);
 	}
 }
