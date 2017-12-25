@@ -75,7 +75,7 @@ public final class Record implements Serializable {
 		final int radix = 10;
 		int nonFiling = 0;
 		if (f != null){
-			nonFiling = Character.digit(f.getIndicator2(), radix);
+			nonFiling = Character.digit(f.getIndicator(1), radix);
 		}
 		if (nonFiling < 0){
 			nonFiling = 0;
@@ -132,16 +132,17 @@ public final class Record implements Serializable {
 	public Field getField(int index){
 		if (index == 0){
 			return leader;
-		} else if (index >= 1 && index < fields.size() + 1){
+		} else if (index >= 1 && index <= fields.size()){
 			return fields.get(index - 1);
 		} else {
-			return null;
+			throw new IndexOutOfBoundsException(
+					String.format("Index %d not in bounds[%d, %d]%n", index, 0, getFieldCount()));
 		}
 	}
 	public void setField(int index, Field field){
 		if (index == 0){
 			leader = (Leader) field;
-		} else if (index >= 1 && index < fields.size() + 1){
+		} else if (index >= 1 && index <= fields.size()){
 			fields.set(index - 1, field);
 		} else {
 			throw new IndexOutOfBoundsException(
@@ -207,15 +208,41 @@ public final class Record implements Serializable {
 		}
 		return f;
 	}
-	public int indexOf(Field field){
+	public int firstIndexOf(Field field){
 		if (leader.equals(field)){
 			return 0;
 		}
-		int i = fields.indexOf(field);
-		if (i >= 0 && i < fields.size()){
-			++i;
+		int index = fields.indexOf(field);
+		if (index >= 0 && index < fields.size()){
+			++index;
 		}
-		return i;
+		return index;
+	}
+	public int lastIndexOf(Field field){
+		int index = -1;
+		if (field == null){
+			for (int i = fields.size() - 1; i >= 0; --i){
+				if (fields.get(i) == null){
+					index = i + 1;
+					break;
+				}
+			}
+		} else {
+			for (int i = fields.size() - 1; i >= 0; --i){
+				if (field.equals(fields.get(i))){
+					index = i + 1;
+					break;
+				}
+			}
+		}
+		if (index == -1){
+			if (field == null){
+				index = leader == null ? 0 : -1;
+			} else {
+				index = field.equals(leader) ? 0 : -1;
+			}
+		}
+		return index;
 	}
 	
 	private List<ControlField> getControlFields(){

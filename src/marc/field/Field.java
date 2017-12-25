@@ -7,7 +7,8 @@ public class Field implements Comparable<Field> {
 	public static final int TAG_LENGTH = 3;
 	public static final String UNKNOWN_TAG;
 	private static final Pattern DATA_TAG_REGEX = Pattern.compile(String.format("[0-9]{%d}", TAG_LENGTH));
-	
+
+	public static final int INDICATOR_COUNT = 2;
 	public static final char BLANK_INDICATOR = 0x20;
 	public static final char[] INDICATOR_VALUES;
 	static {
@@ -28,17 +29,24 @@ public class Field implements Comparable<Field> {
 	}
 	
 	protected String tag;
-	protected char indicator1, indicator2;
+	protected char[] indicator;
 	
 	public Field(){
 		tag = UNKNOWN_TAG;
-		indicator1 = BLANK_INDICATOR;
-		indicator2 = BLANK_INDICATOR;
+		indicator = new char[INDICATOR_COUNT];
+		Arrays.fill(indicator, BLANK_INDICATOR);
 	}
-	protected Field(String tag, char ind1, char ind2){
+	protected Field(String tag){
 		this.tag = tag;
-		indicator1 = ind1;
-		indicator2 = ind2;
+		indicator = new char[INDICATOR_COUNT];
+		Arrays.fill(indicator, BLANK_INDICATOR);
+	}
+	protected Field(String tag, char[] ind){
+		this.tag = tag;
+		this.indicator = Arrays.copyOf(ind, INDICATOR_COUNT);
+		for (int i = ind.length; i < INDICATOR_COUNT; ++i){
+			this.indicator[i] = BLANK_INDICATOR;
+		}
 	}
 	
 	public final boolean hasTag(String value){
@@ -96,21 +104,18 @@ public class Field implements Comparable<Field> {
 	public void setTag(String tag){
 		this.tag = tag;
 	}
-	public char getIndicator1(){
-		return indicator1;
+	public char getIndicator(int index){
+		if (index >= 0 && index < INDICATOR_COUNT){
+			return indicator[index];
+		} else {
+			throw new IndexOutOfBoundsException(String.format("Index %d not in range [0, %d]",
+					index, INDICATOR_COUNT - 1));
+		}
 	}
-	public void setIndicator1(char indicator){
-		indicator1 = indicator;
-	}
-	public char getIndicator2(){
-		return indicator2;
-	}
-	public void setIndicator2(char indicator){
-		indicator2 = indicator;
-	}
-	public void setIndicators(char ind1, char ind2){
-		indicator1 = ind1;
-		indicator2 = ind2;
+	public void setIndicator(int index, char value){
+		if (index >= 0 && index < INDICATOR_COUNT){
+			indicator[index] = value;
+		}
 	}
 	public int getDataCount(){
 		return 0;
@@ -151,9 +156,8 @@ public class Field implements Comparable<Field> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + Arrays.hashCode(indicator);
 		result = prime * result + ((tag == null) ? 0 : tag.hashCode());
-		result = prime * result + indicator1;
-		result = prime * result + indicator2;
 		return result;
 	}
 	/* (non-Javadoc)
@@ -171,17 +175,14 @@ public class Field implements Comparable<Field> {
 			return false;
 		}
 		Field other = (Field) obj;
+		if (!Arrays.equals(indicator, other.indicator)) {
+			return false;
+		}
 		if (tag == null) {
 			if (other.tag != null) {
 				return false;
 			}
 		} else if (!tag.equals(other.tag)) {
-			return false;
-		}
-		if (indicator1 != other.indicator1) {
-			return false;
-		}
-		if (indicator2 != other.indicator2) {
 			return false;
 		}
 		return true;
@@ -192,8 +193,7 @@ public class Field implements Comparable<Field> {
 	public String toString(){
 		StringBuilder buf = new StringBuilder();
 		buf.append(tag);
-		buf.append(indicator1);
-		buf.append(indicator2);
+		buf.append(indicator);
 		String f = getFieldString();
 		if (f != null){
 			buf.append(f);

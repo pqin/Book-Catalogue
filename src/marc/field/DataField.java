@@ -13,11 +13,11 @@ public final class DataField extends Field {
 		subfield = new ArrayList<Subfield>();
 	}
 	public DataField(String tag){
-		super(tag, Field.BLANK_INDICATOR, Field.BLANK_INDICATOR);
+		super(tag);
 		subfield = new ArrayList<Subfield>();
 	}
-	public DataField(String tag, char ind1, char ind2){
-		super(tag, ind1, ind2);
+	public DataField(String tag, char[] ind){
+		super(tag, ind);
 		subfield = new ArrayList<Subfield>();
 	}
 	
@@ -203,7 +203,7 @@ public final class DataField extends Field {
 		return true;
 	}
 	public DataField copy(){
-		DataField copy = new DataField(this.tag, this.indicator1, this.indicator2);
+		DataField copy = new DataField(this.tag, this.indicator);
 		Subfield s = null;
 		for (int i = 0; i < subfield.size(); ++i){
 			s = subfield.get(i);

@@ -32,8 +32,7 @@ public class MarcMnemonic extends AbstractMarc {
 	private static final Pattern TAG_REGEX = Pattern.compile("^=(LDR|\\d{3})  ");
 	private static final Pattern SUBFIELD_REGEX = Pattern.compile("\\$([a-z0-9])([^\\$\\r\\n]*)");
 	private static final int CONTROL_DATA_INDEX = 6;
-	private static final int INDICATOR_1_INDEX = 6;
-	private static final int INDICATOR_2_INDEX = 7;
+	private static final int INDICATOR_INDEX = 6;
 	private static final char BLANK_REPLACEMENT = '\\';
 	
 	@Override
@@ -58,7 +57,7 @@ public class MarcMnemonic extends AbstractMarc {
         RecordBuilder builder = new RecordBuilder();
         Record record = null;
         String tag, data;
-        char ind1, ind2;
+        char[] ind = new char[Field.INDICATOR_COUNT];
         
         in = new BufferedReader(new InputStreamReader(new FileInputStream(file), IO_CHARSET));
         while ((line = in.readLine()) != null){
@@ -81,10 +80,10 @@ public class MarcMnemonic extends AbstractMarc {
             		}
             		builder.setControlData(data);
             	} else {
-            		ind1 = line.charAt(INDICATOR_1_INDEX);
-            		ind2 = line.charAt(INDICATOR_2_INDEX);
-            		builder.setIndicator1((ind1 == BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind1);
-            		builder.setIndicator2((ind2 == BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind2);
+            		line.getChars(INDICATOR_INDEX, INDICATOR_INDEX + Field.INDICATOR_COUNT, ind, 0);
+            		for (int i = 0; i < Field.INDICATOR_COUNT; ++i){
+						builder.setIndicator(i, (ind[i] == BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind[i]);
+					}
             		m2 = SUBFIELD_REGEX.matcher(line);
             		while (m2.find()){
             			data = m2.group(2);
@@ -109,7 +108,7 @@ public class MarcMnemonic extends AbstractMarc {
 		
 		Record record = null;
 		String tag = null;
-		char ind1, ind2;
+		char[] ind = new char[Field.INDICATOR_COUNT];
 		String fieldData = null;
 		Subfield subfield = null;
 		Iterator<Record> it = null;
@@ -133,12 +132,11 @@ public class MarcMnemonic extends AbstractMarc {
 					fieldData = f.getFieldString();
 					out.write(fieldData);
 				} else {
-					ind1 = f.getIndicator1();
-					ind2 = f.getIndicator2();
-					ind1 = (ind1 == Field.BLANK_INDICATOR) ? BLANK_REPLACEMENT : ind1;
-					ind2 = (ind2 == Field.BLANK_INDICATOR) ? BLANK_REPLACEMENT : ind2;
-					out.write(ind1);
-					out.write(ind2);
+					for (int i = 0; i < Field.INDICATOR_COUNT; ++i){
+						ind[i] = f.getIndicator(i);
+						ind[i] = (ind[i] == Field.BLANK_INDICATOR) ? BLANK_REPLACEMENT : ind[i];
+					}
+					out.write(ind);
 					for (int s = 0; s < f.getDataCount(); ++s){
 						subfield = ((DataField) f).getSubfield(s);
 						out.write('$');

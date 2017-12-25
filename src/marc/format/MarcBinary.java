@@ -129,8 +129,9 @@ public class MarcBinary extends AbstractMarc {
 				}
 				builder.setControlData(fieldData.substring(index0, index1));
 			} else {
-				builder.setIndicator1(fieldData.charAt(0));
-				builder.setIndicator2(fieldData.charAt(1));
+				for (int i = 0; i < Field.INDICATOR_COUNT; ++i){
+					builder.setIndicator(i, fieldData.charAt(i));
+				}
 				index0 = fieldData.indexOf(SUBFIELD_DELIMITER)+1;
 				index1 = fieldData.indexOf(FIELD_TERMINATOR, index0);
 				if (index1 == -1){
@@ -294,9 +295,10 @@ public class MarcBinary extends AbstractMarc {
 		} else {
 			tmp = new byte[(2*subCount) + 1][];
 			// indicators
-			tmp[0] = new byte[2];
-			tmp[0][0] = getBytes(f.getIndicator1(), charset)[0];
-			tmp[0][1] = getBytes(f.getIndicator2(), charset)[0];
+			tmp[0] = new byte[Field.INDICATOR_COUNT];
+			for (int i = 0; i < Field.INDICATOR_COUNT; ++i){
+				tmp[0][i] = getBytes(f.getIndicator(i), charset)[0];
+			}
 			// subfield code and data
 			for (int i = 0; i < subCount; ++i){
 				s = f.getSubfield(i);

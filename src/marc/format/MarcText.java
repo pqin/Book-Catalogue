@@ -56,15 +56,16 @@ public class MarcText extends AbstractMarc {
         RecordBuilder builder = new RecordBuilder();
         Record record = null;
         String tag, data;
-        char ind1, ind2;
+        char[] ind = new char[Field.INDICATOR_COUNT];
         
         in = new BufferedReader(new InputStreamReader(new FileInputStream(file), IO_CHARSET));
         while ((line = in.readLine()) != null){
             m1 = FIELD_REGEX.matcher(line);
             if (m1.find()){
             	tag = m1.group(1);
-            	ind1 = m1.group(2).charAt(0);
-            	ind2 = m1.group(3).charAt(0);
+            	for (int i = 0; i < Field.INDICATOR_COUNT; ++i){
+            		ind[i] = m1.group(2+i).charAt(0);
+            	}
             	if (Leader.TAG.equals(tag)){
             		if (recordCount != list.size()){
             			record = builder.build();
@@ -74,8 +75,9 @@ public class MarcText extends AbstractMarc {
             		++recordCount;
             	}
             	builder.createField(tag);
-            	builder.setIndicator1((ind1 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind1);
-            	builder.setIndicator2((ind2 == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind2);
+            	for (int i = 0; i < Field.INDICATOR_COUNT; ++i){
+					builder.setIndicator(i, (ind[i] == INDICATOR_BLANK_REPLACEMENT) ? Field.BLANK_INDICATOR : ind[i]);
+				}
             	m2 = SUBFIELD_REGEX.matcher(line);
             	while (m2.find()){
             		data = m2.group(2);
@@ -107,7 +109,7 @@ public class MarcText extends AbstractMarc {
 		
 		Record record = null;
 		String tag = null;
-		char ind1, ind2;
+		char[] ind = new char[Field.INDICATOR_COUNT];
 		String fieldData = null;
 		Subfield subfield = null;
 		Iterator<Record> it = null;
@@ -118,13 +120,12 @@ public class MarcText extends AbstractMarc {
 			record = it.next();
 			for (Field f : record.getFields()){
 				tag = f.getTag();
-				ind1 = f.getIndicator1();
-				ind2 = f.getIndicator2();
-				ind1 = (ind1 == Field.BLANK_INDICATOR) ? INDICATOR_BLANK_REPLACEMENT : ind1;
-				ind2 = (ind2 == Field.BLANK_INDICATOR) ? INDICATOR_BLANK_REPLACEMENT : ind2;
+				for (int i = 0; i < Field.INDICATOR_COUNT; ++i){
+					ind[i] = f.getIndicator(i);
+					ind[i] = (ind[i] == Field.BLANK_INDICATOR) ? INDICATOR_BLANK_REPLACEMENT : ind[i];
+				}
 				out.write(tag);
-				out.write(ind1);
-				out.write(ind2);
+				out.write(ind);
 				if (Field.isFixedFieldTag(tag)){
 					fieldData = f.getFieldString();
 					fieldData = fieldData.replace(FixedField.BLANK, FIELD_BLANK_REPLACEMENT);

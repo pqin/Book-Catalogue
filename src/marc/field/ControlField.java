@@ -14,7 +14,7 @@ public class ControlField extends Field {
 		data = new char[0];
 	}
 	public ControlField(String tag){
-		super(tag, Field.BLANK_INDICATOR, Field.BLANK_INDICATOR);
+		super(tag);
 		data = new char[0];
 	}
 	public ControlField(int length){
@@ -23,12 +23,12 @@ public class ControlField extends Field {
 		Arrays.fill(data, FixedField.BLANK);
 	}
 	public ControlField(String tag, int length){
-		super(tag, Field.BLANK_INDICATOR, Field.BLANK_INDICATOR);
+		super(tag);
 		data = new char[length];
 		Arrays.fill(data, FixedField.BLANK);
 	}
 	public ControlField(String tag, char[] value){
-		super(tag, Field.BLANK_INDICATOR, Field.BLANK_INDICATOR);
+		super(tag);
 		data = Arrays.copyOf(value, value.length);
 	}
 	

@@ -1,6 +1,7 @@
 package marc.record;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import marc.field.ControlField;
 import marc.field.DataField;
@@ -14,7 +15,7 @@ public final class RecordBuilder {
 	private Leader leader;
 	private FixedDataElement fixedElement;
 	private String tag;
-	private char ind1, ind2;
+	private char[] indicator;
 	private char[] fixedData;
 	private ArrayList<Subfield> variableData;
 	private ArrayList<ControlField> controlField;
@@ -26,8 +27,8 @@ public final class RecordBuilder {
 		fixedElement = new FixedDataElement();
 		
 		tag = Field.UNKNOWN_TAG;
-		ind1 = Field.BLANK_INDICATOR;
-		ind2 = Field.BLANK_INDICATOR;
+		indicator = new char[Field.INDICATOR_COUNT];
+		Arrays.fill(indicator, Field.BLANK_INDICATOR);
 		fixedData = null;
 		variableData = new ArrayList<Subfield>();
 		controlField = new ArrayList<ControlField>();
@@ -45,8 +46,7 @@ public final class RecordBuilder {
 	}
 	private void resetField(){
 		tag = Field.UNKNOWN_TAG;
-		ind1 = Field.BLANK_INDICATOR;
-		ind2 = Field.BLANK_INDICATOR;
+		Arrays.fill(indicator, Field.BLANK_INDICATOR);
 		fixedData = null;
 		variableData.clear();
 	}
@@ -80,11 +80,8 @@ public final class RecordBuilder {
 	public void createField(String tag){
 		this.tag = (tag == null) ? "" : tag;
 	}
-	public void setIndicator1(char indicator1){
-		ind1 = indicator1;
-	}
-	public void setIndicator2(char indicator2){
-		ind2 = indicator2;
+	public void setIndicator(int index, char value){
+		indicator[index] = value;
 	}
 	public void setControlData(String data){
 		fixedData = (data == null) ? new char[0] : data.toCharArray();
@@ -100,7 +97,7 @@ public final class RecordBuilder {
 		} else if (Field.isControlTag(tag)){
 			controlField.add(new ControlField(tag, fixedData));
 		} else {
-			DataField f = new DataField(tag, ind1, ind2);
+			DataField f = new DataField(tag, indicator);
 			Subfield[] tmp = new Subfield[variableData.size()];
 			f.setAllSubfields(variableData.toArray(tmp));
 			dataField.add(f);

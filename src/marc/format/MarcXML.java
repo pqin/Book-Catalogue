@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.stream.XMLInputFactory;
@@ -35,8 +37,7 @@ public class MarcXML extends AbstractMarc {
 	private static final String CONTROLFIELD = "controlfield";
 	private static final String DATAFIELD = "datafield";
 	private static final String TAG = "tag";
-	private static final String INDICATOR1 = "ind1";
-	private static final String INDICATOR2 = "ind2";
+	private static final Pattern INDICATOR = Pattern.compile("ind([0-9]+)");
 	private static final String SUBFIELD = "subfield";
 	private static final String CODE = "code";
 	
@@ -59,7 +60,10 @@ public class MarcXML extends AbstractMarc {
 		FileInputStream in = new FileInputStream(file);
 	    XMLStreamReader reader = null;
 	    String localName = null;
+	    String attributeName = null;
 	    String content = null;
+	    int g = -1;
+		Matcher m = null;
 	    
 	    try {
 			reader = factory.createXMLStreamReader(in);
@@ -83,18 +87,16 @@ public class MarcXML extends AbstractMarc {
 						break;
 					case DATAFIELD:
 						for (int i = 0; i < reader.getAttributeCount(); ++i){
-							switch (reader.getAttributeLocalName(i)){
-							case TAG:
+							attributeName = reader.getAttributeLocalName(i);
+							m = INDICATOR.matcher(attributeName);
+							if (TAG.equals(attributeName)){
 								builder.createField(reader.getAttributeValue(i));
-								break;
-							case INDICATOR1:
-								builder.setIndicator1(reader.getAttributeValue(i).charAt(0));
-								break;
-							case INDICATOR2:
-								builder.setIndicator2(reader.getAttributeValue(i).charAt(0));
-								break;
-							default:
-								break;
+							} else if (m.matches()){
+								g = -1;
+								g = Integer.parseInt(m.group(1), 10) - 1;
+								if (g != -1){
+									builder.setIndicator(g, reader.getAttributeValue(i).charAt(0));
+								}
 							}
 						}
 						break;
@@ -212,8 +214,9 @@ public class MarcXML extends AbstractMarc {
 					} else {
 						writer.writeStartElement(DATAFIELD);
 						writer.writeAttribute(TAG, tag);
-						writer.writeAttribute(INDICATOR1, String.valueOf(f.getIndicator1()));
-						writer.writeAttribute(INDICATOR2, String.valueOf(f.getIndicator2()));
+						for (int j = 0; j < Field.INDICATOR_COUNT; ++j){
+							writer.writeAttribute(String.format("ind%d", j+1), String.valueOf(f.getIndicator(j)));
+						}
 						writer.writeCharacters(newline);
 						subfieldCount = f.getDataCount();
 						for (int s = 0; s < subfieldCount; ++s){

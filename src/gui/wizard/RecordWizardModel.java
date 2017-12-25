@@ -54,14 +54,14 @@ public class RecordWizardModel extends WizardModel {
 				leader = new Leader();
 			}
 			format = RecordTypeFactory.getFormat(leader);
-			config = RecordTypeFactory.getConfigType(format, leader, identifier);
+			config = RecordTypeFactory.getConfigType(format, leader, Leader.TYPE, identifier);
 			((FixedFieldEditor) editor).setConfig(config);
 			editor.setField(leader);
 			break;
 		case PANEL_ID_008:
 			editor = (FixedFieldEditor) panel.getEditor();
 			format = RecordTypeFactory.getFormat(leader);
-			config = RecordTypeFactory.getConfigType(format, leader, identifier);
+			config = RecordTypeFactory.getConfigType(format, leader, Leader.TYPE, identifier);
 			if (dataElement == null){
 				dataElement = new FixedDataElement(config.getLength());
 				dataElement.setEntryDate(RecordFactory.generateEntryDate());

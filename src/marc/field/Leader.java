@@ -20,7 +20,7 @@ public final class Leader extends FixedField {
 		data[STATUS] = FixedField.BLANK;
 		data[TYPE] = FixedField.BLANK;
 		data[CHARACTER_CODING_SCHEME] = FixedField.BLANK;
-		data[10] = '2';
+		setDataToValue(Field.INDICATOR_COUNT, 10, 1);
 		data[11] = '2';
 		setDataToValue(24, BASE_ADDRESS, 5);
 		data[20] = '4';
