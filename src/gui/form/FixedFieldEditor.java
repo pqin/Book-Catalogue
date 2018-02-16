@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 
+import gui.renderer.FixedDatumCellEditor;
 import gui.renderer.FixedDatumTableCellRenderer;
 import marc.field.Field;
 import marc.field.FixedDatum;

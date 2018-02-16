@@ -1,4 +1,4 @@
-package gui.form;
+package gui.renderer;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -10,6 +10,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
+import gui.form.FixedFieldTableModel;
 import gui.wizard.CharMapComboBoxModel;
 import gui.wizard.CharacterComboBox;
 import marc.field.FixedDatum;
