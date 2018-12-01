@@ -47,7 +47,7 @@ public class BibliographicFormatter extends RecordFormatter {
 			title = "";
 		} else {
 			title = format(titleField, titlecode, " ");
-			nonfiling = Character.digit(titleField.getIndicator2(), radix);
+			nonfiling = Character.digit(titleField.getIndicator(1), radix);
 			if (nonfiling < 0){
 				nonfiling = 0;
 			}
@@ -88,7 +88,7 @@ public class BibliographicFormatter extends RecordFormatter {
 		char[] tracingCode = {'a', 'b'};
 		String[] tmpTrace = formatAll(record, "700", tracingCode, " ");
 		boolean titleTraced = false;
-		if (titleField != null && titleField.getIndicator1() == '1'){
+		if (titleField != null && titleField.getIndicator(0) == '1'){
 			titleTraced = true;
 		} else {
 			titleTraced = false;
@@ -185,7 +185,7 @@ public class BibliographicFormatter extends RecordFormatter {
 		String label = null;
 		for (int i = 0; i < s.length; ++i){
 			field = (DataField) summaryField.get(i);
-			indicator = field.getIndicator1();
+			indicator = field.getIndicator(0);
 			if (indicator == indPrev){
 				label = "";
 			} else {

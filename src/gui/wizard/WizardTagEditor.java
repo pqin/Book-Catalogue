@@ -1,6 +1,7 @@
 package gui.wizard;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.Box;
@@ -16,18 +17,12 @@ import marc.field.FieldType;
 public class WizardTagEditor extends AbstractWizardPanel {
 	private JTextComponent textField;
 	private String previousID;
-	private Map<FieldType, String> nextID;
+	private Map<FieldType, String> typeID;
+	private Map<String, String> tagID;
 	
 	public WizardTagEditor(String ID){
 		super(ID);
 		
-		layoutComponents();
-		
-		previousID = null;
-		nextID = new EnumMap<FieldType, String>(FieldType.class);
-		nextID.put(FieldType.UNKNOWN, ID);	// stay at this panel until valid tag is input
-	}
-	private void layoutComponents(){
 		textField = new JTextField(10);
 		textField.setMaximumSize(textField.getPreferredSize());
 		textField.setText(Field.UNKNOWN_TAG);
@@ -39,6 +34,11 @@ public class WizardTagEditor extends AbstractWizardPanel {
 		panel.add(textField);
 		
 		setComponent(panel);
+		
+		previousID = null;
+		typeID = new EnumMap<FieldType, String>(FieldType.class);
+		typeID.put(FieldType.UNKNOWN, ID);	// stay at this panel until valid tag is input
+		tagID = new HashMap<String, String>();
 	}
 	
 	@Override
@@ -70,14 +70,24 @@ public class WizardTagEditor extends AbstractWizardPanel {
 
 	@Override
 	public String getNextID() {
-		FieldType type = Field.getFieldType(textField.getText());
-		return nextID.get(type);
+		String tag = textField.getText();
+		if (tagID.containsKey(tag)){
+			return tagID.get(tag);
+		} else {
+			FieldType type = Field.getFieldType(tag);
+			return typeID.get(type);
+		}
 	}
 	@Override
 	public void setNextID(String ignore){}
+	public void setNextID(String tag, String ID){
+		if (tag != null){
+			tagID.put(tag, ID);
+		}
+	}
 	public void setNextID(FieldType type, String ID){
 		if (type != null && type != FieldType.UNKNOWN){
-			nextID.put(type, ID);
+			typeID.put(type, ID);
 		}
 	}
 

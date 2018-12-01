@@ -7,11 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import marc.field.FixedField;
 import marc.field.Leader;
 
 public final class Format {
 	public static final String DEFAULT_REFERENCE_TAG = Leader.TAG;
 	public static final int DEFAULT_REFERENCE_INDEX = Leader.TYPE;
+	private static final int MAX_TYPE_LENGTH = 2;
 	
 	private String name;
 	private Map<ConfigIdentifier, ConfigNode> map;
@@ -40,29 +42,19 @@ public final class Format {
 		Arrays.sort(output);
 		return output;
 	}
-	public ConfigType[] getConfiguration(String tag, char key){
-		ConfigType[] value = null;
-		if (tag == null){
-			value = new ConfigType[0];
-		} else {
-			ConfigNode node = map.get(new ConfigIdentifier(DEFAULT_REFERENCE_TAG, DEFAULT_REFERENCE_INDEX, key, tag));
-			if (node == null){
-				value = new ConfigType[0];
-			} else {
-				value = node.getConfig(key);
-			}
+	
+	public ConfigType getConfiguration(FixedField reference, int refIndex, String tag){
+		String refTag = reference.getTag();
+		char[] type = reference.getData(refIndex, MAX_TYPE_LENGTH);
+		String key = null;
+		int i = 0;
+		ConfigType config = null;
+		while (config == null && i < type.length){
+			key = String.copyValueOf(type, 0, i+1);
+			config = getConfiguration(refTag, refIndex, tag, key);
+			++i;
 		}
-		return value;
-	}
-	public ConfigType getConfiguration(String tag, String key){
-		ConfigType value = null;
-		if (tag != null){
-			ConfigNode node = map.get(new ConfigIdentifier(DEFAULT_REFERENCE_TAG, DEFAULT_REFERENCE_INDEX, key.charAt(0), tag));
-			if (node != null){
-				value = node.getConfig(key);
-			}
-		}
-		return value;
+		return config;
 	}
 	public ConfigType[] getConfiguration(String reference, int index, String tag, char key){
 		ConfigType[] value = null;

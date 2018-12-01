@@ -13,8 +13,8 @@ import marc.field.Field;
 public class RemoveFieldAction extends FieldAction {
 	private static final long serialVersionUID = 1L;
 	
-	MarcDialog dialog;
-	JLabel message;
+	private MarcDialog dialog;
+	private JLabel message;
 	
 	public RemoveFieldAction(MarcDialog dialog, JTable table){
 		super("Remove", table);

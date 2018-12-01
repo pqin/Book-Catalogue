@@ -34,9 +34,9 @@ public abstract class AbstractFieldEditor implements MarcComponent {
 	public abstract Field getField();
 	/**
 	 * Load editor with the data of the field to edit.
-	 * @param f the field to edit
+	 * @param field the field to edit
 	 */
-	public abstract void setField(Field f);
+	public abstract void setField(Field field);
 	/**
 	 * Clears the editor, setting subcomponents to some initial value.
 	 */

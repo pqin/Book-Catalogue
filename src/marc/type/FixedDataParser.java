@@ -103,7 +103,9 @@ public class FixedDataParser {
 								break;
 							}
 						}
-						if (formatName != null){
+						if (formatName == null){
+							System.out.println("Format name undefined.");
+						} else {
 							format = new Format(formatName);
 						}
 						break;
@@ -244,9 +246,8 @@ public class FixedDataParser {
 					switch (localName){
 					case "format":
 						if (format != null){
-							Iterator<Character> it = formatCode.iterator();
-							while (it.hasNext()){
-								formatList.put(it.next(), format);
+							for (char code : formatCode){
+								formatList.put(code, format);
 							}
 						}
 						break;
@@ -267,11 +268,13 @@ public class FixedDataParser {
 							if (fieldID.isEmpty()){
 								// use 'type_code' of parent Format if no 'field_identifier' defined
 								for (char code : formatCode){
+									//System.out.printf("%s %s/%d=%c <%s>%n", format.getName(), "LDR", 6, code, tag);
 									format.addConfiguration(tag, code, config);
 								}
 							} else {
 								// use 'field_identifier' if defined
 								for (Identifier id : fieldID){
+									//System.out.printf("%s %s/%d=%s <%s>%n", format.getName(), id.tag, id.index, id.value, tag);
 									format.addConfiguration(id.tag, id.index, tag, id.value, config);
 								}
 							}

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
-import marc.field.Field;
 import marc.field.FixedField;
 import marc.field.Leader;
 import marc.record.Record;
@@ -19,7 +18,6 @@ import marc.type.Format;
 import marc.type.RecordType;
 
 public final class RecordTypeFactory {
-	private static final int MAX_TYPE_LENGTH = 2;
 	private static Map<Character, Format> map = loadMap(new File("resource/fixedfielddata.xml"));
 	
 	public static final Map<Character, Format> loadMap(File file){
@@ -66,29 +64,26 @@ public final class RecordTypeFactory {
 		return format;
 	}
 	
+	public static final ConfigType getConfigType(Record record, FixedField field){
+		Format format = getFormat(record.getLeader());
+		return getConfigType(format, record, field);
+	}
 	public static final ConfigType getConfigType(Format format, FixedField reference, int refIndex, String tag){
 		ConfigType config = null;
 		if (format == null){
 			config = new ConfigType("", 0);
 		} else {
-			char[] type = reference.getData(refIndex, MAX_TYPE_LENGTH);
-			String key = null;
-			int i = 0;
-			// TODO implement as Format method
-			while (config == null && i < type.length){
-				key = String.copyValueOf(type, 0, i+1);
-				config = format.getConfiguration(tag, key);
-				++i;
-			}
+			config = format.getConfiguration(reference, refIndex, tag);
 			if (config == null){
 				config = new ConfigType("", 0);
 			}
 		}
 		return config;
 	}
-	public static final ConfigType getConfigType(Format format, Record record, Field field){
+	private static final ConfigType getConfigType(Format format, Record record, FixedField field){
 		ConfigType config = null;
 		if (format == null){
+			System.err.println("Format is null.");
 			config = new ConfigType("", 0);
 		} else {
 			String tag = field.getTag();
@@ -97,7 +92,7 @@ public final class RecordTypeFactory {
 			ConfigIdentifier formatID = null;
 			for (ConfigIdentifier id : identifier){
 				if (tag.equals(id.getTag())){
-					refField = (FixedField) field;
+					refField = field;
 				} else {
 					refField = (FixedField) record.getFirstMatchingField(id.getTag());
 				}
@@ -106,23 +101,28 @@ public final class RecordTypeFactory {
 					break;
 				}
 			}
-			char[] type = null;
-			if (formatID == null){
-				System.err.println("no matching reference Field");
-			} else {
-				type = refField.getData(formatID.getIndex(), MAX_TYPE_LENGTH);
-				String key = null;
-				int i = 0;
-				while (config == null && i < type.length){
-					key = String.copyValueOf(type, 0, i+1);
-					config = format.getConfiguration(formatID.getTag(), formatID.getIndex(), tag, key);
-					++i;
-				}
+			if (formatID != null){
+				config = format.getConfiguration(refField, formatID.getIndex(), tag);
 			}
 			if (config == null){
 				config = new ConfigType("", 0);
 			}
 		}
 		return config;
+	}
+	public static Map<Character, String> getConfigCodes(Record record, String tag){
+		Map<Character, String> codes = new HashMap<Character, String>();
+		Format format = getFormat(record.getLeader());
+		ConfigIdentifier[] identifier = format.getIdentifier(tag);
+		char code = '\0';
+		ConfigType type = null;
+		String value = null;
+		for (ConfigIdentifier id : identifier){
+			code = id.getCode();
+			type = format.getConfiguration(id.getTag(), id.getIndex(), tag, String.valueOf(code));
+			value = (type == null) ? "???" : type.getName();
+			codes.put(id.getCode(), value);
+		}
+		return codes;
 	}
 }

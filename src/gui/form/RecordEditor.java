@@ -105,9 +105,9 @@ public final class RecordEditor extends RecordPanel implements ListSelectionList
 		updateView();
 	}
 	private void updateActions(int index){
-		for (int i = 0; i < fieldAction.length; ++i){
-			fieldAction[i].setRecord(record);
-			fieldAction[i].enableForIndex(index);
+		for (FieldAction action : fieldAction){
+			action.setRecord(record);
+			action.enableForIndex(index);
 		}
 	}
 	protected void updateView(){

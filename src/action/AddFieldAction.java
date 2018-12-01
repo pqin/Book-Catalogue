@@ -29,6 +29,7 @@ public final class AddFieldAction extends FieldAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		wizard.setRecord(record);
 		int option = wizard.showDialog();
 		if (option == JOptionPane.OK_OPTION){
 			Field f = wizard.getField();

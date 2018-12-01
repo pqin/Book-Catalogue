@@ -13,16 +13,14 @@ import gui.form.DataFieldEditor;
 import gui.form.FixedFieldEditor;
 import marc.RecordTypeFactory;
 import marc.field.Field;
-import marc.record.Record;
+import marc.field.FixedField;
 import marc.type.ConfigType;
-import marc.type.Format;
 
 public final class EditFieldAction extends FieldAction {
 	private static final long serialVersionUID = 1L;
 
-	MarcDialog dialog;
-	AbstractFieldEditor fixedFieldForm, controlFieldForm, dataFieldForm;
-	Format format;
+	private MarcDialog dialog;
+	private AbstractFieldEditor fixedFieldForm, controlFieldForm, dataFieldForm;
 	
 	public EditFieldAction(MarcDialog dialog, JTable table){
 		super("Edit", table);
@@ -31,18 +29,8 @@ public final class EditFieldAction extends FieldAction {
 		fixedFieldForm = new FixedFieldEditor();
 		controlFieldForm = new ControlFieldEditor();
 		dataFieldForm = new DataFieldEditor();
-		format = null;
 	}
 	
-	@Override
-	public void setRecord(Record r){
-		super.setRecord(r);
-		if (r == null){
-			format = null;
-		} else {
-			format = RecordTypeFactory.getFormat(record.getLeader());
-		}
-	}
 	@Override
 	public void enableForIndex(int i){
 		setIndex(i);
@@ -50,7 +38,6 @@ public final class EditFieldAction extends FieldAction {
 	}
 	
 	private Field editField(AbstractFieldEditor editor, Field field){
-		//editor.clearForm();
 		editor.setField(field.copy());
 		dialog.setTitle(getTitle());
 		dialog.setContent(editor.getComponent());
@@ -70,8 +57,9 @@ public final class EditFieldAction extends FieldAction {
 		Field data = null;
 		switch (Field.getFieldType(tag)){
 		case FIXED_FIELD:
-			ConfigType config = RecordTypeFactory.getConfigType(format, record, f);
+			ConfigType config = RecordTypeFactory.getConfigType(record, (FixedField) f);
 			if (config.getLength() == 0){
+				System.err.printf("Default to Control: %s%n", tag);
 				data = editField(controlFieldForm, f);
 			} else {
 				((FixedFieldEditor) fixedFieldForm).setConfig(config);

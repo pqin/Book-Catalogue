@@ -1454,7 +1454,7 @@
                 <description>Language</description>
             </fixed_datum>
         </field>
-        <field tag="007" length="11" name="Physical Description">
+        <field tag="007" length="11" name="Disabled">
             <identifier tag="007" index="0">e</identifier>
             <fixed_datum index="0" length="1">
                 <label>Category</label>
@@ -1564,7 +1564,7 @@
     <material name="Physical Description">
         <type_format name="Bibliographic" />
         <type_format name="Holdings" />
-        <field tag="007" length="8" name="Physical Description">
+        <field tag="007" length="8" name="Map">
             <identifier tag="007" index="0">a</identifier>
             <fixed_datum index="0" length="1">
                 <label>Category</label>
@@ -1572,7 +1572,143 @@
                 <code value="a">Map</code>
             </fixed_datum>
         </field>
-        <field tag="007" length="2" name="Physical Description">
+        <field tag="007" length="8" name="Electronic Resource">
+            <identifier tag="007" index="0">c</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="c">Electronic resource</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Globe">
+            <identifier tag="007" index="0">d</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="d">Globe</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Tactile Material">
+            <identifier tag="007" index="0">f</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="f">Tactile material</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Projected Graphic">
+            <identifier tag="007" index="0">g</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="g">Projected graphic</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Microform">
+            <identifier tag="007" index="0">h</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="h">Microform</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Nonprojected Graphic">
+            <identifier tag="007" index="0">k</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="k">Nonprojected graphic</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Motion Picture">
+            <identifier tag="007" index="0">m</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="m">Motion picture</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Kit">
+            <identifier tag="007" index="0">o</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="o">Kit</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+                <code value="u">Unspecified</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Notated Music">
+            <identifier tag="007" index="0">q</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="q">Notated music</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+                <code value="u">Unspecified</code>
+                <code value="|">No attempt to code</code>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Remote Sensing Image">
+            <identifier tag="007" index="0">r</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="r">Remote sensing image</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="8" name="Sound Recording">
+            <identifier tag="007" index="0">s</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="s">Sound recording</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="2" name="Text">
             <identifier tag="007" index="0">t</identifier>
             <fixed_datum index="0" length="1">
                 <label>Category</label>
@@ -1591,7 +1727,19 @@
                 <code value="|">No attempt to code</code>
             </fixed_datum>
         </field>
-        <field tag="007" length="2" name="Physical Description">
+        <field tag="007" length="8" name="Videorecording">
+            <identifier tag="007" index="0">v</identifier>
+            <fixed_datum index="0" length="1">
+                <label>Category</label>
+                <description>Category</description>
+                <code value="v">Videorecording</code>
+            </fixed_datum>
+            <fixed_datum index="1" length="1">
+                <label>SpecMat</label>
+                <description>Specific Material Designation</description>
+            </fixed_datum>
+        </field>
+        <field tag="007" length="2" name="Unspecified">
             <identifier tag="007" index="0">z</identifier>
             <fixed_datum index="0" length="1">
                 <label>Category</label>

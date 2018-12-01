@@ -25,6 +25,7 @@ public class FixedDatumTableCellRenderer extends DefaultTableCellRenderer {
 				table, value, isSelected, hasFocus, row, column);
 		if (value == null){
 			label.setText(null);
+			label.setToolTipText(null);
 		} else {
 			label.setText(((FixedDatum) value).getLabel());
 			label.setToolTipText(((FixedDatum) value).getDescription());
