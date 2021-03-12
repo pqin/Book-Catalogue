@@ -21,6 +21,21 @@ public class Marc8DecoderTest {
 		charset = new Marc8();
 		decoder = charset.newDecoder();
 	}
+	
+	private static final String printBytes(byte[] b){
+		StringBuilder buf = new StringBuilder();
+		buf.append('[');
+		if (b == null){
+			buf.append("NULL");
+		} else if (b.length > 0){
+			buf.append(String.format("%2H", b[0]&0xFF));
+			for (int i = 1; i < b.length; ++i){
+				buf.append(String.format(",%2H", b[i]&0xFF));
+			}
+		}
+		buf.append(']');
+		return buf.toString();
+	}
 
 	private static final String testDecoder(byte[] binary) {
 		String actual = null;
@@ -36,43 +51,31 @@ public class Marc8DecoderTest {
 		}
 		return actual;
 	}
-
-	private static final String testString(byte[] binary) {
-		String actual = null;
-		try {
-			actual = new String(binary, charset);
-		} catch (Exception e){
-			Assert.fail(e.getMessage());
-		}
-		return actual;
-	}
 	
 	@Test
 	public final void testEmpty(){
-		byte[] marc8 = { 0x1B, 0x28, 0x4E, 0x72, 0x55, 0x53, 0x53, 0x4B, 0x49, 0x49 };
-		String expected = new String(new char[]{'\u0420', '\u0443', '\u0441', '\u0441', '\u043A', '\u0438', '\u0438'});
+		byte[] marc8 = { };
+		String expected = "";
 		System.out.printf("Test: \"%s\"%n", expected);
 		String actual0 = testDecoder(marc8);
-		String actual1 = testString(marc8);
+		String actual1 = printBytes(marc8);
 		System.out.printf("Expected: %s%n", expected);
-		System.out.printf("decode:   %s%n", actual0);
-		System.out.printf("String(): %s%n", actual1);
+		System.out.printf("Decoded:  %s%n", actual0);
+		System.out.printf("Bytes: %s%n", actual1);
 		Assert.assertEquals(expected, actual0);
-		Assert.assertEquals(expected, actual1);
 	}
 	
 	@Test
 	public final void testBlank(){
-		byte[] marc8 = { 0x1B, 0x28, 0x4E, 0x72, 0x55, 0x53, 0x53, 0x4B, 0x49, 0x49 };
-		String expected = new String(new char[]{'\u0420', '\u0443', '\u0441', '\u0441', '\u043A', '\u0438', '\u0438'});
+		byte[] marc8 = { 0x20 };
+		String expected = " ";
 		System.out.printf("Test: \"%s\"%n", expected);
 		String actual0 = testDecoder(marc8);
-		String actual1 = testString(marc8);
+		String actual1 = printBytes(marc8);
 		System.out.printf("Expected: %s%n", expected);
-		System.out.printf("decode:   %s%n", actual0);
-		System.out.printf("String(): %s%n", actual1);
+		System.out.printf("Decoded:  %s%n", actual0);
+		System.out.printf("Bytes: %s%n", actual1);
 		Assert.assertEquals(expected, actual0);
-		Assert.assertEquals(expected, actual1);
 	}
 	
 	@Test
@@ -119,12 +122,11 @@ public class Marc8DecoderTest {
 		String expected = "Latin";
 		System.out.printf("Test: \"%s\"%n", expected);
 		String actual0 = testDecoder(marc8);
-		String actual1 = testString(marc8);
+		String actual1 = printBytes(marc8);
 		System.out.printf("Expected: %s%n", expected);
-		System.out.printf("decode:   %s%n", actual0);
-		System.out.printf("String(): %s%n", actual1);
+		System.out.printf("Decoded:  %s%n", actual0);
+		System.out.printf("Bytes: %s%n", actual1);
 		Assert.assertEquals(expected, actual0);
-		Assert.assertEquals(expected, actual1);
 	}
 	
 	@Test
@@ -133,12 +135,11 @@ public class Marc8DecoderTest {
 		String expected = "Acce\u0301nt";
 		System.out.printf("Test: \"%s\"%n", expected);
 		String actual0 = testDecoder(marc8);
-		String actual1 = testString(marc8);
+		String actual1 = printBytes(marc8);
 		System.out.printf("Expected: %s%n", expected);
-		System.out.printf("decode:   %s%n", actual0);
-		System.out.printf("String(): %s%n", actual1);
+		System.out.printf("Decoded:  %s%n", actual0);
+		System.out.printf("Bytes: %s%n", actual1);
 		Assert.assertEquals(expected, actual0);
-		Assert.assertEquals(expected, actual1);
 	}
 	
 	@Test
@@ -147,12 +148,11 @@ public class Marc8DecoderTest {
 		String expected = new String(new char[]{'\u0420', '\u0443', '\u0441', '\u0441', '\u043A', '\u0438', '\u0438'});
 		System.out.printf("Test: \"%s\"%n", expected);
 		String actual0 = testDecoder(marc8);
-		String actual1 = testString(marc8);
+		String actual1 = printBytes(marc8);
 		System.out.printf("Expected: %s%n", expected);
-		System.out.printf("decode:   %s%n", actual0);
-		System.out.printf("String(): %s%n", actual1);
+		System.out.printf("Decoded:  %s%n", actual0);
+		System.out.printf("Bytes: %s%n", actual1);
 		Assert.assertEquals(expected, actual0);
-		Assert.assertEquals(expected, actual1);
 	}
 	
 	@Test
@@ -161,11 +161,10 @@ public class Marc8DecoderTest {
 		String expected = new String(new char[]{'\u4E2D', '\u6587'});
 		System.out.printf("Test: \"%s\"%n", expected);
 		String actual0 = testDecoder(marc8);
-		String actual1 = testString(marc8);
+		String actual1 = printBytes(marc8);
 		System.out.printf("Expected: %s%n", expected);
-		System.out.printf("decode:   %s%n", actual0);
-		System.out.printf("String(): %s%n", actual1);
+		System.out.printf("Decoded:  %s%n", actual0);
+		System.out.printf("Bytes: %s%n", actual1);
 		Assert.assertEquals(expected, actual0);
-		Assert.assertEquals(expected, actual1);
 	}
 }

@@ -3,6 +3,7 @@ package marc.marc8;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class CharacterSet {
 	public static final char UNKNOWN_CHAR = '\uFFFD';
@@ -63,8 +64,13 @@ public class CharacterSet {
 	public void setTable(char[] value) {
 		byteMap.clear();
 		charMap.clear();
+		Set<Character> keySet = charMap.keySet();
 		for (int i = 0; i < value.length; ++i){
 			byteMap.put(i, value[i]);
+			
+			if (!keySet.contains(value[i])){
+				charMap.put(value[i], i);				
+			}
 		}
 	}
 	public final int getTableLength(){
@@ -105,8 +111,7 @@ public class CharacterSet {
 	public byte[] encode(final char c, final int g) {
 		byte b[] = null;
 		if (c < offset){
-			b = new byte[1];
-			b[0] = (byte) c;
+			b = new byte[] { (byte)c };
 			return b;
 		} else {
 			b = new byte[bytesPerChar];

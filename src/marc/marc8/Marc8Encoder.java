@@ -68,6 +68,7 @@ public class Marc8Encoder extends CharsetEncoder {
 		}
 		return g;
 	}
+	
 	private void switchGraphicSet(CharBuffer in, GraphicSet set){
 		int g = set.getGraphicSet();
 		graphic[g] = set;
@@ -77,6 +78,7 @@ public class Marc8Encoder extends CharsetEncoder {
 		int pos = in.position();
 		in.position(pos - 1);
 	}
+	
 	private CoderResult appendByte(CharBuffer in, ByteBuffer out, final byte[] b){
 		CoderResult result = CoderResult.UNDERFLOW;
 		int pos = in.position();
@@ -88,6 +90,7 @@ public class Marc8Encoder extends CharsetEncoder {
 		}
 		return result;
 	}
+	
 	@Override
 	protected CoderResult encodeLoop(CharBuffer in, ByteBuffer out) {
 		char c = '\0';

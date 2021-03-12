@@ -5,7 +5,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -39,19 +38,19 @@ public class Marc8EncoderTest {
 	}
 	
 	private static final byte[] testEncoder(String text){
-		byte[] actual = null;
+		byte[] actual = new byte[] {};
 		CharBuffer in = (text == null) ? null : CharBuffer.wrap(text);
 		ByteBuffer out = null;
 		try {
 			out = encoder.encode(in);
-			byte[] a = out.array();
-			actual = Arrays.copyOf(a, out.remaining());
+			out = (ByteBuffer) out.rewind();
+			actual = new byte[out.remaining()];
+			out.get(actual);
+			System.out.printf("encode:   %s%n", printBytes(actual));
 		} catch (CharacterCodingException e){
 			Assert.fail(e.getMessage());
 		} catch (Exception e){
 			Assert.fail(e.getMessage());
-		} finally {
-			System.out.printf("encode:   %s%n", printBytes(actual));
 		}
 		return actual;
 	}
@@ -101,7 +100,7 @@ public class Marc8EncoderTest {
 		}
 		String text = new String(data);
 		
-		System.out.printf("Test: \"%s\"%n", text);
+		System.out.printf("Test: Control-0%n");
 		System.out.printf("Expected: %s%n", printBytes(expected));
 		byte[] actual0 = testEncoder(text);
 		byte[] actual1 = testString(text);
@@ -139,7 +138,7 @@ public class Marc8EncoderTest {
 		};
 		String text = new String(data);
 		
-		System.out.printf("Test: \"%s\"%n", text);
+		System.out.printf("Test: Control-1%n");
 		System.out.printf("Expected: %s%n", printBytes(expected));
 		byte[] actual0 = testEncoder(text);
 		byte[] actual1 = testString(text);

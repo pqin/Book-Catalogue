@@ -20,7 +20,7 @@ public class Marc8Test {
 
 	@Test
 	public final void testCanEncode() {
-		assertFalse(charset.canEncode());
+		assertTrue(charset.canEncode());
 	}
 
 	@Test
